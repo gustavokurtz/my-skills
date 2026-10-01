@@ -1,0 +1,10 @@
+{
+  "tarefa": "AAAA-MM-DD-slug",
+  "fluxo": "grande",
+  "etapa": "execucao",
+  "tarefas": [
+    { "id": "T1", "fase": 1, "passou": true },
+    { "id": "T2", "fase": 1, "passou": false },
+    { "id": "T3", "fase": 2, "passou": false }
+  ]
+}

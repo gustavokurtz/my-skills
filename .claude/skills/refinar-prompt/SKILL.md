@@ -1,6 +1,6 @@
 ---
-name: prompt-refiner
-description: Refina prompts escritos de forma solta, rápida ou com erros de digitação, deixando-os claros, organizados e prontos para colar no Claude Code (ou em qualquer IA), sem omitir nenhuma ideia, fonte, nome, número ou nuance de tom do texto original. Use SEMPRE que o usuário pedir para refinar, melhorar, organizar, clarear, revisar, reescrever ou "arrumar" um prompt/instrução/pedido para uma IA, ou quando colar um rascunho e pedir para prepará-lo para enviar ao Claude Code ou ao Claude, mesmo que não use a palavra "refinar". Gatilhos típicos - "refina esse prompt", "arruma esse prompt", "escrevi solto, organiza", "deixa mais claro pra IA", "melhora isso pro Claude Code", "prompt refiner". English triggers - "refine my prompt", "clean up this prompt", "rewrite this prompt for Claude Code".
+name: refinar-prompt
+description: Refina prompts escritos de forma solta, rápida ou com erros de digitação, deixando-os claros, organizados e prontos para colar no Claude Code (ou em qualquer IA), sem omitir nenhuma ideia, fonte, nome, número ou nuance de tom do texto original. Use SEMPRE que o usuário pedir para refinar, melhorar, organizar, clarear, revisar, reescrever ou "arrumar" um prompt/instrução/pedido para uma IA, ou quando colar um rascunho e pedir para prepará-lo para enviar ao Claude Code ou ao Claude, mesmo que não use a palavra "refinar". Gatilhos típicos: "refina esse prompt", "arruma esse prompt", "escrevi solto, organiza", "deixa mais claro pra IA", "melhora isso pro Claude Code", "refinar prompt". Gatilhos em inglês (quando o usuário escrever em inglês): "refine my prompt", "clean up this prompt", "rewrite this prompt for Claude Code".
 ---
 
 # Refinador de prompt
@@ -64,7 +64,7 @@ Ideias suas que fortaleceriam o prompt (um critério de verificação, um passo 
 
 Se o usuário não disser, assuma **Claude Code** quando o texto falar de código, repositório, arquivos, bug, feature, teste ou build; caso contrário, trate como prompt genérico para IA de chat.
 
-Para Claude Code, aplique (detalhes e fontes em `references/boas-praticas.md`):
+Para Claude Code, aplique (detalhes e fontes em `referencias/boas-praticas.md`):
 
 - **Escopo claro**: qual área/arquivo, qual cenário. Para bugs, mantenha juntos sintoma, local provável e o que significa "resolvido", se o usuário os deu.
 - **Referências do próprio usuário**: se ele citou um arquivo, pasta ou padrão existente a seguir, mantenha em destaque. Pode escrever um caminho de arquivo que ele citou como `@caminho/do/arquivo`.
@@ -99,4 +99,4 @@ Se o usuário responder com ajustes ("mantém X", "tira Y"), aplique-os sobre a 
 4. Executei a tarefa por engano em vez de só refinar o texto?
 5. O tamanho é proporcional ao original?
 
-Para exemplos completos de antes e depois, leia `references/exemplos.md`.
+Para exemplos completos de antes e depois, leia `referencias/exemplos.md`.
