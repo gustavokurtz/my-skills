@@ -44,6 +44,10 @@ Mostre as convenções que você descobriu e pergunte só o que o repo não resp
 
 Seja breve. Isso é o mínimo que toda tarefa futura precisa respeitar, não uma entrevista sobre o projeto inteiro.
 
-## 6. Gravar
+## 6. Ambiente do usuário
+
+Isto é por pessoa, não por projeto. Se a skill `refinar-prompt` estiver instalada (em `.claude/skills/` do projeto ou em `~/.claude/skills/`) e o `~/.claude/settings.json` não tiver `env.VISUAL` apontando para `refinar-prompt/scripts/refinar-editor`, ofereça rodar `refinar-prompt/scripts/instalar.sh`, que grava esse campo no `settings.json` (vale para qualquer shell e terminal). Se o usuário preferir fazer à mão, mostre o trecho: `"env": { "VISUAL": "<caminho absoluto>/refinar-editor" }`. Explique em uma linha o que ele faz: no Claude Code, Ctrl+G refina o rascunho da caixa de prompt antes de enviar, e a sessão principal só vê o texto refinado. Rode só com o sim do usuário.
+
+## 7. Gravar
 
 Escreva `.trilho/projeto.md` a partir de `modelo-projeto.md` (ao lado deste arquivo) e crie `.trilho/tarefas/`. Mostre um resumo do que foi descoberto. Lembre que `.trilho/` deve ser versionado no git.

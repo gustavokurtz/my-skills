@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# refinar-editor: usado como $VISUAL pelo Claude Code (Ctrl+G na caixa de prompt).
+#
+# Refina o rascunho com as regras do refinar-prompt numa chamada separada do
+# `claude -p` e devolve só o prompt refinado para a caixa, sem enviar. A sessão
+# principal nunca vê o rascunho. A resposta completa (o que mudou, pontos em
+# aberto, sugestões) fica em ~/.cache/refinar/ultimo.md.
+#
+# Qualquer outro arquivo (ex.: git commit) e um segundo Ctrl+G em cima de um
+# texto recém-refinado abrem o editor normal.
+#
+# Variáveis: REFINAR_MODELO (padrão: sonnet), REFINAR_EDITOR (padrão: $EDITOR ou nano).
+set -uo pipefail
+
+arquivo="${1:-}"
+dir_skill="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/refinar"
+modelo="${REFINAR_MODELO:-sonnet}"
+separador="=====FIM-DO-PROMPT====="
+
+abrir_normal() { exec ${REFINAR_EDITOR:-${EDITOR:-nano}} "$@"; }
+avisar() { { printf '%s\n' "$1" > /dev/tty; } 2>/dev/null || true; }
+aparar() { sed -e ':a' -e '/^\n*$/{$d;N;ba' -e '}' | sed -e '/./,$!d'; }
+
+[[ "$(basename -- "$arquivo")" == claude-prompt-*.md ]] || abrir_normal "$@"
+
+rascunho="$(cat -- "$arquivo")"
+[[ -n "${rascunho//[[:space:]]/}" ]] || abrir_normal "$@"
+
+mkdir -p "$cache"
+if [[ -f "$cache/ultimo-prompt.txt" && "$(printf '%s' "$rascunho" | aparar)" == "$(aparar < "$cache/ultimo-prompt.txt")" ]]; then
+  abrir_normal "$@"
+fi
+
+# Regras da skill, sem o frontmatter e sem a seção "Entrada" (que é do modo fork).
+regras="$(awk '
+  /^---$/ && fm < 2 { fm++; next }
+  fm < 2 { next }
+  /^## Entrada/ { pula = 1; next }
+  /^## / { pula = 0 }
+  !pula
+' "$dir_skill/SKILL.md")"
+exemplos="$(cat "$dir_skill/referencias/exemplos.md" 2>/dev/null || true)"
+
+sistema="$regras
+
+# Exemplos
+
+$exemplos
+
+# Modo editor
+
+A mensagem do usuário é o rascunho a refinar. Responda em duas partes, separadas por uma linha contendo exatamente $separador.
+Antes dessa linha: só o prompt refinado, em texto puro, sem bloco de código e sem título.
+Depois dessa linha: O que mudei, Pontos em aberto e Sugestões, no formato da skill.
+Não faça perguntas. Se o rascunho for vazio demais para refinar, devolva-o como está antes da linha."
+
+avisar "refinando com $modelo..."
+if ! (cd "$cache" && printf '%s' "$rascunho" | timeout 180 claude -p \
+      --model "$modelo" --tools "" --strict-mcp-config --no-session-persistence \
+      --append-system-prompt "$sistema" > "$cache/ultimo.md" 2> "$cache/erro.log"); then
+  avisar "refinar: falhou (veja $cache/erro.log); o rascunho ficou como estava."
+  sleep 2
+  exit 0
+fi
+
+if ! grep -qxF "$separador" "$cache/ultimo.md"; then
+  avisar "refinar: resposta fora do formato (veja $cache/ultimo.md); o rascunho ficou como estava."
+  sleep 2
+  exit 0
+fi
+
+refinado="$(awk -v s="$separador" '$0 == s { exit } { print }' "$cache/ultimo.md" | aparar)"
+printf '%s\n' "$refinado" > "$arquivo"
+printf '%s\n' "$refinado" > "$cache/ultimo-prompt.txt"
