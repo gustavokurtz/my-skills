@@ -1,4 +1,4 @@
-# Etapa: entrega
+# Entrega
 
 Só considere a tarefa pronta depois de, nesta ordem:
 
@@ -10,28 +10,18 @@ Rode a suíte de testes inteira, o lint, o typecheck e o build, conforme o `proj
 
 Lance **um** subagente (Agent tool, tipo general-purpose) com contexto limpo. Quem escreveu o código tende a aprovar o próprio trabalho; um revisor que não viu a conversa lê só o que está nos arquivos.
 
-Passe para ele:
+A instrução dele é o conteúdo de `referencias/revisor.md`, mais:
 
-- o caminho da `spec.md` (fluxo grande) ou do `plano.md` (fluxo pequeno);
-- o intervalo de commits da tarefa (`git diff <base>..HEAD`).
+- o caminho do `roteiro.md`;
+- o intervalo de commits da tarefa (`<base>..HEAD`).
 
-Peça uma lista priorizada de:
+O revisor só reporta achados com confiança ≥ 80. Mesmo assim, verifique cada um antes de agir, porque o revisor também erra. Corrija o que for real e commite. Quando discordar de um achado, diga isso explicitamente ao usuário.
 
-- **Cobertura:** algum requisito ou critério de aceite sem implementação ou sem teste?
-- **Correção:** bugs, casos de borda e erros não tratados.
-- **Excesso:** overengineering, código morto, `console.log` esquecido, código comentado, segredo hardcoded, import não usado.
+## 3. Registro
 
-Verifique cada achado antes de agir, porque o revisor também erra. Corrija o que for real. Quando discordar de um achado, diga isso explicitamente ao usuário.
+Preencha a seção Resultado do `estado.md` (commits, resultado dos testes, achados do review, o que ficou de fora e por quê) e mude a etapa para `concluida`.
 
-## 3. Validação manual e2e
-
-Apresente ao usuário o roteiro de validação manual do plano e espere o resultado. Se aparecer um problema, trate como desvio (`referencias/execucao.md`).
-
-## 4. Registro
-
-Preencha a seção Resultado do plano: commits, resultado dos testes, achados do review e o que ficou de fora e por quê. Atualize `etapa` para `concluida`.
-
-## 5. Fechamento
+## 4. Fechamento
 
 Responda com:
 
@@ -39,6 +29,9 @@ Responda com:
 - os commits criados;
 - o resultado dos testes;
 - o resumo do review;
+- o roteiro de validação manual (do "Pronto quando"), para o usuário rodar;
 - o caminho da pasta da tarefa.
+
+Não espere o resultado da validação manual. Se o usuário relatar um problema, ele vira uma nova rodada de execução.
 
 Nada de relatório longo: os arquivos já são o registro.

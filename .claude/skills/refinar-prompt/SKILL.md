@@ -1,11 +1,22 @@
 ---
 name: refinar-prompt
 description: Refina prompts escritos de forma solta, rápida ou com erros de digitação, deixando-os claros, organizados e prontos para colar no Claude Code (ou em qualquer IA), sem omitir nenhuma ideia, fonte, nome, número ou nuance de tom do texto original. Use SEMPRE que o usuário pedir para refinar, melhorar, organizar, clarear, revisar, reescrever ou "arrumar" um prompt/instrução/pedido para uma IA, ou quando colar um rascunho e pedir para prepará-lo para enviar ao Claude Code ou ao Claude, mesmo que não use a palavra "refinar". Gatilhos típicos: "refina esse prompt", "arruma esse prompt", "escrevi solto, organiza", "deixa mais claro pra IA", "melhora isso pro Claude Code", "refinar prompt". Gatilhos em inglês (quando o usuário escrever em inglês): "refine my prompt", "clean up this prompt", "rewrite this prompt for Claude Code".
+context: fork
 ---
 
 # Refinador de prompt
 
 Transforma um prompt escrito "solto" (com typos, ideias fora de ordem, referências vagas) em um prompt claro e bem organizado, **mantendo tudo que o usuário disse e o jeito como ele disse**.
+
+## Entrada
+
+Esta skill roda num contexto separado da conversa principal: você não vê a conversa, só o rascunho abaixo e os arquivos do repo. Sua resposta final volta para a sessão principal, que a mostra ao usuário.
+
+Rascunho a refinar:
+
+$ARGUMENTS
+
+Se o rascunho estiver vazio, peça o texto e pare.
 
 ## Seu papel: editor, não executor
 
@@ -84,7 +95,7 @@ Sempre nesta ordem, no mesmo idioma do original:
 
 Não faça perguntas _antes_ de refinar. Refine com o que há, registre as suposições em "Pontos em aberto" e deixe o usuário corrigir. A única exceção é um texto tão vazio que não dá para refinar (ex.: só "arruma aquilo"); aí peça o texto.
 
-Se o usuário responder com ajustes ("mantém X", "tira Y"), aplique-os sobre a última versão refinada em vez de recomeçar.
+Se o usuário responder com ajustes ("mantém X", "tira Y"), aplique-os sobre a última versão refinada em vez de recomeçar. Como esta skill roda separada, esses ajustes acontecem na sessão principal: quem os aplica é ela, sobre a última versão mostrada.
 
 ## Intensidade
 

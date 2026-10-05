@@ -1,6 +1,6 @@
 ---
 name: compactar-contexto
-description: Gera um resumo estruturado da conversa atual antes de compactar o contexto, preservando decisões-chave (com o porquê), alternativas descartadas, correções do usuário, estado atual e pendências, cobrindo início, meio e fim da sessão. Use sempre que o usuário for rodar /compact, mencionar "compactar", "resumir a sessão", "salvar contexto", "handoff", "o contexto tá cheio", "vou limpar a conversa", ou quiser continuar o trabalho depois sem perder o que foi decidido, mesmo que não peça explicitamente um resumo.
+description: Gera um resumo estruturado da conversa atual antes de compactar o contexto, preservando decisões-chave (com o porquê), alternativas descartadas, correções do usuário, estado atual e pendências, cobrindo início, meio e fim da sessão. Use sempre que o usuário for rodar /compact, mencionar "compactar", "resumir a sessão", "salvar contexto", "handoff", "o contexto tá cheio", "vou limpar a conversa", ou quiser continuar o trabalho depois sem perder o que foi decidido, mesmo que não peça explicitamente um resumo. Se houver uma tarefa do trilho em andamento (`.trilho/tarefas/`), use o handoff do trilho em vez desta skill.
 ---
 
 # Contexto para /compact
