@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # refinar-editor: usado como $VISUAL pelo Claude Code (Ctrl+G na caixa de prompt).
 #
-# Refina o rascunho com as regras do refinar-prompt numa chamada separada do
+# Refina o rascunho com a skill refinar-prompt inteira (SKILL.md, boas-praticas.md
+# e exemplos.md) numa chamada separada do
 # `claude -p` e devolve só o prompt refinado para a caixa, sem enviar. A sessão
 # principal nunca vê o rascunho. A resposta completa (o que mudou, pontos em
 # aberto, sugestões) fica em ~/.cache/refinar/ultimo.md.
@@ -40,11 +41,16 @@ regras="$(awk '
   /^## / { pula = 0 }
   !pula
 ' "$dir_skill/SKILL.md")"
+boas_praticas="$(cat "$dir_skill/referencias/boas-praticas.md" 2>/dev/null || true)"
 exemplos="$(cat "$dir_skill/referencias/exemplos.md" 2>/dev/null || true)"
 
 sistema="$regras
 
-# Exemplos
+# Boas práticas (referencias/boas-praticas.md)
+
+$boas_praticas
+
+# Exemplos (referencias/exemplos.md)
 
 $exemplos
 
