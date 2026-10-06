@@ -52,7 +52,7 @@ Tarefa no formato antigo (`spec.md`, `plano.md`, `progresso.json`): leia esses a
 ```
 .trilho/tarefas/AAAA-MM-DD-<slug>/
   roteiro.md   # o que fazer e como (modelo: modelos/roteiro.md). Estável.
-  estado.md    # onde estamos (modelo: modelos/estado.md). Reescrito a cada handoff.
+  estado.md    # onde estamos (modelo: modelos/estado.md). Atualizado a cada tarefa; reescrito no handoff.
 ```
 
 Use a data real do sistema e um slug curto em kebab-case.

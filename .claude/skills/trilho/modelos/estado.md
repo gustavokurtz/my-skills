@@ -9,7 +9,7 @@ Uma ou duas frases: o que acabou de ser feito.
 
 ## Tarefas
 
-- T1 — feito (`abc1234`)
+- T1 — feito
 - T2 — em andamento: <onde parou>
 - T3 — pendente
 
