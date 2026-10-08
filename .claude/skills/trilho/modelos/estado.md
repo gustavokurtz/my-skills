@@ -2,6 +2,7 @@
 
 **Atualizado em:** AAAA-MM-DD HH:MM
 **Etapa:** planejamento | execucao | entrega | concluida
+**Último review:** nenhum <!-- formato: <hash do HEAD revisado> (fase N) -->
 
 ## Onde paramos
 
@@ -12,6 +13,8 @@ Uma ou duas frases: o que acabou de ser feito.
 - T1 — feito
 - T2 — em andamento: <onde parou>
 - T3 — pendente
+- T4 — esperando o dev: <o que ele roda e o que deve colar de volta>
+- Entrega — pendente (verificação, <o que o campo Entrega do roteiro pede>)
 
 ## Próximo passo
 
@@ -41,4 +44,4 @@ Decisões de implementação tomadas no caminho, cada uma com o porquê.
 
 ## Resultado
 
-Preencher na entrega: commits, resultado dos testes, achados do review, o que ficou de fora e por quê.
+Preencher na entrega: commits, resultado dos testes, achados dos reviews, o que ficou de fora e por quê.

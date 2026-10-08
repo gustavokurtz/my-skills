@@ -1,6 +1,6 @@
 # Execução
 
-Trabalhe uma tarefa de cada vez, na ordem do roteiro. A próxima é sempre a primeira que não está `feito` no `estado.md`.
+Trabalhe uma tarefa de cada vez, na ordem do roteiro. A próxima é sempre a primeira que não está `feito` nem `esperando o dev` no `estado.md`.
 
 ## O estado a cada tarefa
 
@@ -37,12 +37,40 @@ Confira efeitos fora do alvo: uma mudança que corrige um ponto pode quebrar out
 
 Rodadas dentro do orçamento não são desvio: não precisam de aprovação.
 
+## Tarefa com `Quem roda: dev`
+
+Quem executa é o usuário; você prepara e lê.
+
+1. **Entregue os comandos** prontos para copiar (diretório, variáveis, flags) e diga o que ele deve colar de volta (relatório, ids de trace ou thread, saída).
+2. **Marque `esperando o dev: <o que ele roda>`** no `estado.md`, aponte o "Próximo passo" para "ler o resultado da Tn" e commite.
+3. **Siga com as tarefas da fase que não dependem desse resultado.** Se só restarem tarefas que dependem dele, pare e diga que está esperando.
+4. **Com o resultado em mãos,** leia a evidência como em qualquer tarefa: `Verificar por:` ou `Meta:`, e marque `feito`. Se for empírica, cada ida e volta conta uma rodada do orçamento; a próxima rodada volta ao passo 1.
+
 ## Fim de fase
+
+A fase só fecha com todas as tarefas dela `feito`, inclusive as do dev.
+
+Roteiro sem fases conta como uma fase só, que termina com a última tarefa.
 
 1. Rode a suíte completa e o lint/typecheck do `projeto.md`.
 2. Confira o critério da fase.
-3. Confira se o `estado.md` registra o que a fase ensinou (aprendizados, decisões, hipóteses descartadas), não só o status das tarefas.
-4. Contexto pesado: faça o handoff (`referencias/handoff.md`). Leve: siga para a próxima fase.
+3. Faça o code review da fase (abaixo). Sempre.
+4. Confira se o `estado.md` registra o que a fase ensinou (aprendizados, decisões, hipóteses descartadas), não só o status das tarefas.
+5. Contexto pesado: faça o handoff (`referencias/handoff.md`). Leve: siga para a próxima fase.
+
+## Code review da fase
+
+Revisar a cada fase evita acumular bug para o fim e abrir outra sessão só para corrigir. Lance **um** subagente (Agent tool, tipo general-purpose) com contexto limpo, como juiz: quem escreveu o código tende a aprovar o próprio trabalho, e um revisor que não viu a conversa lê só o que está nos arquivos.
+
+A instrução dele é o conteúdo de `referencias/revisor.md`, mais:
+
+- o caminho do `roteiro.md`;
+- o intervalo `<base>..HEAD`, com `<base>` = o "Último review" do `estado.md` ou, na primeira fase, `git merge-base <integração> HEAD` (use `origin/<integração>` se houver remoto);
+- as tarefas da fase (ex.: "T4 a T7") e se é a última fase.
+
+O revisor só reporta achados com confiança ≥ 80. Mesmo assim, verifique cada um antes de agir, porque o revisor também erra. Corrija o que for real, rode os testes afetados e commite. Quando discordar de um achado, diga isso explicitamente ao usuário.
+
+Registre no `estado.md` o "Último review" (o hash do HEAD que o revisor leu e a fase) e, em "Aprendizados", os achados corrigidos.
 
 ## Quando a realidade diverge do roteiro
 
@@ -51,4 +79,6 @@ Rodadas dentro do orçamento não são desvio: não precisam de aprovação.
 
 ## Fim da execução
 
-Com todas as tarefas `feito`, siga para `referencias/entrega.md`.
+Quando a última tarefa virar `feito`, faça o fim de fase da última fase, com o code review. Depois mude a etapa do `estado.md` para `entrega` e o "Próximo passo" para "entrega: verificação completa e push/PR", leia `referencias/entrega.md` e siga.
+
+Não dê a tarefa por pronta antes da entrega. Se o contexto estiver pesado, pode fazer o handoff antes, porque o `estado.md` já aponta para a entrega.

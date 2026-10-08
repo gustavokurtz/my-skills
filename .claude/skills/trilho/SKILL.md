@@ -23,7 +23,7 @@ Se o arquivo não existir, diga ao usuário que `/trilho-init` cria esse arquivo
 ## Fluxo
 
 ```
-explorar → perguntar (0 a N) → roteiro.md → [handoff + /clear, se o contexto pesou] → executar → entrega
+branch → explorar → perguntar (entrega + 0 a N) → roteiro.md → [handoff + /clear, se o contexto pesou] → executar (code review a cada fase) → entrega (verificação, push/PR)
 ```
 
 É um fluxo só, para qualquer tamanho. O que muda é a profundidade de cada passo: uma tarefa pequena tem zero perguntas e um roteiro de 15 linhas; uma grande tem várias fases e alguns handoffs. Mudança trivial (uma linha, um texto, formatação): faça direto e avise que não abriu roteiro.
@@ -43,7 +43,7 @@ Quando o usuário pedir para continuar ou citar uma tarefa que já existe:
 
 1. Leia o `estado.md` da tarefa. Do `roteiro.md`, leia só o que o próximo passo precisa.
 2. Confira com `git log` e `git status` o que de fato foi feito. Se divergir do estado (alguém trabalhou fora do fluxo), reconcilie e atualize o `estado.md`.
-3. Recapitule em poucas linhas onde paramos, o que já se aprendeu e o próximo passo. Siga sem esperar confirmação.
+3. Recapitule em poucas linhas onde paramos, o que já se aprendeu e o próximo passo. Siga sem esperar confirmação. Se a etapa for `entrega`, vá direto para `referencias/entrega.md`. Se houver tarefa `esperando o dev`, peça o resultado dela no recap.
 
 Tarefa no formato antigo (`spec.md`, `plano.md`, `progresso.json`): leia esses arquivos, gere um `estado.md` a partir deles e siga usando o `plano.md` como roteiro.
 

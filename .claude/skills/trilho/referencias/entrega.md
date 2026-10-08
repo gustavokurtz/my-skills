@@ -1,34 +1,38 @@
 # Entrega
 
-Só considere a tarefa pronta depois de, nesta ordem:
+A entrega é uma etapa obrigatória, não um extra: a tarefa só termina depois dela. Siga esta ordem. O code review já rodou no fim de cada fase (`referencias/execucao.md`), e push e PR só acontecem depois dele.
 
 ## 1. Verificação completa
 
 Rode a suíte de testes inteira, o lint, o typecheck e o build, conforme o `projeto.md`. Falhou: conserte e volte ao início desta lista.
 
-## 2. Code review por subagente
+## 2. Review conferido
 
-Lance **um** subagente (Agent tool, tipo general-purpose) com contexto limpo. Quem escreveu o código tende a aprovar o próprio trabalho; um revisor que não viu a conversa lê só o que está nos arquivos.
-
-A instrução dele é o conteúdo de `referencias/revisor.md`, mais:
-
-- o caminho do `roteiro.md`;
-- o intervalo de commits da tarefa (`<base>..HEAD`).
-
-O revisor só reporta achados com confiança ≥ 80. Mesmo assim, verifique cada um antes de agir, porque o revisor também erra. Corrija o que for real e commite. Quando discordar de um achado, diga isso explicitamente ao usuário.
+Confira se o `estado.md` registra o review da última fase. Se não registrar (tarefa antiga, ou o review ficou de fora), faça agora o "Code review da fase" de `referencias/execucao.md`, como última fase, antes de seguir.
 
 ## 3. Registro
 
-Preencha a seção Resultado do `estado.md` (commits, resultado dos testes, achados do review, o que ficou de fora e por quê) e mude a etapa para `concluida`.
+Preencha a seção Resultado do `estado.md` (commits, resultado dos testes, achados dos reviews, o que ficou de fora e por quê), marque a linha Entrega como `feito`, mude a etapa para `concluida` e commite.
 
-## 4. Fechamento
+## 4. Push e PR
+
+Faça o que o campo `Entrega:` do roteiro diz, e nada além:
+
+- **Só commits na branch:** não faça push.
+- **Push da branch:** `git push -u origin <branch>`.
+- **Push + PR:** faça o push e abra o PR para a branch de integração (`gh pr create`), seguindo o template de PR do repo, se houver. Na descrição: o pedido em uma frase, o que mudou, o resultado dos testes, o resumo dos reviews e a validação manual.
+
+Roteiro sem o campo `Entrega:` (tarefa antiga): pergunte antes do push. Push recusado (hook, conflito, permissão): pare e traga o erro ao usuário, sem contornar.
+
+## 5. Fechamento
 
 Responda com:
 
 - o que foi feito, em uma ou duas frases;
 - os commits criados;
 - o resultado dos testes;
-- o resumo do review;
+- o resumo dos reviews;
+- o link do PR, se abriu um;
 - o roteiro de validação manual (do "Pronto quando"), para o usuário rodar;
 - o caminho da pasta da tarefa.
 

@@ -1,7 +1,8 @@
 # Roteiro — <título da tarefa>
 
 **Tarefa:** AAAA-MM-DD-<slug>
-**Branch:** <nome da branch>
+**Branch:** `<nome da branch>` (sai de `<integração>`)
+**Entrega:** só commits na branch | push da branch | push + PR para `<integração>`
 
 ## Pedido
 
@@ -31,6 +32,8 @@ O que só se descobre rodando. "nenhuma" se a tarefa é toda determinística.
 
 ## Tarefas
 
+<!-- Branch, push, PR e code review não entram aqui: o review roda no fim de cada fase; push e PR, na entrega. -->
+
 ### Fase 1 — <o que fica funcionando ao fim da fase>
 
 - **T1** — <ação verificável>
@@ -42,6 +45,10 @@ O que só se descobre rodando. "nenhuma" se a tarefa é toda determinística.
 - **T3** — <tarefa empírica>
   - Como: …
   - Meta: <resultado mensurável>. Orçamento: <rodadas ou custo>. Se esgotar: <plano B, ou "parar e trazer ao usuário">
+- **T4** — <tarefa que o usuário executa>
+  - Como: …
+  - Quem roda: dev (<motivo: custo de LLM, credencial, ambiente dele, prova na tela>)
+  - Verificar por / Meta: …
 
 **Fim da fase 1:** <o que deve estar verde ou demonstrável>
 
