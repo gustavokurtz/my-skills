@@ -12,7 +12,11 @@ Confira se o `estado.md` registra o review da última fase. Se não registrar (t
 
 ## 3. Registro
 
-Preencha a seção Resultado do `estado.md` (commits, resultado dos testes, achados dos reviews, o que ficou de fora e por quê), marque a linha Entrega como `feito`, mude a etapa para `concluida` e commite.
+Preencha a seção Resultado do `estado.md` (commits, resultado dos testes, achados dos reviews, o que ficou de fora e por quê), marque a linha Entrega como `feito` e mude a etapa para `concluida`.
+
+O `estado.md` morre com a tarefa. Releia os Aprendizados, as Decisões da execução e o que o usuário disse: o que uma tarefa futura, sem relação com esta, precisaria saber (comando que só funciona de um jeito, armadilha do projeto, convenção que o usuário corrigiu) sobe para o `.trilho/projeto.md`, uma linha cada, na seção que couber (Comandos, Convenções de código, Regras fixas, Áreas sensíveis ou Armadilhas; crie a seção se ela não existir). O que só vale para esta tarefa fica no `estado.md`. Nada durável: siga sem mexer no `projeto.md`.
+
+Commite o `estado.md` e o `projeto.md` juntos.
 
 ## 4. Push e PR
 
@@ -32,6 +36,7 @@ Responda com:
 - os commits criados;
 - o resultado dos testes;
 - o resumo dos reviews;
+- o que subiu para o `projeto.md`, se algo subiu;
 - o link do PR, se abriu um;
 - o roteiro de validação manual (do "Pronto quando"), para o usuário rodar;
 - o caminho da pasta da tarefa.

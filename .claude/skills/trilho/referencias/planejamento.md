@@ -6,7 +6,7 @@ O objetivo é um `roteiro.md` que uma sessão nova, sem nada desta conversa, exe
 
 Antes de escrever qualquer arquivo, deixe a tarefa na branch dela. É a primeira ação do planejamento.
 
-- **Na branch de integração** (do `projeto.md`): rode `git fetch` e crie a branch pelo padrão de nome do `projeto.md`, com o slug da tarefa, a partir da integração atualizada (ex.: `git switch -c feat/<slug> origin/<integração>`).
+- **Na branch de integração** (do `projeto.md`): rode `git fetch` e crie a branch pelo padrão de nome do `projeto.md`, com o slug da tarefa, a partir da integração atualizada (ex.: `git switch -c feat/<slug> --no-track origin/<integração>`). Use `--no-track` para a branch não rastrear a integração; o upstream é definido no push da entrega.
 - **Já em outra branch:** pergunte se a tarefa é dessa branch ou se é para criar uma nova.
 - **Árvore com mudanças não commitadas:** pergunte antes de trocar de branch, para não levar trabalho do usuário junto sem querer.
 - **Worktree:** só se o `projeto.md` pedir.

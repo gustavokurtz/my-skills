@@ -60,7 +60,7 @@ Roteiro sem fases conta como uma fase só, que termina com a última tarefa.
 
 ## Code review da fase
 
-Revisar a cada fase evita acumular bug para o fim e abrir outra sessão só para corrigir. Lance **um** subagente (Agent tool, tipo general-purpose) com contexto limpo, como juiz: quem escreveu o código tende a aprovar o próprio trabalho, e um revisor que não viu a conversa lê só o que está nos arquivos.
+Revisar a cada fase evita acumular bug para o fim e abrir outra sessão só para corrigir. Lance **um** subagente (Agent tool, tipo general-purpose, `model: "opus"`) com contexto limpo, como juiz: quem escreveu o código tende a aprovar o próprio trabalho, e um revisor que não viu a conversa lê só o que está nos arquivos. Passe o modelo explicitamente: sem ele, o revisor herda o modelo da sessão, e o juiz precisa ser forte mesmo quando a sessão roda num modelo mais leve. É um por fase, então o custo é pequeno.
 
 A instrução dele é o conteúdo de `referencias/revisor.md`, mais:
 

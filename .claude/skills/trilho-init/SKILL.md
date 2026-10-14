@@ -10,7 +10,7 @@ Monte o `.trilho/projeto.md`, a fonte da verdade que o `trilho` lê antes de qua
 
 ## 1. Já existe?
 
-Se `.trilho/projeto.md` já existe, isto é uma atualização. Descubra tudo de novo, compare com o arquivo, mostre só o que mudou e atualize.
+Se `.trilho/projeto.md` já existe, isto é uma atualização. Descubra tudo de novo, compare com o arquivo, mostre só o que mudou e atualize. Mantenha o que o repo não redescobre: as Armadilhas e as linhas que vieram de tarefas ou do usuário. Só tire uma delas se o repo mostrar que deixou de valer, e diga qual.
 
 ## 2. Descobrir
 
@@ -50,4 +50,4 @@ Isto é por pessoa, não por projeto. Se a skill `refinar-prompt` estiver instal
 
 ## 7. Gravar
 
-Escreva `.trilho/projeto.md` a partir de `modelo-projeto.md` (ao lado deste arquivo) e crie `.trilho/tarefas/`. Mostre um resumo do que foi descoberto. Lembre que `.trilho/` deve ser versionado no git.
+Escreva `.trilho/projeto.md` a partir de `${CLAUDE_SKILL_DIR}/modelo-projeto.md` e crie `.trilho/tarefas/`. Mostre um resumo do que foi descoberto. Lembre que `.trilho/` deve ser versionado no git.

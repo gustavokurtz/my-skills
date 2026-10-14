@@ -16,7 +16,7 @@ Planejar por mais tempo não reduz a incerteza empírica. Descubra cedo e barato
 
 ## Antes de tudo: o projeto
 
-Leia `.trilho/projeto.md`. Ele é a fonte da verdade para comandos de teste, lint, typecheck e build, convenção de commit, branch de integração e regras fixas do projeto.
+Leia `.trilho/projeto.md`. Ele é a fonte da verdade para comandos de teste, lint, typecheck e build, convenção de commit, branch de integração, regras fixas e armadilhas do projeto.
 
 Se o arquivo não existir, diga ao usuário que `/trilho-init` cria esse arquivo e pergunte se ele quer rodar agora. Se não quiser, descubra só o mínimo que a tarefa precisa (comando de teste, padrão de commit pelo `git log`) e siga sem gravar nada.
 
@@ -28,7 +28,7 @@ branch → explorar → perguntar (entrega + 0 a N) → roteiro.md → [handoff 
 
 É um fluxo só, para qualquer tamanho. O que muda é a profundidade de cada passo: uma tarefa pequena tem zero perguntas e um roteiro de 15 linhas; uma grande tem várias fases e alguns handoffs. Mudança trivial (uma linha, um texto, formatação): faça direto e avise que não abriu roteiro.
 
-Ao entrar em cada passo, leia a referência dele:
+Ao entrar em cada passo, leia a referência dele. Os caminhos `referencias/` e `modelos/` desta skill ficam em `${CLAUDE_SKILL_DIR}`.
 
 | Passo | Referência |
 |---|---|
@@ -78,3 +78,13 @@ Todo o resto (detalhe de implementação, teste que precisou ir para outro arqui
 - **Teste que confere texto de prompt não prova comportamento.** Ele prova que você escreveu a frase, não que o modelo obedece. Para comportamento de LLM, a evidência é a rodada real (eval, trace).
 - **Teste que já existia quebrou:** conserte a causa, não o teste. Se o teste estiver errado, diga isso ao usuário em vez de ajustá-lo em silêncio.
 - **Nunca commite deixando vermelho um teste que estava verde.** Se o usuário pedir explicitamente para commitar assim, registre no corpo do commit o que está falhando.
+
+## Armadilhas
+
+Falhas que já aconteceram e custaram retrabalho.
+
+- **Branch rastreando a integração.** `git switch -c <branch> origin/<integração>` configura a integração como upstream da branch nova: o `git status` mostra "ahead of origin/<integração>" e o `git pull` traz a integração. Crie com `--no-track`; o upstream vem no `git push -u` da entrega.
+- **Rodadas de ajuste sem meta.** Uma tarefa determinística que vira empírica no meio (o teste passa, mas o comportamento real não) leva a ajustes emendados sem fim, com um pedido de desvio a cada rodada. Não emende: proponha ao usuário, uma vez, meta, orçamento e plano B, registre no roteiro e siga como tarefa empírica.
+- **Verde no arquivo, vermelho na suíte.** O teste da tarefa passar não fecha a fase. Verde é a suíte do `projeto.md`, não o arquivo que você rodou.
+- **Implementar durante o planejamento.** O roteiro registra decisões (o quê, onde, como verificar), não o código. Se está escrevendo implementação no roteiro, volte ao nível de decisão.
+- **Referência perdida depois de compactar.** Depois de um `/compact`, este arquivo volta ao contexto, mas as referências lidas antes não. Releia a referência do passo atual antes de seguir.

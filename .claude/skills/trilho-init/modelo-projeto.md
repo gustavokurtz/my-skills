@@ -53,3 +53,9 @@ O que vale para toda tarefa, sem exceção.
 O que exige perguntar antes de rodar ou alterar.
 
 - … (ex.: `npm run migrate` aponta para `DATABASE_URL`; nunca rodar contra banco remoto sem perguntar)
+
+## Armadilhas
+
+O que já deu errado neste projeto e como evitar. Começa vazia; as tarefas do trilho acrescentam na entrega.
+
+- nenhuma
