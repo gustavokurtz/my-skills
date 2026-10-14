@@ -77,6 +77,9 @@ Escreva `roteiro.md` na pasta da tarefa a partir de `modelos/roteiro.md`.
 1. Crie o `estado.md` a partir de `modelos/estado.md`, com todas as tarefas `pendente` (inclusive a linha Entrega, no fim) e o próximo passo apontando para a primeira.
 2. Commite o `roteiro.md` e o `estado.md` na branch da tarefa, seguindo a convenção do `projeto.md`.
 3. Mostre um resumo de até 5 linhas: o pedido em uma frase, as decisões que você tomou sozinha, as incertezas e o caminho do roteiro. Não espere aprovação; o usuário interrompe se quiser corrigir.
-4. Decida pelo peso do contexto:
-   - **Leve** (exploração curta, poucos arquivos lidos): diga "sigo aqui, contexto leve" e vá para `referencias/execucao.md`.
-   - **Pesado:** faça o handoff (`referencias/handoff.md`).
+4. Faça o handoff (`referencias/handoff.md`). É o padrão: você não mede o próprio contexto, e a execução rende mais numa sessão limpa. Siga direto para `referencias/execucao.md` só se **tudo** isto valer, e diga qual critério conferiu:
+   - roteiro sem fases, com até 5 tarefas;
+   - nenhuma sondagem nem comando longo (eval, servidor, build) durante o planejamento;
+   - no máximo uma rodada de perguntas.
+
+   Na dúvida, handoff.

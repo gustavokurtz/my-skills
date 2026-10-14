@@ -23,7 +23,7 @@ Se o arquivo não existir, diga ao usuário que `/trilho-init` cria esse arquivo
 ## Fluxo
 
 ```
-branch → explorar → perguntar (entrega + 0 a N) → roteiro.md → [handoff + /clear, se o contexto pesou] → executar (code review a cada fase) → entrega (verificação, push/PR)
+branch → explorar → perguntar (entrega + 0 a N) → roteiro.md → handoff + /clear (padrão; pula só em roteiro curto) → executar (code review a cada fase) → entrega (verificação, push/PR)
 ```
 
 É um fluxo só, para qualquer tamanho. O que muda é a profundidade de cada passo: uma tarefa pequena tem zero perguntas e um roteiro de 15 linhas; uma grande tem várias fases e alguns handoffs. Mudança trivial (uma linha, um texto, formatação): faça direto e avise que não abriu roteiro.
@@ -87,4 +87,5 @@ Falhas que já aconteceram e custaram retrabalho.
 - **Rodadas de ajuste sem meta.** Uma tarefa determinística que vira empírica no meio (o teste passa, mas o comportamento real não) leva a ajustes emendados sem fim, com um pedido de desvio a cada rodada. Não emende: proponha ao usuário, uma vez, meta, orçamento e plano B, registre no roteiro e siga como tarefa empírica.
 - **Verde no arquivo, vermelho na suíte.** O teste da tarefa passar não fecha a fase. Verde é a suíte do `projeto.md`, não o arquivo que você rodou.
 - **Implementar durante o planejamento.** O roteiro registra decisões (o quê, onde, como verificar), não o código. Se está escrevendo implementação no roteiro, volte ao nível de decisão.
+- **Julgar o contexto como leve.** Uma sessão foi do planejamento direto para a execução com quase 300k de contexto, depois de sondagem com eval real e várias leituras. O modelo não mede o próprio contexto e tende a se achar leve para seguir trabalhando. Depois do planejamento vale o critério objetivo de `referencias/planejamento.md`, não a sensação.
 - **Referência perdida depois de compactar.** Depois de um `/compact`, este arquivo volta ao contexto, mas as referências lidas antes não. Releia a referência do passo atual antes de seguir.
