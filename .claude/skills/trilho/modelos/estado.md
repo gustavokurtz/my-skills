@@ -28,7 +28,7 @@ Correções, preferências e restrições que surgiram na conversa, com as palav
 
 ## Aprendizados
 
-O que se descobriu rodando ou lendo o código e o roteiro não sabia. Concreto: arquivo, função, comando, valor.
+O que se descobriu rodando ou lendo o código e o roteiro não sabia. Concreto: arquivo, função, comando, valor. As causas encontradas entram aqui, com `arquivo:linha`.
 
 - nenhum
 
@@ -38,7 +38,7 @@ O que se descobriu rodando ou lendo o código e o roteiro não sabia. Concreto: 
 
 ## Decisões da execução
 
-Decisões de implementação tomadas no caminho, cada uma com o porquê.
+Decisões de implementação tomadas no caminho, cada uma com o porquê. Remendo consciente aprovado pelo usuário entra aqui, com as palavras dele.
 
 - nenhuma
 

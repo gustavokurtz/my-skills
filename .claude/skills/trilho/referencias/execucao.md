@@ -9,6 +9,21 @@ O `estado.md` acompanha a execução tarefa a tarefa, para que uma sessão que c
 - **Ao começar** uma tarefa, marque-a `em andamento` e atualize "Próximo passo" e "Atualizado em".
 - **Ao terminar**, marque `feito` e atualize "Onde paramos", "Próximo passo" e "Atualizado em". O `estado.md` entra no commit da própria tarefa. Não anote o hash: ele ainda não existe quando você edita o arquivo, e o commit cita o id da tarefa, o que basta para achá-lo no `git log`.
 
+## Antes de cada tarefa
+
+Diga ao usuário, em uma linha, o porquê e o como da tarefa. Ex.: "T3: o frete vinha 0 porque `calcularFrete` roda antes de `validarCarrinho` (`checkout.ts:42`); vou mover a chamada para depois da validação." Se você não consegue escrever essa linha, ainda não entendeu o bastante: leia mais antes de editar.
+
+## Quando algo falha sem explicação
+
+Teste vermelho que não devia, erro inesperado, comportamento estranho:
+
+1. **Reproduza** e leia o erro inteiro.
+2. **Rastreie até onde ele nasce**, não onde aparece. Escreva a hipótese em uma linha e a evidência que a confirma.
+3. **Classifique a correção:** raiz ou sintoma (ver "Porquê e como" no `SKILL.md`). Raiz dentro do escopo: corrija. Fora do escopo, ou só dá para remendar: pare e traga ao usuário a causa e as opções.
+4. **Registre a causa** em "Aprendizados" no `estado.md`, com `arquivo:linha`.
+
+Se uma correção não resolveu, a hipótese estava errada: volte ao passo 2 em vez de empilhar outra correção em cima.
+
 ## Tarefa com `Teste:`
 
 1. **Teste primeiro.** Escreva o teste e rode. Ele precisa falhar **pelo motivo certo**: o comportamento ainda não existe. Se falhar por import, sintaxe ou setup, corrija isso antes, porque um teste que falha pelo motivo errado não prova nada.
@@ -55,8 +70,9 @@ Roteiro sem fases conta como uma fase só, que termina com a última tarefa.
 1. Rode a suíte completa e o lint/typecheck do `projeto.md`.
 2. Confira o critério da fase.
 3. Faça o code review da fase (abaixo). Sempre.
-4. Confira se o `estado.md` registra o que a fase ensinou (aprendizados, decisões, hipóteses descartadas), não só o status das tarefas.
-5. Contexto pesado: faça o handoff (`referencias/handoff.md`). Leve: siga para a próxima fase.
+4. Confira se o `estado.md` registra o que a fase ensinou (aprendizados, causas, decisões, hipóteses descartadas), não só o status das tarefas.
+5. Mostre ao usuário, junto com o resultado do review, as decisões da execução desta fase, cada uma com o porquê. Ele precisa conhecê-las antes da próxima fase.
+6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. Na última fase, não: siga para a entrega na mesma sessão (ver "Fim da execução").
 
 ## Code review da fase
 
@@ -75,7 +91,7 @@ Registre no `estado.md` o "Último review" (o hash do HEAD que o revisor leu e a
 ## Quando a realidade diverge do roteiro
 
 - **Detalhe de implementação** (outro arquivo, outra função, teste em outro lugar): decida, registre em "Decisões da execução" no `estado.md` e siga.
-- **Objetivo, escopo ou abordagem** precisariam mudar: pare e proponha o ajuste (ver "Autonomia" no `SKILL.md`). Com a aprovação, edite o `roteiro.md` e registre no `estado.md` o que mudou e por quê.
+- **Objetivo, escopo ou abordagem** precisariam mudar, ou a correção na raiz sai do escopo: pare e proponha o ajuste (ver "Autonomia" no `SKILL.md`). Com a aprovação, edite o `roteiro.md` e registre no `estado.md` o que mudou e por quê.
 
 ## Fim da execução
 

@@ -1,6 +1,6 @@
 # Planejamento
 
-O objetivo é um `roteiro.md` que uma sessão nova, sem nada desta conversa, executa lendo só `projeto.md`, `roteiro.md` e `estado.md`, sem perguntar nada.
+O objetivo é um `roteiro.md` que uma sessão nova, sem nada desta conversa, executa lendo só `projeto.md`, `roteiro.md` e `estado.md`, sem perguntar nada, e cujos porquês o usuário confirmou.
 
 ## 1. Branch
 
@@ -13,9 +13,17 @@ Antes de escrever qualquer arquivo, deixe a tarefa na branch dela. É a primeira
 
 O nome e a base vão para o cabeçalho do roteiro.
 
-## 2. Explorar
+## 2. Pesquisar
 
-Leia o código que a tarefa toca, os padrões que já existem, os testes que já existem e os pontos de integração. **Não pergunte o que o código responde.**
+Entenda como o código funciona hoje antes de decidir qualquer coisa: o que a tarefa toca, os padrões e testes que já existem, os pontos de integração e quem mais usa o código que vai mudar. **Não pergunte o que o código responde.**
+
+Em bug, a pesquisa vai até a causa: reproduza (teste, comando, log) e rastreie até onde o comportamento diverge do esperado. Se a causa não aparecer lendo nem reproduzindo de forma barata, ela é uma incerteza empírica e vira sondagem no roteiro.
+
+**Leia direto** quando a tarefa toca poucos arquivos e você já sabe quais são. **Use subagentes** quando a área é ampla (vários módulos, fluxo que atravessa camadas, código que você não sabe onde fica) ou quando o bug não tem causa conhecida. Eles devolvem conclusões em vez de arquivos inteiros, e a sessão de planejamento fica leve para as perguntas e o roteiro.
+
+- Lance de 1 a 3 subagentes em paralelo, numa mensagem só (Agent tool, tipo `Explore`, `model: "sonnet"`), cada um com uma pergunta diferente. Ex.: "onde está e como funciona o fluxo de X", "quem chama Y e o que depende do retorno dele", "como o projeto faz Z hoje (padrão e testes)". Passe o modelo explicitamente, como no revisor, para não depender do padrão do tipo.
+- A instrução de cada um é o conteúdo de `referencias/pesquisador.md` mais a pergunta dele.
+- Antes de decidir em cima de uma conclusão, confira os `arquivo:linha` que a sustentam. O subagente também erra.
 
 **Se a tarefa mexe em UI** (tela, componente, layout, estilo): carregue a skill `frontend-design` (Skill tool, `frontend-design:frontend-design`) antes de decidir o desenho, e leve as escolhas visuais para a seção Decisões do roteiro. Se a skill não estiver instalada, siga sem ela e avise o usuário.
 
@@ -23,22 +31,33 @@ Leia o código que a tarefa toca, os padrões que já existem, os testes que já
 
 Liste para você mesmo:
 
+- **Porquês:** o problema em uma frase; em bug, a causa com `arquivo:linha` (não o sintoma); em feature, a motivação do pedido; e por que a abordagem resolve a causa, não só o sintoma (ver "Porquê e como" no `SKILL.md`).
 - **Escopo:** o que entra e o que fica de fora.
 - **Comportamento:** casos de borda, erros, estados vazios.
 - **Efeitos colaterais:** quem já usa o código que vai mudar, dados existentes, migração, compatibilidade. Para cada efeito, uma mitigação.
-- **Caminho:** a menor solução que atende. Uma opção mais elaborada precisa se justificar pelo pedido, não por "pode ser útil depois".
+- **Caminho:** a menor solução que resolve a causa. Uma opção mais elaborada precisa se justificar pelo pedido, não por "pode ser útil depois". Se a correção na raiz sai do escopo pedido, isso vira pergunta no passo 4.
 - **Incertezas empíricas:** o que nem você nem o usuário sabem e só aparece rodando. Isso não vira pergunta: vira sondagem no roteiro.
 
-## 4. Perguntar só o que muda a solução
+## 4. Confirmar os porquês e perguntar
 
-Antes de cada pergunta, teste: "se a resposta fosse a outra, o código ou o escopo mudaria? E o que o usuário já disse resolve?". Pergunte só se mudaria e não resolve. Caso contrário, decida e registre em Decisões, marcado como "(decidido por mim)". Fora a pergunta de entrega, **zero perguntas é um resultado válido.**
+**Os porquês.** Antes das perguntas, mostre em texto, curto:
+
+- **Problema:** o que está errado ou faltando.
+- **Causa** (bug) ou **motivação** (feature), com `arquivo:linha` quando houver.
+- **Abordagem:** o que vai mudar e por que resolve na raiz.
+- **Decisões que eu tomaria sozinha:** cada uma em uma linha, com o porquê.
+
+A primeira pergunta da rodada confirma esse bloco ("Os porquês acima batem com o que você sabe?", opções "Batem" e "Corrigir"). Ela vai na mesma chamada do AskUserQuestion das outras perguntas, para não abrir uma rodada só para isso. Se o usuário corrigir, ajuste e confirme de novo só a parte que mudou. Nada de roteiro com porquê não confirmado.
+
+**As perguntas.** Antes de cada uma, teste: "se a resposta fosse a outra, o código ou o escopo mudaria? E o que o usuário já disse resolve?". Pergunte só se mudaria e não resolve. Caso contrário, decida e registre em Decisões, marcado como "(decidido por mim)". Fora a confirmação dos porquês e a pergunta de entrega, **zero perguntas é um resultado válido.**
 
 **O que você decide e o que você pergunta:**
 
-- **Decisão técnica** (onde fica o código, que padrão seguir, nome, estrutura de teste, como reaproveitar): decida.
+- **Decisão técnica** (onde fica o código, que padrão seguir, nome, estrutura de teste, como reaproveitar): decida, e mostre no bloco dos porquês.
 - **Produto e negócio** (o que o usuário final vê ou faz: texto, fluxo de tela, valor pré-preenchido, o que aparece ou some, regra de negócio): pergunte, com a sua recomendação, mesmo que tenha um bom palpite. Só decida se o que o usuário disse já responde.
+- **Raiz fora do escopo:** se corrigir a causa toca outro módulo, muda um contrato ou afeta outros usos, pergunte com as duas opções (corrigir na raiz × remendo consciente) e o que cada uma afeta.
 
-**Pergunta fixa: entrega.** Toda tarefa pergunta o que fazer com o git ao final, para que nenhuma tarefa de push ou PR seja criada sem o usuário querer. Use AskUserQuestion (junto com as outras perguntas, se houver), sem recomendação, porque é preferência do usuário:
+**Pergunta fixa: entrega.** Toda tarefa pergunta o que fazer com o git ao final, para que nenhuma tarefa de push ou PR seja criada sem o usuário querer. Use AskUserQuestion (junto com as outras perguntas), sem recomendação, porque é preferência do usuário:
 
 - **Só commits na branch:** o usuário faz push e PR;
 - **Push da branch;**
@@ -62,8 +81,10 @@ Formato:
 Escreva `roteiro.md` na pasta da tarefa a partir de `modelos/roteiro.md`.
 
 - **Pedido:** o que o usuário pediu, reescrito de forma clara e fiel. Cada ideia, restrição, nome e número dele continua lá, com o porquê quando ele deu. Corrija a forma, não o conteúdo, e não acrescente requisitos. É a referência de "o que ele quis" para as próximas sessões.
+- **Porquê:** o bloco confirmado no passo 4 (problema, causa ou motivação, abordagem), com a data da confirmação.
 - **Tarefas:**
   - cada uma é uma ação verificável, não um tema, e cabe num passo de trabalho (se vai encostar em oito arquivos, quebre);
+  - cada uma diz em `Porquê:` o que resolve, em uma linha, e em `Como:` o que fazer;
   - ordem por dependência **e por risco**: a sondagem da maior incerteza vem primeiro, antes de construir em volta dela;
   - branch, push, PR e code review **não são tarefas**: a branch já existe (passo 1), o review roda no fim de cada fase e push e PR são da entrega (`referencias/entrega.md`);
   - cada uma declara como é verificada: `Teste:` (escrito antes, TDD), ou `Verificar por:` com um comando ou passo concreto e o motivo de não ter teste, ou, se for empírica, `Meta:`, `Orçamento:` e `Se esgotar:`;
@@ -76,10 +97,5 @@ Escreva `roteiro.md` na pasta da tarefa a partir de `modelos/roteiro.md`.
 
 1. Crie o `estado.md` a partir de `modelos/estado.md`, com todas as tarefas `pendente` (inclusive a linha Entrega, no fim) e o próximo passo apontando para a primeira.
 2. Commite o `roteiro.md` e o `estado.md` na branch da tarefa, seguindo a convenção do `projeto.md`.
-3. Mostre um resumo de até 5 linhas: o pedido em uma frase, as decisões que você tomou sozinha, as incertezas e o caminho do roteiro. Não espere aprovação; o usuário interrompe se quiser corrigir.
-4. Faça o handoff (`referencias/handoff.md`). É o padrão: você não mede o próprio contexto, e a execução rende mais numa sessão limpa. Siga direto para `referencias/execucao.md` só se **tudo** isto valer, e diga qual critério conferiu:
-   - roteiro sem fases, com até 5 tarefas;
-   - nenhuma sondagem nem comando longo (eval, servidor, build) durante o planejamento;
-   - no máximo uma rodada de perguntas.
-
-   Na dúvida, handoff.
+3. Mostre um resumo de até 5 linhas: o pedido em uma frase, as incertezas e o caminho do roteiro. Os porquês o usuário já confirmou; não repita.
+4. Faça o handoff (`referencias/handoff.md`). Sempre, mesmo com roteiro curto: você não mede o próprio contexto, e a execução rende mais numa sessão limpa.

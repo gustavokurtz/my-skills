@@ -8,6 +8,14 @@
 
 O que o usuário pediu, reescrito de forma clara e fiel: cada ideia, restrição, nome e número dele, com o porquê quando ele deu. Sem requisitos novos.
 
+## Porquê
+
+Confirmado com o usuário em AAAA-MM-DD.
+
+- **Problema:** <o que está errado ou faltando, em uma frase>
+- **Causa:** <em bug: onde o problema nasce, com `arquivo:linha`; em feature: a motivação do pedido>
+- **Abordagem:** <o que muda e por que resolve na raiz, não só o sintoma>
+
 ## Contexto no código
 
 - `caminho/do/arquivo.ts` — o que existe hoje e por que importa para a tarefa
@@ -37,15 +45,19 @@ O que só se descobre rodando. "nenhuma" se a tarefa é toda determinística.
 ### Fase 1 — <o que fica funcionando ao fim da fase>
 
 - **T1** — <ação verificável>
+  - Porquê: <o que esta tarefa resolve, em uma linha>
   - Como: <o que fazer, em uma ou duas linhas>
   - Teste: <teste a escrever antes de implementar>
 - **T2** — <ação verificável>
+  - Porquê: <o que esta tarefa resolve, em uma linha>
   - Como: …
   - Verificar por: <comando ou passo concreto> (sem teste porque <motivo>)
 - **T3** — <tarefa empírica>
+  - Porquê: <o que esta tarefa resolve, em uma linha>
   - Como: …
   - Meta: <resultado mensurável>. Orçamento: <rodadas ou custo>. Se esgotar: <plano B, ou "parar e trazer ao usuário">
 - **T4** — <tarefa que o usuário executa>
+  - Porquê: <o que esta tarefa resolve, em uma linha>
   - Como: …
   - Quem roda: dev (<motivo: custo de LLM, credencial, ambiente dele, prova na tela>)
   - Verificar por / Meta: …

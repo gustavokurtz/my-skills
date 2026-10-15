@@ -2,7 +2,7 @@
 
 Prepara a tarefa para continuar numa sessão nova, depois de um `/clear`.
 
-**Quando:** o usuário pede ("handoff", "vou dar clear", "salva onde paramos"); no fim do planejamento ou de uma fase com o contexto pesado; antes de qualquer pausa.
+**Quando:** sempre no fim do planejamento e no fim de cada fase, menos a última (a entrega segue na mesma sessão); quando o usuário pede ("handoff", "vou dar clear", "salva onde paramos"); antes de qualquer pausa. Você não roda o `/clear`: peça ao usuário.
 
 ## Como
 
@@ -10,6 +10,7 @@ Prepara a tarefa para continuar numa sessão nova, depois de um `/clear`.
 2. **Procure o que o roteiro não tem:**
    - correções e preferências do usuário, com as palavras dele quando importarem;
    - decisões tomadas no caminho, cada uma com o porquê (sem o porquê, a decisão é revertida na primeira dúvida);
+   - causas encontradas, com `arquivo:linha`;
    - hipóteses testadas e descartadas, com a evidência;
    - descobertas sobre o código que a próxima sessão precisaria redescobrir.
 3. **Reescreva o `estado.md`** a partir de `modelos/estado.md`. Reescreva, não acrescente: ele descreve o agora. Hipóteses descartadas e decisões continuam enquanto forem relevantes; o que virou história sai (o histórico fica no git).
