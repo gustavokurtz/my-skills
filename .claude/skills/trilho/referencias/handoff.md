@@ -8,10 +8,10 @@ Prepara a tarefa para continuar numa sessão nova, depois de um `/clear`.
 
 A skill registra um hook (`scripts/contexto.py`, no frontmatter do `SKILL.md`) que fica ativo na sessão depois que o trilho é invocado. Ele lê o tamanho do contexto no transcript e injeta um aviso que começa com `[trilho] contexto em …`:
 
-- **Aviso (200k):** termine a tarefa em andamento, sem abrir outra, e faça o handoff. Numa rodada empírica ou esperando o dev, faça assim que a rodada fechar.
-- **Limite (250k):** pare agora, sem começar nada novo. Deixe o código num ponto commitável, ou registre no `estado.md` o que ficou pela metade, e faça o handoff.
+- **Aviso (300k):** termine a tarefa em andamento, sem abrir outra, e faça o handoff. Numa rodada empírica ou esperando o dev, faça assim que a rodada fechar.
+- **Limite (400k):** pare agora, sem começar nada novo. Deixe o código num ponto commitável, ou registre no `estado.md` o que ficou pela metade, e faça o handoff.
 
-O aviso não se discute: você não mede o próprio contexto, e a partir de uns 300k a qualidade cai. Os limites mudam com `TRILHO_CONTEXTO_AVISO` e `TRILHO_CONTEXTO_LIMITE`, que vão no `env` do `settings.json`.
+O aviso não se discute: você não mede o próprio contexto, e a qualidade cai com o contexto cheio, mesmo numa janela de 1M. Os limites mudam com `TRILHO_CONTEXTO_AVISO` e `TRILHO_CONTEXTO_LIMITE`, que vão no `env` do `settings.json`.
 
 ## Como
 

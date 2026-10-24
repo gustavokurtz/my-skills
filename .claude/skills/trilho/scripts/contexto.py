@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Hook do trilho: avisa o modelo quando o contexto da sessão fica grande.
 
-O modelo não mede o próprio contexto e tende a se achar leve; a partir de uns
-300k tokens a qualidade cai. Este hook lê o último `usage` do transcript
+O modelo não mede o próprio contexto e tende a se achar leve, mas a qualidade
+cai com o contexto cheio, mesmo numa janela de 1M. Este hook lê o último `usage` do transcript
 (input + cache_creation + cache_read, a mesma soma da statusline) e, acima dos
 limites, injeta um aviso para fazer o handoff.
 
-- aviso (TRILHO_CONTEXTO_AVISO, padrão 200000): terminar a tarefa atual e fazer o handoff;
-- limite (TRILHO_CONTEXTO_LIMITE, padrão 250000): parar e fazer o handoff agora.
+- aviso (TRILHO_CONTEXTO_AVISO, padrão 300000): terminar a tarefa atual e fazer o handoff;
+- limite (TRILHO_CONTEXTO_LIMITE, padrão 400000): parar e fazer o handoff agora.
 
 Para não repetir o aviso a cada tool, ele só volta depois de o contexto crescer
 mais 25k desde o último aviso. Qualquer falha sai em silêncio: o hook nunca
@@ -18,8 +18,8 @@ import os
 import sys
 import tempfile
 
-AVISO = int(os.environ.get("TRILHO_CONTEXTO_AVISO", "200000"))
-LIMITE = int(os.environ.get("TRILHO_CONTEXTO_LIMITE", "250000"))
+AVISO = int(os.environ.get("TRILHO_CONTEXTO_AVISO", "300000"))
+LIMITE = int(os.environ.get("TRILHO_CONTEXTO_LIMITE", "400000"))
 REPETE_A_CADA = 25000
 CAUDA = 512 * 1024
 
