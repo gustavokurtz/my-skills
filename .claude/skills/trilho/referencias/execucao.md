@@ -19,10 +19,21 @@ Teste vermelho que não devia, erro inesperado, comportamento estranho:
 
 1. **Reproduza** e leia o erro inteiro.
 2. **Rastreie até onde ele nasce**, não onde aparece. Escreva a hipótese em uma linha e a evidência que a confirma.
-3. **Classifique a correção:** raiz ou sintoma (ver "Porquê e como" no `SKILL.md`). Raiz dentro do escopo: corrija. Fora do escopo, ou só dá para remendar: pare e traga ao usuário a causa e as opções.
-4. **Registre a causa** em "Aprendizados" no `estado.md`, com `arquivo:linha`.
+3. **Ache a causa de desenho e a família.** Escreva também, em uma linha, o que no sistema permite essa classe de falha, e compare com "Defeitos" no `estado.md` (e com os aprendizados do `projeto.md`). Mesmo mecanismo de um defeito anterior: é família.
+4. **Classifique a correção:** raiz ou sintoma (ver "Porquê e como" no `SKILL.md`). Raiz dentro do escopo e primeiro da família: corrija. Fora do escopo, só dá para remendar, ou segundo da família: lance o arquiteto (abaixo), pare e traga ao usuário a causa e as opções, local e estrutural.
+5. **Registre o defeito** em "Defeitos" no `estado.md`: sintoma, causa imediata com `arquivo:linha`, mecanismo de desenho em uma linha e o que foi feito.
 
-Se uma correção não resolveu, a hipótese estava errada: volte ao passo 2 em vez de empilhar outra correção em cima.
+Se uma correção não resolveu, a hipótese estava errada: volte ao passo 2 em vez de empilhar outra correção em cima. Correção que falhou na rodada real (eval, tela) também aciona o arquiteto antes da próxima tentativa.
+
+## Arquiteto
+
+Um subagente com contexto limpo, que não herda o viés desta sessão nem a hipótese dela: ele lê o sistema e o histórico de defeitos e propõe a correção local e a estrutural. Lance **um** (Agent tool, tipo general-purpose, `model: "fable"`) quando:
+
+- é o segundo defeito da mesma família;
+- uma correção falhou na rodada real;
+- o usuário pedir uma visão crítica ou "um subagente mais capaz" para uma correção.
+
+A instrução dele é o conteúdo de `referencias/arquiteto.md`, mais os sintomas (com ids de thread, trace, teste), o caminho do `estado.md` e do `roteiro.md` e o que já foi tentado e desfeito. **Não passe a sua hipótese nem peça "a menor mudança":** isso prende o arquiteto ao remendo. Verifique os `arquivo:linha` e as medições que ele trouxer antes de repassar, e leve ao usuário as opções no formato de "Como falar com o usuário" (`SKILL.md`). Quem escolhe é ele.
 
 ## Tarefa com `Teste:`
 
@@ -40,12 +51,14 @@ Execute a verificação e mostre o resultado. Só então marque `feito` no `esta
 
 O resultado só aparece rodando, então a tarefa é um ciclo. Cada rodada:
 
-1. **Hipótese:** o que você acha que causa a diferença, em uma linha.
+1. **Hipótese:** o que você acha que causa a diferença, em uma linha, tirada do código e do texto que o modelo recebe (ver "Dois tipos de incerteza" no `SKILL.md`). Sem hipótese, não há rodada.
 2. **Mudança mínima** que testa essa hipótese. Uma por rodada, para saber o que funcionou.
 3. **Rode e leia a evidência, não só o placar:** o que o sistema fez e por quê (trace, debug, log).
 4. **Registre no `estado.md`:** hipótese, resultado, evidência (id de thread ou trace, commit). Hipótese descartada fica registrada para ninguém tentar de novo.
 
-Confira efeitos fora do alvo: uma mudança que corrige um ponto pode quebrar outro (ex.: um texto que o modelo vê em todo turno muda todos os turnos). Rode o cenário completo, não só o ponto que você está corrigindo.
+Confira efeitos fora do alvo: uma mudança que corrige um ponto pode quebrar outro (ex.: um texto que o modelo vê em todo turno muda todos os turnos). No replay, os controles incluem os casos vizinhos que recebem o texto alterado (outras falas, outros cenários com o mesmo estado), não só as falas do defeito. Na rodada real, rode o cenário completo, não só o ponto que você está corrigindo.
+
+Mudança no produto e mudança na régua do eval vão em commits separados: desfazer uma não pode deixar a outra para trás, e cada uma se mede sozinha.
 
 - **Atingiu a meta:** marque `feito` no `estado.md` e commite.
 - **Orçamento esgotado:** aplique o plano B se ele foi combinado. Se não houver, pare e traga ao usuário o que aprendeu e as opções.
@@ -55,6 +68,8 @@ Rodadas dentro do orçamento não são desvio: não precisam de aprovação.
 ## Tarefa com `Quem roda: dev`
 
 Quem executa é o usuário; você prepara e lê.
+
+Um bloqueio de ambiente registrado no `estado.md` por outra sessão ("não consigo rodar X, o usuário roda") é hipótese, não regra. Em cada sessão, tente uma vez o comando não destrutivo antes de passá-lo ao usuário. Só delegue o que é destrutivo, caro por decisão dele (eval com custo de LLM), ou o que bloqueou nesta sessão.
 
 1. **Entregue os comandos** prontos para copiar (diretório, variáveis, flags) e diga o que ele deve colar de volta (relatório, ids de trace ou thread, saída).
 2. **Marque `esperando o dev: <o que ele roda>`** no `estado.md`, aponte o "Próximo passo" para "ler o resultado da Tn" e commite.
@@ -70,8 +85,16 @@ Roteiro sem fases conta como uma fase só, que termina com a última tarefa.
 1. Rode a suíte completa e o lint/typecheck do `projeto.md`.
 2. Confira o critério da fase.
 3. Faça o code review da fase (abaixo). Sempre.
-4. Confira se o `estado.md` registra o que a fase ensinou (aprendizados, causas, decisões, hipóteses descartadas), não só o status das tarefas.
-5. Mostre ao usuário, junto com o resultado do review, as decisões da execução desta fase, cada uma com o porquê. Ele precisa conhecê-las antes da próxima fase.
+4. Confira se o `estado.md` registra o que a fase ensinou (defeitos, aprendizados, decisões, hipóteses descartadas), não só o status das tarefas.
+5. Mostre ao usuário o que mudou no código, junto com o resultado do review e as decisões da execução desta fase (cada uma com o porquê). Ele precisa conhecer as duas coisas antes da próxima fase. O "o que mudou" é uma explicação, não um relatório. Para cada mudança que importa:
+   - **Onde:** `arquivo:linha` e a função.
+   - **Antes → agora:** o comportamento, em uma frase com as palavras do domínio.
+   - **Por quê:** a causa ou o pedido que exigiu a mudança.
+   - **O trecho:** até ~10 linhas do código novo, quando ele ajuda a entender. Mudança mecânica (renome, teste, texto) entra numa linha só, agrupada.
+
+## Quando rodar a suíte inteira
+
+A suíte do `projeto.md` fecha a fase e vem antes de commitar código de produção. Mudança só no instrumento de medição (o script do eval, a régua dele e o teste dele) roda o teste desse instrumento e entrega o comando ao usuário. A suíte fica para o fim da fase.
 6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. Na última fase, não: siga para a entrega na mesma sessão (ver "Fim da execução").
 
 ## Code review da fase

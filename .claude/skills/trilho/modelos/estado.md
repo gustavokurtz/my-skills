@@ -20,11 +20,17 @@ Uma ou duas frases: o que acabou de ser feito.
 
 A ação concreta, executável sem perguntar nada.
 
-## O que o usuário disse e não está no roteiro
+## O que o usuário decidiu e não está no roteiro
 
-Correções, preferências e restrições que surgiram na conversa, com as palavras dele quando importarem.
+Correções, preferências, restrições e decisões que surgiram na conversa, escritas com as suas palavras ("decidido: X"). Não transcreva a fala dele, salvo se ele pedir.
 
 - nenhum
+
+## Defeitos
+
+Cada defeito encontrado na execução, com o mecanismo de desenho em uma linha. Mecanismo repetido é família: o segundo da família para e vai ao arquiteto (ver "A causa tem dois níveis" no `SKILL.md`).
+
+- nenhum <!-- formato: <sintoma> — causa: <imediata, arquivo:linha> — mecanismo: <de desenho> — feito: <correção ou decisão do usuário> -->
 
 ## Aprendizados
 
@@ -38,7 +44,7 @@ O que se descobriu rodando ou lendo o código e o roteiro não sabia. Concreto: 
 
 ## Decisões da execução
 
-Decisões de implementação tomadas no caminho, cada uma com o porquê. Remendo consciente aprovado pelo usuário entra aqui, com as palavras dele.
+Decisões de implementação tomadas no caminho, cada uma com o porquê. Remendo consciente aprovado pelo usuário entra aqui, com o porquê dele, escrito com as suas palavras.
 
 - nenhuma
 

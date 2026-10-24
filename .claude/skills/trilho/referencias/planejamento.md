@@ -43,18 +43,22 @@ Liste para você mesmo:
 **Os porquês.** Antes das perguntas, mostre em texto, curto:
 
 - **Problema:** o que está errado ou faltando.
-- **Causa** (bug) ou **motivação** (feature), com `arquivo:linha` quando houver.
+- **Causa** (bug) ou **motivação** (feature), com `arquivo:linha` quando houver. Em bug, a causa nos dois níveis (imediata e de desenho, ver "A causa tem dois níveis" no `SKILL.md`).
 - **Abordagem:** o que vai mudar e por que resolve na raiz.
-- **Decisões que eu tomaria sozinha:** cada uma em uma linha, com o porquê.
+- **Decisões técnicas que eu tomaria sozinha:** cada uma em uma linha, com o porquê. Só técnicas: decisão de produto nunca entra aqui (ver abaixo).
 
-A primeira pergunta da rodada confirma esse bloco ("Os porquês acima batem com o que você sabe?", opções "Batem" e "Corrigir"). Ela vai na mesma chamada do AskUserQuestion das outras perguntas, para não abrir uma rodada só para isso. Se o usuário corrigir, ajuste e confirme de novo só a parte que mudou. Nada de roteiro com porquê não confirmado.
+Escreva o bloco em linguagem simples (ver "Como falar com o usuário" no `SKILL.md`): ele vai ler e responder, então precisa entender sem abrir o código.
 
-**As perguntas.** Antes de cada uma, teste: "se a resposta fosse a outra, o código ou o escopo mudaria? E o que o usuário já disse resolve?". Pergunte só se mudaria e não resolve. Caso contrário, decida e registre em Decisões, marcado como "(decidido por mim)". Fora a confirmação dos porquês e a pergunta de entrega, **zero perguntas é um resultado válido.**
+A primeira pergunta da rodada confirma esse bloco ("Os porquês acima batem com o que você sabe?", opções "Batem" e "Corrigir"). Ela vai na mesma chamada do AskUserQuestion das outras perguntas, para não abrir uma rodada só para isso. Nada de roteiro com porquê não confirmado.
+
+**Se o usuário corrigir o desenho** (o quê, onde ou como, não só um detalhe), abra uma nova rodada antes de escrever o roteiro: mostre o desenho novo, o que mudou por causa da correção e as perguntas que ela criou. Um roteiro escrito minutos depois de uma correção de desenho, sem reconfirmar, leva as decisões erradas para a execução, onde custam rodadas de eval. Até duas rodadas de perguntas é o normal numa tarefa com fluxo novo; não economize a segunda.
+
+**As perguntas.** Antes de cada uma, teste: "se a resposta fosse a outra, o código ou o escopo mudaria? E o que o usuário já disse resolve?". Pergunte se mudaria e o que ele disse não resolve. Decisão técnica que passa nesse teste você decide e registra em Decisões, marcada como "(decidido por mim)". Só uma mudança trivial ou um bug de causa e correção óbvias chega ao roteiro sem nenhuma pergunta além da confirmação e da entrega.
 
 **O que você decide e o que você pergunta:**
 
 - **Decisão técnica** (onde fica o código, que padrão seguir, nome, estrutura de teste, como reaproveitar): decida, e mostre no bloco dos porquês.
-- **Produto e negócio** (o que o usuário final vê ou faz: texto, fluxo de tela, valor pré-preenchido, o que aparece ou some, regra de negócio): pergunte, com a sua recomendação, mesmo que tenha um bom palpite. Só decida se o que o usuário disse já responde.
+- **Produto e negócio** (o que o usuário final vê ou faz: texto, fluxo de tela, valor pré-preenchido, o que aparece ou some, regra de negócio, o que acontece quando dá errado, até onde vai o escopo): **uma pergunta para cada decisão**, com a sua recomendação e um exemplo concreto do que o usuário final vê em cada opção. Nunca dentro do bloco dos porquês: um "Batem" sobre seis itens não é seis decisões dele. Só decida se o que o usuário disse já responde, e diga qual fala dele responde.
 - **Raiz fora do escopo:** se corrigir a causa toca outro módulo, muda um contrato ou afeta outros usos, pergunte com as duas opções (corrigir na raiz × remendo consciente) e o que cada uma afeta.
 
 **Pergunta fixa: entrega.** Toda tarefa pergunta o que fazer com o git ao final, para que nenhuma tarefa de push ou PR seja criada sem o usuário querer. Use AskUserQuestion (junto com as outras perguntas), sem recomendação, porque é preferência do usuário:
@@ -72,7 +76,8 @@ As perguntas são da tarefa e ancoradas no código, nunca genéricas.
 
 Formato:
 
-- **Decisão fechada:** AskUserQuestion com 2 a 4 opções. A recomendada vem primeiro, com "(Recomendado)", e cada descrição traz o trade-off. Junte até 4 perguntas independentes numa chamada.
+- **Decisão fechada:** AskUserQuestion com 2 a 4 opções. A recomendada vem primeiro, com "(Recomendado)", e cada descrição traz o trade-off em linguagem de negócio (o que o usuário final vê, o que pode dar errado), sem nome de função, campo ou status. Junte até 4 perguntas independentes numa chamada.
+- **Regra que o usuário escreveu** (formato, faixa, texto): não vira pergunta com reinterpretações dela como opções. Vai para o roteiro ao pé da letra, onde ele disse. Só pergunte o que a regra não responde.
 - **Pergunta aberta** (objetivo, contexto de negócio): em texto.
 - **Incerteza empírica relevante:** combine numa pergunta só, com recomendação, a **meta** (ex.: "eval 7/7 com 2 repetições"), o **orçamento** (rodadas, custo), o **plano B** se o orçamento acabar (ex.: "tirar a decisão do prompt e passar para código") e **quem roda** (você ou o usuário).
 
