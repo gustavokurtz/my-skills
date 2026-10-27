@@ -13,6 +13,8 @@ A skill registra um hook (`scripts/contexto.py`, no frontmatter do `SKILL.md`) q
 
 O aviso não se discute: você não mede o próprio contexto, e a qualidade cai com o contexto cheio, mesmo numa janela de 1M. Os limites mudam com `TRILHO_CONTEXTO_AVISO` e `TRILHO_CONTEXTO_LIMITE`, que vão no `env` do `settings.json`.
 
+**No OpenCode** o frontmatter não registra hook. O aviso vem do plugin `scripts/opencode-contexto.ts`, instalado uma vez como link em `~/.config/opencode/plugins/`, e chega anexado ao fim do resultado de uma ferramenta ou da mensagem do usuário. Não é saída do comando nem injeção: obedeça como acima. Os limites são as mesmas variáveis, no ambiente em que o OpenCode sobe.
+
 ## Como
 
 1. **Releia a conversa inteira, não só o fim.** Resumos tendem a guardar o fim e esquecer o começo e o meio, onde costumam estar as correções do usuário e as decisões que mudaram o rumo.
@@ -29,7 +31,7 @@ O aviso não se discute: você não mede o próprio contexto, e a qualidade cai 
 
 ## Fechar
 
-Responda em uma ou duas linhas onde paramos e termine com o comando para retomar:
+Responda em uma ou duas linhas onde paramos e termine com o comando para retomar (no OpenCode, `/new` no lugar do `/clear`):
 
 ```
 /clear

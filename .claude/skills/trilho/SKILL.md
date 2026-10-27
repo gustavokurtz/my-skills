@@ -84,7 +84,7 @@ Contexto limpo entre etapas é regra, não avaliação: depois do planejamento e
 
 É um fluxo só, para qualquer tamanho. O que muda é a profundidade de cada passo: uma tarefa pequena tem poucas perguntas e um roteiro de 15 linhas; uma grande tem várias fases e alguns handoffs. Mudança trivial (uma linha, um texto, formatação): faça direto e avise que não abriu roteiro.
 
-Ao entrar em cada passo, leia a referência dele. Os caminhos `referencias/` e `modelos/` desta skill ficam em `${CLAUDE_SKILL_DIR}`.
+Ao entrar em cada passo, leia a referência dele. Os caminhos `referencias/`, `modelos/` e `scripts/` são relativos à pasta desta skill (no Claude Code, `${CLAUDE_SKILL_DIR}`; no OpenCode, o "Base directory" que vem ao carregar a skill).
 
 | Passo | Referência |
 |---|---|
@@ -94,6 +94,20 @@ Ao entrar em cada passo, leia a referência dele. Os caminhos `referencias/` e `
 | entrega | `referencias/entrega.md` |
 | feedback sobre o trilho | `referencias/feedback.md` |
 | arquiteto (bug da mesma família, correção que falhou) | `referencias/arquiteto.md` |
+
+### No OpenCode
+
+As referências usam os nomes do Claude Code. No OpenCode, troque assim:
+
+| Claude Code | OpenCode |
+|---|---|
+| Agent tool, tipo `general-purpose` / `Explore` | ferramenta `subagent`, `agent: "general"` / `"explore"` |
+| `model: "opus"` / `"sonnet"` / `"fable"` | sem `model`: o subagente usa o modelo da sessão |
+| AskUserQuestion, "(Recomendado)" | ferramenta `question`, mesma convenção |
+| Skill tool | ferramenta `skill` |
+| `/clear` | `/new` |
+
+O modelo fica sem fixar porque os modelos disponíveis dependem do plano de cada um no OpenCode, e um modelo fora do plano faz o `subagent` falhar. O aviso de contexto vem de um plugin, não do hook (ver `referencias/handoff.md`).
 
 ## Retomando uma tarefa
 
