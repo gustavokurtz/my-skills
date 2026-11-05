@@ -20,20 +20,20 @@ Teste vermelho que não devia, erro inesperado, comportamento estranho:
 1. **Reproduza** e leia o erro inteiro.
 2. **Rastreie até onde ele nasce**, não onde aparece. Escreva a hipótese em uma linha e a evidência que a confirma.
 3. **Ache a causa de desenho e a família.** Escreva também, em uma linha, o que no sistema permite essa classe de falha, e compare com "Defeitos" no `estado.md` (e com os aprendizados do `projeto.md`). Mesmo mecanismo de um defeito anterior: é família.
-4. **Classifique a correção:** raiz ou sintoma (ver "Porquê e como" no `SKILL.md`). Raiz dentro do escopo e primeiro da família: corrija. Fora do escopo, só dá para remendar, ou segundo da família: lance o arquiteto (abaixo), pare e traga ao usuário a causa e as opções, local e estrutural.
+4. **Classifique a correção:** raiz ou sintoma (ver "Porquê e como" no `SKILL.md`). Raiz dentro do escopo e primeiro da família: corrija. Fora do escopo, só dá para remendar, ou segundo da família: lance o arquiteto (abaixo), pare e traga ao usuário a causa e as opções: local, só no caminho da falha e estrutural.
 5. **Registre o defeito** em "Defeitos" no `estado.md`: sintoma, causa imediata com `arquivo:linha`, mecanismo de desenho em uma linha e o que foi feito.
 
 Se uma correção não resolveu, a hipótese estava errada: volte ao passo 2 em vez de empilhar outra correção em cima. Correção que falhou na rodada real (eval, tela) também aciona o arquiteto antes da próxima tentativa.
 
 ## Arquiteto
 
-Um subagente com contexto limpo, que não herda o viés desta sessão nem a hipótese dela: ele lê o sistema e o histórico de defeitos e propõe a correção local e a estrutural. Lance **um** (Agent tool, tipo general-purpose, `model: "fable"`) quando:
+Um subagente com contexto limpo, que não herda o viés desta sessão nem a hipótese dela: ele lê o sistema e o histórico de defeitos e propõe três correções: a local, a que só assume no caminho da falha e a estrutural, cada uma com o quanto muda nos casos normais. Lance **um** (Agent tool, tipo general-purpose, `model: "fable"`) quando:
 
 - é o segundo defeito da mesma família;
 - uma correção falhou na rodada real;
 - o usuário pedir uma visão crítica ou "um subagente mais capaz" para uma correção.
 
-A instrução dele é o conteúdo de `referencias/arquiteto.md`, mais os sintomas (com ids de thread, trace, teste), o caminho do `estado.md`, da `spec.json` e do `plano.md` e o que já foi tentado e desfeito. **Não passe a sua hipótese nem peça "a menor mudança":** isso prende o arquiteto ao remendo. Verifique os `arquivo:linha` e as medições que ele trouxer antes de repassar, e leve ao usuário as opções no formato de "Como falar com o usuário" (`SKILL.md`). Quem escolhe é ele.
+A instrução dele é o conteúdo de `referencias/arquiteto.md`, mais as restrições que o usuário já deu para a tarefa (ex.: "não afetar os casos normais"), os sintomas (com ids de thread, trace, teste), o caminho do `estado.md`, da `spec.json` e do `plano.md` e o que já foi tentado e desfeito. **Não passe a sua hipótese nem peça "a menor mudança":** isso prende o arquiteto ao remendo. Verifique os `arquivo:linha` e as medições que ele trouxer antes de repassar, e leve ao usuário as opções no formato de "Como falar com o usuário" (`SKILL.md`). Quem escolhe é ele.
 
 ## Tarefa com `Teste:`
 
@@ -63,7 +63,9 @@ Mudança no produto e mudança na régua do eval vão em commits separados: desf
 - **Atingiu a meta:** marque `feito` no `estado.md` e commite.
 - **Orçamento esgotado:** aplique o plano B se ele foi combinado. Se não houver, pare e traga ao usuário o que aprendeu e as opções.
 
-Rodadas dentro do orçamento não são desvio: não precisam de aprovação.
+Rodadas dentro do orçamento não são desvio de plano, mas **o orçamento é um teto, não uma licença**. Antes de cada rodada que chama LLM real pago (eval, replay, sondagem, juiz) ou grava em banco ou serviço remoto, avise em uma linha o que vai rodar (quantas conversas ou chamadas, o que grava, onde) e espere o "pode" do usuário nesta sessão. Autorização registrada por outra sessão não vale. Nunca dispare isso em segundo plano sem esse "pode".
+
+**Defeito novo fora do alvo** (aparece na rodada, mas não tem relação com o que a tarefa mudou): não é correção na hora. Registre como ponto em aberto no `estado.md`, com a evidência, e traga ao usuário no fim da rodada. Só vira tarefa se ele decidir.
 
 ## Tarefa com `Quem roda: dev`
 
@@ -71,7 +73,7 @@ Quem executa é o usuário; você prepara e lê.
 
 Um bloqueio de ambiente registrado no `estado.md` por outra sessão ("não consigo rodar X, o usuário roda") é hipótese, não regra. Em cada sessão, tente uma vez o comando não destrutivo antes de passá-lo ao usuário. Só delegue o que é destrutivo, caro por decisão dele (eval com custo de LLM), ou o que bloqueou nesta sessão.
 
-1. **Entregue os comandos** prontos para copiar (diretório, variáveis, flags) e diga o que ele deve colar de volta (relatório, ids de trace ou thread, saída).
+1. **Entregue os comandos** prontos para copiar e diga o que ele deve colar de volta (relatório, ids de trace ou thread, saída). O comando é o padrão do `projeto.md`, contra o ambiente que ele já usa (a API, a porta e os serviços que ele já tem de pé), não o setup que você montou para a sua prova. Estrutura extra (outro container, outra porta, `--base-url`) só com motivo concreto, oferecida em uma linha como opção. Comando copiado de tarefa antiga é conferido contra o `projeto.md` e o código atual antes de ir para ele.
 2. **Marque `esperando o dev: <o que ele roda>`** no `estado.md`, aponte o "Próximo passo" para "ler o resultado da Tn" e commite.
 3. **Siga com as tarefas da fase que não dependem desse resultado.** Se só restarem tarefas que dependem dele, pare e diga que está esperando.
 4. **Com o resultado em mãos,** leia a evidência como em qualquer tarefa: `Verificar por:` ou `Meta:`, e marque `feito`. Se for empírica, cada ida e volta conta uma rodada do orçamento; a próxima rodada volta ao passo 1.
@@ -82,7 +84,7 @@ A fase só fecha com todas as tarefas dela `feito`, inclusive as do dev.
 
 Plano sem fases conta como uma fase só, que termina com a última tarefa.
 
-1. Rode a suíte completa e o lint/typecheck do `projeto.md`.
+1. Rode a suíte e o lint/typecheck conforme "Quando rodar a suíte inteira", abaixo.
 2. Confira o critério da fase.
 3. Faça o code review da fase (abaixo). Sempre.
 4. Confira se o `estado.md` registra o que a fase ensinou (defeitos, aprendizados, decisões, hipóteses descartadas), não só o status das tarefas.
@@ -96,7 +98,7 @@ Plano sem fases conta como uma fase só, que termina com a última tarefa.
 
 ## Quando rodar a suíte inteira
 
-A suíte do `projeto.md` fecha a fase e vem antes de commitar código de produção. Mudança só no instrumento de medição (o script do eval, a régua dele e o teste dele) roda o teste desse instrumento e entrega o comando ao usuário. A suíte fica para o fim da fase.
+A regra de testes do `projeto.md` vence esta seção: ela é decisão do usuário. Sem regra no projeto, a suíte inteira fecha a fase quando a fase mudou código de produção. Mudança só no instrumento de medição (o script do eval, a régua dele e o teste dele), em docs ou em `.trilho/` roda só o teste do que mudou e, se for o eval, entrega o comando ao usuário. Suíte que já rodou e passou depois do último código de produção não roda de novo.
 
 ## Code review da fase
 

@@ -52,7 +52,7 @@ Se a correção na raiz cabe no escopo, faça a da raiz. Se sai do escopo (toca 
 - **Imediata:** o que fez este caso falhar (o modelo foi pelo texto em vez da tool, o `if` não cobria o valor).
 - **De desenho:** o que no sistema permite essa classe de falha (o LLM escreve livremente um passo que só tem uma resposta certa; dois módulos guardam o mesmo estado com regras diferentes).
 
-Corrigir só a imediata é corrigir o caso, não o sistema. Antes de corrigir, confira em "Defeitos" no `estado.md` se outro defeito já teve o mesmo mecanismo de desenho. **O segundo defeito da mesma família é remendo por definição**, mesmo que a correção local seja pequena e passe no teste: pare, consulte o arquiteto (`referencias/arquiteto.md`) e traga ao usuário as duas opções, a local e a estrutural, com o que cada uma resolve, o que toca (inclusive a decisão registrada que a estrutural contraria) e quanto custa. A estrutural pode não ser simples; quem decide se vale é o usuário, sabendo que ela existe.
+Corrigir só a imediata é corrigir o caso, não o sistema. Antes de corrigir, confira em "Defeitos" no `estado.md` se outro defeito já teve o mesmo mecanismo de desenho. **O segundo defeito da mesma família é remendo por definição**, mesmo que a correção local seja pequena e passe no teste: pare, consulte o arquiteto (`referencias/arquiteto.md`) e traga ao usuário as três opções (a local, a que só assume no caminho da falha e a estrutural), com o que cada uma resolve, o que toca (inclusive a decisão registrada que a estrutural contraria), quantos casos normais ela muda e quanto custa. A estrutural pode não ser simples; quem decide se vale é o usuário, sabendo que ela existe.
 
 Os porquês também são do usuário: ele precisa conhecê-los. Por isso cada requisito da spec traz o porquê dele e se bate com o objetivo de origem, ele aprova item a item, e a execução diz em uma linha o porquê e o como de cada tarefa.
 
@@ -66,6 +66,7 @@ Ele quer entender o porquê, não receber tudo de uma vez. Escreva para quem nã
 - **Ao parar para uma decisão:** "o que aconteceu" (com exemplo), depois "o que você decide", com opções curtas, cada uma com o efeito que o usuário final vê. Diga o que já está decidido e não muda.
 - **Pedido ambíguo com mais de uma oferta pendente** ("corrija a régua", "faz isso"): pergunte qual em uma linha antes de editar.
 - **Regra que ele escreveu se aplica ao pé da letra, onde ele disse.** Não ofereça reinterpretações dela como opções, não acrescente exceção nem mexa em mais nada.
+- **Regra nova ditada no meio do caminho:** repita-a numa frase, com as palavras dele. Se ela já decide os casos, confirme com sim ou não. Pergunte só o que ela deixa em aberto, sem criar conceito que ele não usou ("em partes", "contagem separada").
 
 ## Antes de tudo: o projeto
 
@@ -146,6 +147,7 @@ Perguntas pertencem ao planejamento. Na execução, siga sozinha e pare só quan
 - a correção na raiz sai do escopo da spec, ou só dá para remendar (ver "Porquê e como");
 - é o segundo defeito da mesma família, ou uma correção falhou na rodada real (ver "A causa tem dois níveis");
 - a ação é destrutiva, irreversível ou toca banco ou serviço remoto;
+- a próxima rodada chama LLM real pago ou grava em banco remoto: avise o que vai rodar e espere o "pode" nesta sessão, mesmo dentro do orçamento (ver `referencias/execucao.md`, tarefa empírica);
 - uma ambiguidade mudaria o resultado e nada do que o usuário disse resolve.
 
 Todo o resto (detalhe de implementação, teste que precisou ir para outro arquivo, mais uma rodada dentro do orçamento): decida, registre no `estado.md` e siga. Divergência não se resolve em silêncio, mas também não precisa de aprovação.

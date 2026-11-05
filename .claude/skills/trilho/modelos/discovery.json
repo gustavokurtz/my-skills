@@ -18,8 +18,17 @@
       "pergunta": "A busca da OS no começo é uma tool do modelo ou código?",
       "contexto": "Como tool, a busca só acontece se o modelo chamar, e o Violeta tem histórico de pular tool. Como código, ela roda em toda abertura, inclusive quando o J0 é pulado.",
       "opcoes": [
-        { "id": "codigo", "rotulo": "Código", "efeito": "A busca acontece sempre, antes do 1º turno. O J0 deixa de chamar o get_os_info, e um ADR novo substitui a INV-T11.", "recomendada": true },
-        { "id": "tool", "rotulo": "Tool do J0", "efeito": "O modelo decide quando buscar. Precisa de código extra para levar o retorno ao state, e a busca falha quando o modelo pula a tool." }
+        {
+          "id": "codigo",
+          "rotulo": "Código",
+          "efeito": "A busca acontece sempre, antes do 1º turno. O J0 deixa de chamar o get_os_info, e um ADR novo substitui a INV-T11.",
+          "recomendada": true
+        },
+        {
+          "id": "tool",
+          "rotulo": "Tool do J0",
+          "efeito": "O modelo decide quando buscar. Precisa de código extra para levar o retorno ao state, e a busca falha quando o modelo pula a tool."
+        }
       ],
       "prova": "INV-T11 (ADR-082); ADR-281 e P321-14 (modelo pulando tool); SDK-015 (tool_choice recusado pelo gateway)"
     },
@@ -29,8 +38,17 @@
       "pergunta": "Quando a busca falha no começo, o que o técnico vê?",
       "contexto": "Pode ser a API fora do ar ou a OS que não está entre as atividades do técnico.",
       "opcoes": [
-        { "id": "segue", "rotulo": "Segue a conversa e só transfere ao pedir a manobra", "efeito": "O diagnóstico funciona sem a OS. Ao pedir a manobra, transfere como hoje.", "recomendada": true },
-        { "id": "transfere-1o-turno", "rotulo": "Transfere já no 1º turno, em qualquer jornada", "efeito": "\"Não consegui consultar os dados da sua OS agora, então vou te direcionar para um atendente.\" Uma queda da API transfere todo técnico que abrir conversa naquele momento." }
+        {
+          "id": "segue",
+          "rotulo": "Segue a conversa e só transfere ao pedir a manobra",
+          "efeito": "O diagnóstico funciona sem a OS. Ao pedir a manobra, transfere como hoje.",
+          "recomendada": true
+        },
+        {
+          "id": "transfere-1o-turno",
+          "rotulo": "Transfere já no 1º turno, em qualquer jornada",
+          "efeito": "\"Não consegui consultar os dados da sua OS agora, então vou te direcionar para um atendente.\" Uma queda da API transfere todo técnico que abrir conversa naquele momento."
+        }
       ]
     },
     {
@@ -38,9 +56,19 @@
       "tema": "entrega",
       "pergunta": "No final, o que faço com o git?",
       "opcoes": [
-        { "id": "commits", "rotulo": "Só commits na branch", "efeito": "Você faz o push e o PR." },
-        { "id": "push", "rotulo": "Push da branch" },
-        { "id": "pr", "rotulo": "Push e PR para develop" }
+        {
+          "id": "commits",
+          "rotulo": "Só commits na branch",
+          "efeito": "Você faz o push e o PR."
+        },
+        {
+          "id": "push",
+          "rotulo": "Push da branch"
+        },
+        {
+          "id": "pr",
+          "rotulo": "Push e PR para develop"
+        }
       ]
     }
   ],
@@ -56,6 +84,18 @@
       "texto": "Os dados chegam à tool da manobra pelo mesmo caminho do número da OS e da matrícula, sem passar pelo modelo.",
       "porque": "É o padrão que o projeto já usa para dado de sessão.",
       "fonte": "agents/specialists/_base.py:4888"
+    }
+  ],
+  "terceiros": [
+    {
+      "id": "T1",
+      "para": "Magic Tools",
+      "pergunta": "No real, o search-activities devolve só as OS já iniciadas?",
+      "hoje": "Com a massa, o retorno traz `totalResultsStarted` e só atividades iniciadas.",
+      "nosso_codigo": "Procuramos a OS da sessão nessa lista; se não achar, transferimos.",
+      "nao_sabemos": "Se em produção a OS aparece antes de o técnico iniciá-la no app.",
+      "se_vier_diferente": "Se só vierem as iniciadas, o técnico que abre a conversa antes de iniciar a OS é transferido.",
+      "prova": "tools/definitions/api_tool.py:1361"
     }
   ]
 }

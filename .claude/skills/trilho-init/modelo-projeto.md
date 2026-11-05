@@ -4,13 +4,15 @@
 
 ## Comandos
 
-| Ação | Comando | Observação |
-|---|---|---|
-| Testes (todos) | `<ex: npm test>` | |
-| Teste (um arquivo) | `<ex: npx vitest run caminho>` | |
-| Lint | `<ex: npm run lint>` | |
-| Typecheck | `<ex: npx tsc --noEmit>` | |
-| Build | `<ex: npm run build>` | |
+| Ação | Comando | Quando rodar | Observação |
+|---|---|---|---|
+| Testes (todos) | `<ex: npm test>` | fim de fase e entrega, se entrou código de produção depois da última vez que passou | leva ~<N> min (medido em AAAA-MM-DD) |
+| Teste (um arquivo) | `<ex: npx vitest run caminho>` | a cada tarefa; na entrega, quando só mudou o que não é produção | |
+| Lint | `<ex: npm run lint>` | fim de fase e entrega | |
+| Typecheck | `<ex: npx tsc --noEmit>` | fim de fase e entrega | |
+| Build | `<ex: npm run build>` | entrega | |
+
+A coluna "Quando rodar" é decisão do usuário e vence o padrão do trilho. Quando ele corrigir quando um comando roda, atualize a coluna.
 
 Comando inexistente: escreva `—` e diga o que usar no lugar (ex.: "sem testes; o usuário optou por não configurar; verificação alternativa por execução manual").
 

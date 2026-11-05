@@ -27,7 +27,7 @@ Leia, sem perguntar:
 
 ## 3. Validar
 
-Rode o comando de teste uma vez para confirmar que funciona. **Antes, verifique para onde ele aponta:** se o teste toca um banco ou serviço que não é local, pergunte antes de rodar.
+Rode o comando de teste uma vez para confirmar que funciona, e anote quanto tempo a suíte inteira leva (vai na coluna Observação). **Antes, verifique para onde ele aponta:** se o teste toca um banco ou serviço que não é local, pergunte antes de rodar.
 
 ## 4. Lacunas
 

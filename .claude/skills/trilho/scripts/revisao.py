@@ -40,7 +40,10 @@ TIPOS_REQ = {"requisito", "comportamento", "restricao"}
 STATUS_SPEC = {"aprovado", "ajustar", "rejeitado"}
 STATUS_DECIDIDO = {"concordo", "discordo"}
 STATUS_ENTENDIMENTO = {"certo", "errado"}
+STATUS_TERCEIRO = {"mandar", "tirar"}
+STATUS_ESBOCO = {"aprovado", "ajustar"}
 ID_ENTENDIMENTO = "ENT"
+ID_ESBOCO = "ESB"
 
 
 def hash_item(item):
@@ -53,7 +56,11 @@ def itens_revisaveis(doc):
     if doc["etapa"] == "spec":
         return list(doc.get("requisitos", [])) + list(doc.get("fora_de_escopo", []))
     entendimento = {"id": ID_ENTENDIMENTO, "texto": doc.get("entendimento", "")}
-    return [entendimento] + list(doc.get("perguntas", [])) + list(doc.get("decidido", []))
+    esboco = [dict(doc["esboco"], id=ID_ESBOCO)] if doc.get("esboco") else []
+    return (
+        [entendimento] + esboco + list(doc.get("perguntas", []))
+        + list(doc.get("terceiros", [])) + list(doc.get("decidido", []))
+    )
 
 
 def validar(doc, etapa):
@@ -65,7 +72,7 @@ def validar(doc, etapa):
         if not doc.get(campo):
             erros.append(f'falta "{campo}"')
 
-    vistos = {ID_ENTENDIMENTO} if etapa == "discovery" else set()
+    vistos = {ID_ENTENDIMENTO, ID_ESBOCO} if etapa == "discovery" else set()
 
     def novo_id(item, onde):
         i = item.get("id")
@@ -115,8 +122,15 @@ def validar(doc, etapa):
         if not doc.get("entendimento"):
             erros.append('falta "entendimento"')
         perguntas = doc.get("perguntas") or []
-        if not perguntas:
+        if not perguntas and not doc.get("terceiros"):
             erros.append('falta "perguntas"')
+        if doc.get("esboco") and not (doc["esboco"].get("link") and doc["esboco"].get("texto")):
+            erros.append('"esboco" precisa de "link" e "texto"')
+        for t in doc.get("terceiros") or []:
+            i = novo_id(t, "terceiros")
+            for campo in ("para", "pergunta", "hoje", "nao_sabemos", "se_vier_diferente"):
+                if not t.get(campo):
+                    erros.append(f'{i}: pergunta para outro time precisa de "{campo}"')
         for p in perguntas:
             i = novo_id(p, "perguntas")
             if not p.get("pergunta"):
@@ -166,7 +180,7 @@ def resumo(doc, respostas):
         r = itens.get(item["id"], {})
         chave = r.get("status") or ("respondida" if r.get("escolha") else "sem resposta")
         contagem[chave] = contagem.get(chave, 0) + 1
-        aprovado = r.get("status") in ("aprovado", "concordo", "certo") or (
+        aprovado = r.get("status") in ("aprovado", "concordo", "certo", "mandar") or (
             doc["etapa"] == "discovery" and r.get("escolha") and not r.get("comentario")
         )
         if not aprovado:
@@ -314,6 +328,7 @@ def main():
                 return
             # spec: todo item tem status. discovery: pergunta tem escolha; decidido tem status.
             decididos = {d["id"] for d in doc.get("decidido", [])}
+            terceiros = {t["id"] for t in doc.get("terceiros", [])}
             limpos = {}
             for item in itens_revisaveis(doc):
                 r = itens.get(item["id"]) or {}
@@ -321,6 +336,10 @@ def main():
                     validos = STATUS_SPEC
                 elif item["id"] == ID_ENTENDIMENTO:
                     validos = STATUS_ENTENDIMENTO
+                elif item["id"] == ID_ESBOCO:
+                    validos = STATUS_ESBOCO
+                elif item["id"] in terceiros:
+                    validos = STATUS_TERCEIRO
                 elif item["id"] in decididos:
                     validos = STATUS_DECIDIDO
                 else:

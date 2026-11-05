@@ -2,9 +2,14 @@
 
 A entrega é uma etapa obrigatória, não um extra: a tarefa só termina depois dela. Siga esta ordem. O code review já rodou no fim de cada fase (`referencias/execucao.md`), e push e PR só acontecem depois dele.
 
-## 1. Verificação completa
+## 1. Verificação
 
-Rode a suíte de testes inteira, o lint, o typecheck e o build, conforme o `projeto.md`. Falhou: conserte e volte ao início desta lista.
+Siga a regra de testes do `projeto.md` (a coluna "Quando rodar" dos comandos, ou o que estiver escrito ali). Ela é decisão do usuário e vence esta lista. Sem regra no projeto:
+
+- **Entrou código de produção depois da última vez que a suíte inteira rodou e passou** (inclusive por merge da integração): rode a suíte inteira.
+- **Não entrou** (só régua de eval, docs, `.trilho/`, catálogo, registro): rode só os testes dos arquivos que mudaram desde então, e diga isso em uma linha.
+
+Depois, o lint, o typecheck e o build do `projeto.md`. Falhou: conserte e volte ao início desta lista. Se a suíte for lenta (o tempo está no `projeto.md`), diga quanto leva antes de disparar.
 
 ## 2. Review conferido
 

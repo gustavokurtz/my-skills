@@ -6,6 +6,8 @@ O planejamento tem três produtos, nesta ordem, e cada um só começa quando o a
 2. **Spec** (`spec.json`): o contrato do que vai ser feito e por quê, aprovado por ele item a item.
 3. **Plano** (`plano.md`): como fazer, que uma sessão nova, sem nada desta conversa, executa lendo só `projeto.md`, `spec.json`, `plano.md` e `estado.md`, sem perguntar nada.
 
+**Pedido de feature gera um trilho que termina com ela funcionando.** Protótipo, docs e esboços são tarefas da primeira fase dele, não um trilho à parte. Se você propuser um trilho só de planejamento ou documentação, diga isso com essas palavras ("este trilho não entrega código; a implementação é outro trilho depois"), e o recap de cada retomada repete.
+
 Discovery e spec são lidos e respondidos numa página no navegador (ver "A tela de revisão", no fim). O chat não leva bloco de porquês nem pedido de "batem?": a validação está na spec, em cada requisito.
 
 ## 1. Branch
@@ -31,7 +33,7 @@ Em bug, a pesquisa vai até a causa: reproduza (teste, comando, log) e rastreie 
 - A instrução de cada um é o conteúdo de `referencias/pesquisador.md` mais a pergunta dele.
 - Antes de decidir em cima de uma conclusão, confira os `arquivo:linha` que a sustentam. O subagente também erra.
 
-**Se a tarefa mexe em UI** (tela, componente, layout, estilo): carregue a skill `frontend-design` (Skill tool, `frontend-design:frontend-design`) antes de decidir o desenho, e leve as escolhas visuais que mudam o que o usuário vê para o discovery (`desenho`), e o resto para as Decisões do plano. Se a skill não estiver instalada, siga sem ela e avise o usuário.
+**Se a tarefa mexe em UI** (tela, componente, layout, estilo): carregue a skill `frontend-design` (Skill tool, `frontend-design:frontend-design`) antes de decidir o desenho. Se o projeto tem um protótipo navegável (ou dá para fazer uma página solta rápida), faça um esboço da tela nele durante o planejamento e leve o link ao discovery (`esboco`): o usuário julga o desenho vendo a tela, não lendo. O app de verdade só muda na execução, e diga isso ao mostrar o esboço, e leve as escolhas visuais que mudam o que o usuário vê para o discovery (`desenho`), e o resto para as Decisões do plano. Se a skill não estiver instalada, siga sem ela e avise o usuário.
 
 ## 3. Mapear
 
@@ -53,6 +55,8 @@ O discovery junta numa tela tudo o que o usuário precisa decidir antes de exist
 - **`entendimento`:** o problema e o que você entendeu do pedido, em até 5 linhas de linguagem simples (ver "Como falar com o usuário" no `SKILL.md`). Em bug, a causa nos dois níveis, imediata e de desenho, dita com as palavras do domínio. Na tela, ele marca "Entendeu certo" ou "Entendeu errado" (o item `ENT` nas respostas).
 - **`achados`** (opcional): o que a pesquisa encontrou e que muda a conversa, cada um com a prova técnica em `prova` (fica recolhida na tela).
 - **`perguntas`:** as decisões, uma por item, com 2 a 4 opções. A recomendada leva `"recomendada": true` (nunca na de entrega, que é preferência dele). Cada opção diz em `efeito` o que o usuário final vê. Pergunta aberta (objetivo, contexto de negócio) leva `"aberta": true` e nenhuma opção.
+- **`esboco`** (tarefa de UI): `link` para o esboço da tela e `texto` dizendo o que olhar nele. Ele marca "Está bom" ou "Mudar".
+- **`terceiros`:** as perguntas para outro time (contrato, API de terceiro), ver abaixo.
 - **`decidido`:** o que você decidiu sem perguntar e que ele precisa conhecer: decisão técnica que passa no teste abaixo e decisão que uma fala dele já responde. Cada item com `porque` e `fonte` (a fala dele, com a data, ou o `arquivo:linha`). Ele concorda ou discorda na tela, e é isso que evita perguntar de novo o que ele já disse.
 
 **O que vira pergunta.** Antes de cada uma, teste: "se a resposta fosse a outra, o código ou o escopo mudaria? E o que o usuário já disse resolve?". Pergunte se mudaria e o que ele disse não resolve. Se uma fala dele resolve, o item vai para `decidido`, citando a fala. As perguntas são da tarefa e ancoradas no código, nunca genéricas:
@@ -65,8 +69,18 @@ O discovery junta numa tela tudo o que o usuário precisa decidir antes de exist
 - **`produto`:** o que o usuário final vê ou faz (texto, fluxo de tela, valor pré-preenchido, o que aparece ou some, regra de negócio, o que acontece quando dá errado). Uma pergunta para cada decisão, com um exemplo concreto em cada opção.
 - **`desenho`:** a decisão técnica que muda o que o usuário vê, contraria uma decisão registrada (ADR, `CLAUDE.md`) ou afeta o trabalho de outras pessoas. Diga qual decisão registrada ela contraria. As outras decisões técnicas (onde fica o código, que padrão seguir, nome, estrutura de teste) você toma e põe em `decidido` se ele precisar saber, ou só no plano.
 - **`escopo`:** a correção na raiz sai do escopo (toca outro módulo, muda um contrato, afeta outros usos). Opções: corrigir na raiz × remendo consciente, com o que cada uma afeta.
-- **`incerteza`:** a incerteza empírica relevante. Uma pergunta com a **meta** (ex.: "eval 7/7 com 2 repetições"), o **orçamento** (rodadas, custo), o **plano B** se o orçamento acabar (ex.: "tirar a decisão do prompt e passar para código") e **quem roda**.
+- **`incerteza`:** a incerteza empírica relevante. Uma pergunta com a **meta** (ex.: "eval 7/7 com 2 repetições"), o **orçamento** (rodadas, custo), o **plano B** se o orçamento acabar (ex.: "tirar a decisão do prompt e passar para código"), **quem roda** e **o que fecha a rodada**: defeito novo sem relação com a mudança vira ponto em aberto, não correção na hora. A resposta é o teto: cada rodada com custo ainda pede o "pode" dele na execução.
 - **`entrega`:** fixa, em toda tarefa: o que fazer com o git no final, para que nenhum push ou PR aconteça sem ele querer. Opções: "Só commits na branch" (ele faz push e PR), "Push da branch" e "Push + PR para `<integração>`".
+
+**Perguntas para outro time** (o contrato de uma API externa, o comportamento de um sistema de terceiro). Antes de cada uma, o filtro: **só eles sabem a resposta?** Se o nosso código, uma decisão registrada ou o próprio usuário resolvem, ela não vai: vira `decidido`, com a fonte. Cada uma que passa no filtro é uma situação, não um rótulo:
+
+- `hoje`: o que vem hoje (o trecho real do payload ou do comportamento);
+- `nosso_codigo`: o que fazemos com isso;
+- `nao_sabemos`: a dúvida, em uma frase;
+- `se_vier_diferente`: o que o usuário final vê se o real vier diferente;
+- `prova`: o `arquivo:linha`, recolhido.
+
+Na tela ele marca "Mandar" ou "Tirar" em cada uma. Só depois disso monte o texto para enviar (com as que ficaram), pedindo resposta de todas, a menos que ele diga outra coisa.
 
 **Regra que o usuário escreveu** (formato, faixa, texto) não vira pergunta com reinterpretações dela como opções. Ela vai para a spec ao pé da letra, onde ele disse. Só pergunte o que a regra não responde.
 
@@ -76,7 +90,7 @@ O discovery junta numa tela tudo o que o usuário precisa decidir antes de exist
 
 1. **Comentário que é pergunta ou dúvida** ("não entendi", "mas como fica X?", "que tool?"): responda no chat, em linguagem simples, antes de qualquer outra coisa. Não grave nada em arquivo no lugar de responder.
 2. **Entendeu errado** (`ENT`): corrija o entendimento antes de tudo e refaça as perguntas que dependiam dele; as respostas dadas em cima do entendimento errado não valem até ele confirmar de novo.
-3. **Discordo, outra resposta ou correção de desenho** (o quê, onde ou como): atualize o `discovery.json`, suba a `versao` e abra nova rodada só com o que mudou ou o que a correção criou. Até duas rodadas é o normal numa tarefa com fluxo novo; não economize a segunda.
+3. **Discordo, outra resposta, esboço para mudar ou correção de desenho** (o quê, onde ou como): atualize o `discovery.json`, suba a `versao` e abra nova rodada só com o que mudou ou o que a correção criou. Até duas rodadas é o normal numa tarefa com fluxo novo; não economize a segunda.
 4. **Tudo respondido** (com o entendimento certo): siga para a spec.
 
 ## 5. Spec

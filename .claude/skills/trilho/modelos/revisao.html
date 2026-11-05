@@ -72,9 +72,9 @@ a { color: var(--cobalto); }
   margin: 0 0 1rem;
   transition: border-color .15s;
 }
-.clausula[data-v="aprovado"], .clausula[data-v="concordo"], .clausula[data-v="certo"], .clausula[data-v="respondida"] { border-left-color: var(--aprovado); }
+.clausula[data-v="aprovado"], .clausula[data-v="concordo"], .clausula[data-v="certo"], .clausula[data-v="mandar"], .clausula[data-v="respondida"] { border-left-color: var(--aprovado); }
 .clausula[data-v="ajustar"] { border-left-color: var(--ajustar); }
-.clausula[data-v="rejeitado"], .clausula[data-v="discordo"], .clausula[data-v="errado"] { border-left-color: var(--rejeitado); }
+.clausula[data-v="rejeitado"], .clausula[data-v="discordo"], .clausula[data-v="errado"], .clausula[data-v="tirar"] { border-left-color: var(--rejeitado); }
 .marg { text-align: right; padding-top: .1rem; }
 .cid { display: block; font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
 .tipo { display: block; font-size: .75rem; color: var(--grafite); margin-top: .25rem; overflow-wrap: anywhere; hyphens: auto; }
@@ -112,9 +112,9 @@ fieldset { border: 0; padding: 0; margin: .4rem 0 .6rem; min-width: 0; }
 }
 .veredito label:hover span { border-color: var(--grafite); }
 .veredito input:focus-visible + span { outline: 3px solid var(--cobalto); outline-offset: 2px; }
-.veredito input[value="aprovado"]:checked + span, .veredito input[value="concordo"]:checked + span, .veredito input[value="certo"]:checked + span { background: var(--aprovado-fundo); border-color: var(--aprovado); color: var(--aprovado); }
+.veredito input[value="aprovado"]:checked + span, .veredito input[value="concordo"]:checked + span, .veredito input[value="certo"]:checked + span, .veredito input[value="mandar"]:checked + span { background: var(--aprovado-fundo); border-color: var(--aprovado); color: var(--aprovado); }
 .veredito input[value="ajustar"]:checked + span { background: var(--ajustar-fundo); border-color: var(--ajustar); color: var(--ajustar); }
-.veredito input[value="rejeitado"]:checked + span, .veredito input[value="discordo"]:checked + span, .veredito input[value="errado"]:checked + span { background: var(--rejeitado-fundo); border-color: var(--rejeitado); color: var(--rejeitado); }
+.veredito input[value="rejeitado"]:checked + span, .veredito input[value="discordo"]:checked + span, .veredito input[value="errado"]:checked + span, .veredito input[value="tirar"]:checked + span { background: var(--rejeitado-fundo); border-color: var(--rejeitado); color: var(--rejeitado); }
 
 /* Opções de pergunta */
 .opcoes { display: grid; gap: .5rem; margin: .6rem 0 .8rem; }
@@ -150,6 +150,7 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
 .cobertura.lacuna { color: var(--rejeitado); }
 .lista-simples { padding-left: 1.2rem; }
 .lista-simples li { margin-bottom: .4rem; }
+.esboco-link { font-family: var(--sans); font-weight: 600; font-size: 1rem; }
 
 /* Rodapé fixo: progresso e envio */
 .rodape {
@@ -207,8 +208,10 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
   const spec = doc.etapa === "spec";
   const chaveLocal = "trilho:" + doc.tarefa + ":" + doc.etapa + ":v" + doc.versao;
   const decididos = new Set((doc.decidido || []).map(function (d) { return d.id; }));
-  const ENT = "ENT";
+  const ENT = "ENT", ESB = "ESB";
   const entendimento = { id: ENT, texto: doc.entendimento || "" };
+  const esboco = doc.esboco ? Object.assign({}, doc.esboco, { id: ESB }) : null;
+  const terceiros = new Set((doc.terceiros || []).map(function (t) { return t.id; }));
   const objetivosPorId = {};
   (doc.objetivos || []).forEach(function (o) { objetivosPorId[o.id] = o; });
 
@@ -221,13 +224,13 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
 
   function itens() {
     return spec ? (doc.requisitos || []).concat(doc.fora_de_escopo || [])
-                : [entendimento].concat(doc.perguntas || [], doc.decidido || []);
+                : [entendimento].concat(esboco ? [esboco] : [], doc.perguntas || [], doc.terceiros || [], doc.decidido || []);
   }
   function resolvidoAntes(id) {
     if (!ant || !ant.itens || !ant.itens[id]) return false;
     const a = ant.itens[id];
     if (a.hash !== hashes[id]) return false;
-    if (a.status === "aprovado" || a.status === "concordo" || a.status === "certo") return true;
+    if (["aprovado", "concordo", "certo", "mandar"].indexOf(a.status) >= 0) return true;
     return !spec && !decididos.has(id) && a.escolha && !a.comentario;
   }
   itens().forEach(function (it) {
@@ -344,6 +347,27 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
       veredito(ENT, [["certo", "Entendeu certo"], ["errado", "Entendeu errado"]]) +
       comentario(ENT, "Se entendi errado, diga o quê") + "</div></article>";
   }
+  function clausulaEsboco() {
+    return '<article class="clausula" id="' + ESB + '" data-id="' + ESB + '">' +
+      '<div class="marg"><span class="tipo">esboço</span></div>' +
+      '<div class="corpo">' + selo(ESB) + '<p><a class="esboco-link" href="' + esc(esboco.link) + '" target="_blank" rel="noopener">Abrir o esboço da tela</a></p>' +
+      '<p class="prosa">' + fmt(esboco.texto) + "</p>" +
+      veredito(ESB, [["aprovado", "Está bom"], ["ajustar", "Mudar"]]) +
+      comentario(ESB, "O que mudar na tela") + "</div></article>";
+  }
+  function clausulaTerceiro(t) {
+    return '<article class="clausula" id="' + esc(t.id) + '" data-id="' + esc(t.id) + '">' +
+      '<div class="marg"><span class="cid">' + esc(t.id) + '</span><span class="tipo">para ' + esc(t.para) + "</span></div>" +
+      '<div class="corpo">' + selo(t.id) + "<h3>" + fmt(t.pergunta) + "</h3>" +
+      '<dl class="rastro">' +
+        linha("Hoje vem", fmt(t.hoje)) +
+        linha("O que fazemos", fmt(t.nosso_codigo)) +
+        linha("O que não sabemos", fmt(t.nao_sabemos)) +
+        linha("Se vier diferente", fmt(t.se_vier_diferente)) +
+      "</dl>" + detalhe(t.prova) +
+      veredito(t.id, [["mandar", "Mandar"], ["tirar", "Tirar"]]) +
+      comentario(t.id, "Comentário (se tirar, por quê: já decidido, inútil…)") + "</div></article>";
+  }
   function travada(it) {
     const ver = ant ? ant.versao : "";
     const resumo = it.texto || it.pergunta || "";
@@ -356,6 +380,8 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
     if (travados.has(it.id)) return travada(it);
     if (spec) return clausulaRequisito(it, (doc.fora_de_escopo || []).indexOf(it) >= 0);
     if (it.id === ENT) return clausulaEntendimento();
+    if (it.id === ESB) return clausulaEsboco();
+    if (terceiros.has(it.id)) return clausulaTerceiro(it);
     return decididos.has(it.id) ? clausulaDecidido(it) : clausulaPergunta(it);
   }
 
@@ -388,7 +414,11 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
       if ((doc.achados || []).length) h += "<h2>O que a pesquisa achou</h2>" + doc.achados.map(function (a) {
         return '<div class="prosa"><p><b>' + fmt(a.titulo) + ".</b> " + fmt(a.texto) + "</p>" + detalhe(a.prova) + "</div>";
       }).join("");
-      h += "<h2>Perguntas</h2>" + (doc.perguntas || []).map(cartao).join("");
+      if (esboco) h += "<h2>Esboço da tela</h2>" + cartao(esboco);
+      if ((doc.perguntas || []).length) h += "<h2>Perguntas</h2>" + doc.perguntas.map(cartao).join("");
+      if ((doc.terceiros || []).length) h += "<h2>Perguntas para outro time</h2>" +
+        '<p class="instrucao">Só o que só eles sabem. Tire a que nós mesmos resolvemos ou que você já decidiu.</p>' +
+        doc.terceiros.map(cartao).join("");
       if ((doc.decidido || []).length) h += "<h2>O que eu já dei como decidido</h2>" + doc.decidido.map(cartao).join("");
     }
     h += '<h2>Comentário geral</h2><textarea id="geral" rows="3" placeholder="Algo que não cabe em nenhum item (opcional)">' + esc(resp.geral) + "</textarea>";
@@ -437,7 +467,7 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
     const ta = document.querySelector('textarea[data-c="' + id + '"]');
     if (!ta) return;
     const st = r(id).status;
-    ta.classList.toggle("falta", (st === "ajustar" || st === "rejeitado" || st === "discordo" || st === "errado") && !r(id).comentario.trim());
+    ta.classList.toggle("falta", ["ajustar", "rejeitado", "discordo", "errado"].indexOf(st) >= 0 && !r(id).comentario.trim());
   }
   function autoAltura(t) { t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight + 2, 320) + "px"; }
 
@@ -460,7 +490,7 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
       const v = valor(it.id);
       if (!v) return;
       resp_++;
-      if (v === "ajustar") aj++; else if (v === "rejeitado" || v === "discordo" || v === "errado") rj++; else ap++;
+      if (v === "ajustar") aj++; else if (["rejeitado", "discordo", "errado", "tirar"].indexOf(v) >= 0) rj++; else ap++;
     });
     const n = todos.length || 1;
     document.getElementById("contagem").textContent = resp_ + " de " + todos.length + " respondidos" +
