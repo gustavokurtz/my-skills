@@ -29,7 +29,7 @@ O aviso não se discute: você não mede o próprio contexto, e a qualidade cai 
 4. **Seja concreto:** arquivos, funções, comandos, ids, mensagens de erro. "Ajustamos o prompt" não serve; "trocamos o retorno da `acionar_manobra` em `tools/registry.py`" serve.
 5. **Teste antes de entregar:** uma sessão nova executaria o próximo passo lendo só `projeto.md`, `spec.json`, `plano.md` e `estado.md`, sem perguntar nada? Se não, falta algo. Máximo de duas telas; corte o que já está na spec ou no plano.
 
-No planejamento, com uma tela de revisão aberta (discovery ou spec sem resposta), o "Próximo passo" diz qual etapa e versão está esperando, e a próxima sessão roda o script de novo: o rascunho do usuário volta junto.
+Com uma tela sem resposta (discovery, spec ou o diff de uma fase), o "Próximo passo" diz qual tela está esperando, e a próxima sessão roda o script de novo: o rascunho do usuário volta junto. O diff não trava a próxima fase: a sessão roda o script em segundo plano e segue.
 
 ## Fechar
 

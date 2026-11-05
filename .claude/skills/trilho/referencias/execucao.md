@@ -88,13 +88,29 @@ Plano sem fases conta como uma fase só, que termina com a última tarefa.
 2. Confira o critério da fase.
 3. Faça o code review da fase (abaixo). Sempre.
 4. Confira se o `estado.md` registra o que a fase ensinou (defeitos, aprendizados, decisões, hipóteses descartadas), não só o status das tarefas.
-5. Mostre ao usuário o que mudou no código, junto com o resultado do review e as decisões da execução desta fase (cada uma com o porquê). Ele precisa conhecer as duas coisas antes da próxima fase. O "o que mudou" é uma explicação, não um relatório. Para cada mudança que importa:
-   - **Onde:** `arquivo:linha` e a função.
-   - **Antes → agora:** o comportamento, em uma frase com as palavras do domínio.
-   - **Por quê:** a causa ou o pedido que exigiu a mudança.
-   - **O trecho:** até ~10 linhas do código novo, quando ele ajuda a entender. Mudança mecânica (renome, teste, texto) entra numa linha só, agrupada.
+5. Abra o diff da branch para ele revisar (abaixo, "A tela do diff"). No chat, só o endereço e, se houver, as decisões da execução desta fase, uma linha cada: elas não aparecem no diff.
+6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. A tela não segura o handoff: se ele ainda não enviou, o "Próximo passo" diz isso. Na última fase, não faça handoff: siga para a entrega na mesma sessão (ver "Fim da execução").
 
-6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. Na última fase, não: siga para a entrega na mesma sessão (ver "Fim da execução").
+## A tela do diff
+
+O diff da branch, commit a commit, estilo VS Code: os commits que não estão na integração, sem os de merge, cada um com os seus arquivos e o diff contra o pai. Ele lê, cita linhas e escreve os questionamentos num campo só. Não há JSON para escrever.
+
+Rode em segundo plano (Bash com `run_in_background: true`):
+`python3 <pasta da skill>/scripts/diff.py .trilho/tarefas/<slug> --base origin/<integração> --fase <N>` (sem remoto, a integração local).
+
+Ele tenta abrir o navegador sozinho. Saída 2 é ref que não existe: confira a integração no `projeto.md`. O rascunho, o pid e o encerramento por ociosidade funcionam como na tela do planejamento (`referencias/planejamento.md`, "A tela de revisão"). No OpenCode, rode com `nohup … &` e peça que ele diga "enviei".
+
+## Questionamentos do diff
+
+Quando ele envia, o script grava `codigo-fase<N>.respostas.json`, imprime o texto e encerra. Texto vazio quer dizer que está tudo certo. Trate o texto antes da próxima tarefa do plano (termine a que está em andamento):
+
+- **Pergunta:** responda no chat antes de seguir.
+- **Pedido de mudança:** vira a tarefa `C<N>.<k>` no `estado.md` (ex.: `C1.1`), feita com o mesmo rigor das outras (porquê, como, teste). O commit cita o id.
+- **Discordância de uma decisão:** siga "Quando a realidade diverge do plano", abaixo.
+
+As correções aparecem na tela da fase seguinte, como commits novos. Na última fase não há tela seguinte: depois das correções, rode o script de novo com a mesma `--fase`.
+
+Commite o `codigo-fase<N>.respostas.json`. O rascunho e o pid são temporários e não entram no commit.
 
 ## Quando rodar a suíte inteira
 

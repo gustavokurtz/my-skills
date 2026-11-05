@@ -158,6 +158,8 @@ O script `scripts/revisao.py` valida o JSON da etapa, serve a página (`modelos/
 5. **Nova rodada:** edite o JSON, suba a `versao` e rode o script de novo. Ele derruba sozinho o servidor anterior da mesma etapa, e os itens já aprovados e sem mudança aparecem fechados.
 6. **Ao sair do planejamento** (plano escrito, handoff, ou o usuário mudou de assunto), confira que nenhum servidor da tarefa ficou de pé (`ls <pasta>/*.pid`) e desligue o que sobrou. Ele também encerra sozinho depois de 4 horas sem acesso.
 
+A execução mostra o diff de cada fase com outro script, no mesmo esquema (`referencias/execucao.md`, "A tela do diff").
+
 Commite o JSON da etapa e as respostas. O `<etapa>.rascunho.json` e o `<etapa>.pid` são temporários e não entram no commit.
 
 No OpenCode, sem aviso de processo em segundo plano: rode com `nohup … &`, mostre o endereço e peça que ele diga "respondi" depois de enviar. Aí leia o `<etapa>.respostas.json`.

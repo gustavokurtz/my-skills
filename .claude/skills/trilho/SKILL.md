@@ -1,6 +1,6 @@
 ---
 name: trilho
-description: Workflow de desenvolvimento que explora o código, pergunta só o que muda a solução (discovery), escreve uma spec que o usuário aprova item a item numa página no navegador, um plano executável, e executa com autonomia (TDD, handoff entre sessões, code review). Use quando o usuário pedir para planejar ("vamos planejar", "planeja isso", "cria a spec", "cria o plano"), executar ou continuar ("executa", "continua de onde paramos", "onde paramos?", "continua <slug>"), fazer handoff de uma tarefa do trilho ("handoff", "vou dar clear", "salva onde paramos"), mencionar uma tarefa em `.trilho/` ou registrar feedback sobre o trilho ("feedback: …", "anota isso pro trilho"). Não use para perguntas, explicações ou edições pontuais que o usuário não pediu para planejar.
+description: Workflow de desenvolvimento que explora o código, pergunta só o que muda a solução (discovery), escreve uma spec que o usuário aprova item a item numa página no navegador, um plano executável, e executa com autonomia (TDD, handoff entre sessões, code review e o diff de cada fase numa página estilo VS Code para o usuário revisar). Use quando o usuário pedir para planejar ("vamos planejar", "planeja isso", "cria a spec", "cria o plano"), executar ou continuar ("executa", "continua de onde paramos", "onde paramos?", "continua <slug>"), fazer handoff de uma tarefa do trilho ("handoff", "vou dar clear", "salva onde paramos"), mencionar uma tarefa em `.trilho/` ou registrar feedback sobre o trilho ("feedback: …", "anota isso pro trilho"). Não use para perguntas, explicações ou edições pontuais que o usuário não pediu para planejar.
 hooks:
   UserPromptSubmit:
     - hooks:
@@ -78,7 +78,7 @@ Se o arquivo não existir, diga ao usuário que `/trilho-init` cria esse arquivo
 
 ```
 branch → pesquisar → discovery (tela, 1 a 2 rodadas) → spec (tela, aprovada item a item) → plano.md → handoff + /clear
-→ executar fase (code review → handoff + /clear) → … → última fase (code review) → entrega (verificação, push/PR)
+→ executar fase (code review → diff → handoff + /clear) → … → última fase (code review → diff) → entrega (verificação, push/PR)
 ```
 
 Contexto limpo entre etapas é regra, não avaliação: depois do planejamento e no fim de cada fase (menos a última, que segue para a entrega na mesma sessão), faça o handoff e peça ao usuário o `/clear`. O tamanho do contexto também dispara o handoff: quando aparecer o aviso `[trilho] contexto em …` (vem de um hook, ver `referencias/handoff.md`), siga o que ele diz, no meio da fase se for preciso.
@@ -114,7 +114,7 @@ O modelo fica sem fixar porque os modelos disponíveis dependem do plano de cada
 
 Quando o usuário pedir para continuar ou citar uma tarefa que já existe:
 
-1. Leia o `estado.md` da tarefa. Da `spec.json` e do `plano.md`, leia só o que o próximo passo precisa. Na etapa `planejamento`, veja o que já existe: `discovery.json` sem respostas ou spec sem aprovação é uma tela pendente; rode o script de novo (`referencias/planejamento.md`, "A tela de revisão") e o rascunho dele volta.
+1. Leia o `estado.md` da tarefa. Da `spec.json` e do `plano.md`, leia só o que o próximo passo precisa. Na etapa `planejamento`, veja o que já existe: `discovery.json` sem respostas ou spec sem aprovação é uma tela pendente; rode o script de novo (`referencias/planejamento.md`, "A tela de revisão") e o rascunho dele volta. Na execução, o diff de uma fase sem `codigo-fase<N>.respostas.json` está pendente: rode o script de novo em segundo plano e siga com o próximo passo; quando o texto chegar, trate-o antes da próxima tarefa (`referencias/execucao.md`, "Questionamentos do diff").
 2. Confira com `git log` e `git status` o que de fato foi feito. Se divergir do estado (alguém trabalhou fora do fluxo), reconcilie e atualize o `estado.md`. Se a branch da tarefa já foi mergeada, ou o usuário está em outra branch (ex.: mergeou e publicou pela integração), **não troque de branch sozinho**: pergunte em uma linha em qual branch seguir e registre a resposta no `estado.md`.
 3. Recapitule em poucas linhas onde paramos, o que já se aprendeu e o próximo passo. Siga sem esperar confirmação. Se a etapa for `entrega`, vá direto para `referencias/entrega.md`. Se houver tarefa `esperando o dev`, peça o resultado dela no recap.
 
@@ -129,6 +129,7 @@ Tarefa com `roteiro.md` (formato anterior): siga usando o roteiro como plano; o 
   spec.json                 # o quê e por quê, o contrato (modelo: modelos/spec.json). Estável.
   spec.respostas.json       # a aprovação item a item
   plano.md                  # como (modelo: modelos/plano.md). Estável.
+  codigo-fase<N>.respostas.json  # os questionamentos do usuário sobre o diff da fase N
   estado.md    # onde estamos (modelo: modelos/estado.md). Atualizado a cada tarefa; reescrito no handoff.
 ```
 

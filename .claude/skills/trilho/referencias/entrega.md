@@ -15,6 +15,8 @@ Depois, o lint, o typecheck e o build do `projeto.md`. Falhou: conserte e volte 
 
 Confira se o `estado.md` registra o review da última fase. Se não registrar (tarefa antiga, ou o review ficou de fora), faça agora o "Code review da fase" de `referencias/execucao.md`, como última fase, antes de seguir.
 
+Se o `Entrega:` faz push, o diff da última fase precisa estar enviado e os questionamentos tratados antes do push, inclusive a nova rodada quando houve correção. Sem envio, peça em uma linha e espere: mudar depois do PR custa mais. Ele pode responder no chat ("pode subir"), e aí desligue o servidor. Com "Só commits na branch", não espere.
+
 ## 3. Registro
 
 Preencha a seção Resultado do `estado.md` (commits, resultado dos testes, achados dos reviews, o que ficou de fora e por quê), marque a linha Entrega como `feito` e mude a etapa para `concluida`.

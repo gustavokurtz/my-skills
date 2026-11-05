@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diff da branch</title>
+<style>
+:root {
+  --fundo: #ffffff;
+  --lateral: #f3f3f3;
+  --barra: #e8e8e8;
+  --tinta: #1f2328;
+  --apagado: #6e7781;
+  --linha: #d0d7de;
+  --foco: #0969da;
+  --sel: #dbe9fb;
+  --add: #e6ffec;
+  --add-num: #ccffd8;
+  --add-mk: #abf2bc;
+  --del: #ffebe9;
+  --del-num: #ffd7d5;
+  --del-mk: #ffb8b4;
+  --vazio: #f6f8fa;
+  --dobra: #ddf4ff;
+  --st-m: #9a6700;
+  --st-a: #1a7f37;
+  --st-d: #cf222e;
+  --st-r: #0969da;
+  --hl-kw: #cf222e;
+  --hl-str: #0a3069;
+  --hl-com: #6e7781;
+  --hl-num: #0550ae;
+  --hl-fn: #8250df;
+  --hl-tipo: #953800;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #1e1e1e;
+    --lateral: #252526;
+    --barra: #2d2d2d;
+    --tinta: #d4d4d4;
+    --apagado: #8b949e;
+    --linha: #3c3c3c;
+    --foco: #4daafc;
+    --sel: #37373d;
+    --add: rgba(46, 160, 67, .15);
+    --add-num: rgba(46, 160, 67, .25);
+    --add-mk: rgba(46, 160, 67, .45);
+    --del: rgba(248, 81, 73, .15);
+    --del-num: rgba(248, 81, 73, .25);
+    --del-mk: rgba(248, 81, 73, .45);
+    --vazio: #252526;
+    --dobra: #1f2a36;
+    --st-m: #e2c08d;
+    --st-a: #73c991;
+    --st-d: #f48771;
+    --st-r: #4daafc;
+    --hl-kw: #569cd6;
+    --hl-str: #ce9178;
+    --hl-com: #6a9955;
+    --hl-num: #b5cea8;
+    --hl-fn: #dcdcaa;
+    --hl-tipo: #4ec9b0;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--fundo); color: var(--tinta); font: 13px/1.45 var(--sans); }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+button:focus-visible, textarea:focus-visible { outline: 2px solid var(--foco); outline-offset: -2px; }
+code { font-family: var(--mono); }
+
+#app { display: grid; grid-template-columns: 300px 1fr; height: 100vh; }
+.lateral { background: var(--lateral); border-right: 1px solid var(--linha); display: flex; flex-direction: column; min-height: 0; }
+.topo { padding: 10px 12px 8px; border-bottom: 1px solid var(--linha); }
+.topo .branch { font-weight: 600; overflow-wrap: anywhere; }
+.topo .sub { color: var(--apagado); font-size: 12px; margin-top: 2px; }
+
+.caixa { padding: 10px 12px; border-bottom: 1px solid var(--linha); }
+.caixa label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--apagado); margin-bottom: 6px; }
+.caixa textarea {
+  width: 100%; min-height: 84px; max-height: 40vh; resize: vertical; padding: 6px 8px; font: 13px/1.4 var(--sans);
+  color: var(--tinta); background: var(--fundo); border: 1px solid var(--linha); border-radius: 3px;
+}
+#enviar { display: block; width: 100%; margin-top: 8px; padding: 6px; border-radius: 3px; text-align: center; font-weight: 600; background: var(--foco); color: #fff; }
+#enviar:disabled { opacity: .6; cursor: wait; }
+.estado { font-size: 11px; color: var(--apagado); margin-top: 6px; min-height: 1em; }
+.estado.erro { color: var(--st-d); }
+
+.lista { overflow-y: auto; flex: 1; padding-bottom: 12px; }
+.commit-cab { display: grid; grid-template-columns: 14px auto 1fr; gap: 6px; width: 100%; padding: 6px 12px 6px 8px; align-items: baseline; }
+.commit-cab:hover { background: var(--sel); }
+.seta { color: var(--apagado); transition: transform .1s; display: inline-block; }
+.commit.fechado .seta { transform: rotate(-90deg); }
+.commit.fechado ul { display: none; }
+.commit-cab .hash { font-family: var(--mono); font-size: 11px; color: var(--apagado); }
+.commit-cab .titulo { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.commit ul { list-style: none; margin: 0; padding: 0; }
+.arq { display: grid; grid-template-columns: 1fr auto; gap: 8px; width: 100%; padding: 3px 12px 3px 28px; align-items: baseline; }
+.arq:hover { background: var(--sel); }
+.arq.atual { background: var(--sel); box-shadow: inset 2px 0 0 var(--foco); }
+.arq.visto .nome { opacity: .55; }
+.arq .nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arq .dir { color: var(--apagado); font-size: 12px; margin-left: 4px; }
+.st { font-family: var(--mono); font-weight: 700; font-size: 12px; }
+.st-M { color: var(--st-m); } .st-A { color: var(--st-a); } .st-D { color: var(--st-d); } .st-R, .st-C { color: var(--st-r); }
+
+.painel { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.painel-cab { background: var(--barra); border-bottom: 1px solid var(--linha); padding: 6px 12px; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+.painel-cab .caminho { font-family: var(--mono); font-weight: 600; overflow-wrap: anywhere; }
+.painel-cab .era { color: var(--apagado); font-family: var(--mono); font-size: 12px; }
+.cont { font-family: var(--mono); font-size: 12px; }
+.cont .a { color: var(--st-a); } .cont .d { color: var(--st-d); }
+.painel-cab .commit-info { flex-basis: 100%; color: var(--apagado); font-size: 12px; }
+.painel-cab .commit-info code { color: var(--tinta); }
+.acoes { margin-left: auto; display: flex; gap: 4px; }
+.acoes button { padding: 2px 8px; border: 1px solid var(--linha); border-radius: 3px; font-size: 12px; }
+.acoes button[aria-pressed="true"] { background: var(--fundo); border-color: var(--foco); }
+.corpo-commit { flex-basis: 100%; white-space: pre-wrap; font-size: 12px; color: var(--apagado); margin: 0; }
+
+.diff-area { overflow: auto; flex: 1; }
+.aviso { padding: 24px; color: var(--apagado); font-size: 14px; }
+.aviso button { color: var(--foco); text-decoration: underline; }
+table.d { border-collapse: collapse; width: 100%; table-layout: fixed; font: 12.5px/1.5 var(--mono); }
+table.d td { padding: 0 8px; vertical-align: top; }
+table.d td.n { width: 52px; text-align: right; color: var(--apagado); user-select: none; cursor: pointer; padding-right: 10px; }
+table.d td.n:empty { cursor: default; }
+table.d td.n:not(:empty):hover { color: var(--foco); text-decoration: underline; }
+table.d td.c { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; }
+table.d.lado td.c { border-right: 1px solid var(--linha); }
+table.d.lado td.c:last-child { border-right: 0; }
+table.d td.add { background: var(--add); } table.d td.n.add { background: var(--add-num); }
+table.d td.del { background: var(--del); } table.d td.n.del { background: var(--del-num); }
+table.d td.vazio { background: var(--vazio); }
+table.d td.add .mk { background: var(--add-mk); border-radius: 2px; }
+table.d td.del .mk { background: var(--del-mk); border-radius: 2px; }
+table.d tr.dobra td { background: var(--dobra); color: var(--apagado); padding: 2px 8px; }
+table.d tr.dobra button:hover { color: var(--foco); }
+table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px 8px; }
+
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-meta .hljs-keyword { color: var(--hl-kw); }
+.hljs-string, .hljs-regexp, .hljs-attr-value, .hljs-template-string { color: var(--hl-str); }
+.hljs-comment, .hljs-quote { color: var(--hl-com); font-style: italic; }
+.hljs-number { color: var(--hl-num); }
+.hljs-title, .hljs-title.function_, .hljs-section { color: var(--hl-fn); }
+.hljs-built_in, .hljs-type, .hljs-title.class_, .hljs-attr, .hljs-attribute, .hljs-name { color: var(--hl-tipo); }
+
+.enviado { grid-column: 1 / -1; display: grid; place-items: center; }
+.enviado div { max-width: 28rem; padding: 24px; }
+.enviado h1 { font-size: 20px; margin: 0 0 8px; color: var(--st-a); }
+
+@media (max-width: 900px) {
+  #app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; min-height: 100vh; }
+  .lateral { max-height: 55vh; border-right: 0; border-bottom: 1px solid var(--linha); }
+  .painel { min-height: 70vh; }
+  #modo-lado { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script id="dados" type="application/json">__DADOS__</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+<script>
+(function () {
+  "use strict";
+  const D = JSON.parse(document.getElementById("dados").textContent);
+  const commits = D.commits || [];
+  const CTX = 3;
+  const chave = "trilho-diff:" + D.tarefa + ":" + D.nome;
+  const estreito = window.matchMedia("(max-width: 900px)");
+
+  function ler(k, padrao) { try { const v = localStorage.getItem(k); return v == null ? padrao : JSON.parse(v); } catch (e) { return padrao; } }
+  function gravar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sem armazenamento */ } }
+
+  let modo = ler("trilho-diff:modo", "lado");
+  const vistos = new Set(ler(chave + ":vistos", []));
+  const abertos = {};      // "c:f" -> lista de [i, j] de dobras abertas
+  const fechados = new Set();
+  let atual = null;         // [c, f]
+  let texto = D.rascunho || ler(chave + ":texto", "") || "";
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  // ---------- realce de sintaxe ----------
+  const LINGUAS = { py: "python", js: "javascript", mjs: "javascript", cjs: "javascript", jsx: "javascript",
+    ts: "typescript", tsx: "typescript", json: "json", md: "markdown", yml: "yaml", yaml: "yaml", sh: "bash",
+    bash: "bash", zsh: "bash", css: "css", scss: "scss", html: "xml", xml: "xml", svg: "xml", sql: "sql",
+    java: "java", kt: "kotlin", go: "go", rs: "rust", rb: "ruby", php: "php", cs: "csharp", c: "c", h: "c",
+    cpp: "cpp", hpp: "cpp", toml: "ini", ini: "ini", dockerfile: "dockerfile", prisma: "typescript" };
+  function lingua(caminho) {
+    const nome = caminho.split("/").pop().toLowerCase();
+    if (nome === "dockerfile") return "dockerfile";
+    const ext = nome.indexOf(".") >= 0 ? nome.split(".").pop() : "";
+    const l = LINGUAS[ext];
+    return l && window.hljs && window.hljs.getLanguage(l) ? l : null;
+  }
+  function hl(s, lang) {
+    if (!lang || !s) return esc(s);
+    try { return window.hljs.highlight(s, { language: lang, ignoreIllegals: true }).value; } catch (e) { return esc(s); }
+  }
+  // Marca o pedaço que mudou entre a linha removida e a adicionada (prefixo e sufixo iguais ficam sem marca).
+  function marcado(antes, depois, lang) {
+    let p = 0;
+    while (p < antes.length && p < depois.length && antes[p] === depois[p]) p++;
+    let s = 0;
+    while (s < antes.length - p && s < depois.length - p && antes[antes.length - 1 - s] === depois[depois.length - 1 - s]) s++;
+    if (p + s === 0) return [hl(antes, lang), hl(depois, lang)];
+    function parte(t) {
+      const meio = t.slice(p, t.length - s);
+      return hl(t.slice(0, p), lang) + (meio ? '<span class="mk">' + hl(meio, lang) + "</span>" : "") + hl(t.slice(t.length - s), lang);
+    }
+    return [parte(antes), parte(depois)];
+  }
+
+  // ---------- lista ----------
+  function arquivoDe(c, f) { return commits[c].arquivos[f]; }
+  function chaveArq(c, f) { return c + ":" + f; }
+  function contagem(a) {
+    return '<span class="cont"><span class="a">+' + a.adicionadas + '</span> <span class="d">−' + a.removidas + "</span></span>";
+  }
+
+  function lateral() {
+    const total = commits.reduce(function (n, c) { return n + c.arquivos.length; }, 0);
+    let h = '<aside class="lateral">' +
+      '<div class="topo"><div class="branch">' + esc(D.branch) + '</div><div class="sub">' +
+      commits.length + " commit" + (commits.length === 1 ? "" : "s") + " fora de <code>" + esc(D.base_ref) + "</code>, sem merges" +
+      (D.pendentes ? " · " + D.pendentes + " arquivo(s) não commitado(s) fora daqui" : "") +
+      ' · <span id="vistos"></span> de ' + total + " vistos</div></div>" +
+      '<div class="caixa"><label for="texto">Questionamentos</label>' +
+      '<textarea id="texto" placeholder="Dúvidas, discordâncias, o que mudar. Clique no número de uma linha para citá-la.">' + esc(texto) + "</textarea>" +
+      '<button id="enviar" type="button"></button><div class="estado" id="estado" aria-live="polite"></div></div>' +
+      '<nav class="lista" aria-label="Commits e arquivos">';
+    commits.forEach(function (c, ci) {
+      h += '<div class="commit' + (fechados.has(ci) ? " fechado" : "") + '" id="commit-' + ci + '">' +
+        '<button class="commit-cab" data-commit="' + ci + '" title="' + esc(c.titulo) + '">' +
+        '<span class="seta">▾</span><span class="hash">' + esc(c.curto) + '</span><span class="titulo">' + esc(c.titulo) + "</span></button><ul>";
+      c.arquivos.forEach(function (a, fi) {
+        const partes = a.caminho.split("/");
+        const nome = partes.pop();
+        h += '<li><button class="arq" data-c="' + ci + '" data-f="' + fi + '" id="arq-' + ci + "-" + fi + '" title="' + esc(a.caminho) + '">' +
+          '<span class="nome">' + esc(nome) + '<span class="dir">' + esc(partes.join("/")) + "</span></span>" +
+          '<span class="st st-' + esc(a.status) + '">' + esc(a.status) + "</span></button></li>";
+      });
+      if (!c.arquivos.length) h += '<li class="arq"><span class="nome">(sem arquivos)</span></li>';
+      h += "</ul></div>";
+    });
+    return h + "</nav></aside>";
+  }
+
+  // ---------- diff ----------
+  function visiveis(a, k) {
+    const L = a.linhas, n = L.length, vis = new Array(n).fill(false);
+    for (let i = 0; i < n; i++) {
+      if (L[i][0] === "c") continue;
+      for (let x = Math.max(0, i - CTX); x <= Math.min(n - 1, i + CTX); x++) vis[x] = true;
+    }
+    (abertos[k] || []).forEach(function (r) { for (let x = r[0]; x <= r[1]; x++) vis[x] = true; });
+    // Dobra pequena não vale o clique.
+    for (let i = 0; i < n;) {
+      if (vis[i]) { i++; continue; }
+      let j = i;
+      while (j < n && !vis[j]) j++;
+      if (j - i <= 4) for (let x = i; x < j; x++) vis[x] = true;
+      i = j;
+    }
+    return vis;
+  }
+  function num(n, cls, ref) {
+    return '<td class="n ' + cls + '"' + (n ? ' data-ref="' + esc(ref) + '"' : "") + ">" + (n || "") + "</td>";
+  }
+  function tabela(a, c) {
+    const k = chaveArq(c.ci, c.fi), L = a.linhas, vis = visiveis(a, k), lang = lingua(a.caminho);
+    const lado = modo === "lado" && !estreito.matches;
+    const cols = lado ? 4 : 3;
+    const refNovo = function (n) { return commits[c.ci].curto + " " + a.caminho + ":" + n; };
+    const refVelho = function (n) { return commits[c.ci].curto + " " + (a.antigo || a.caminho) + ":" + n + " (antes)"; };
+    let h = '<table class="d ' + (lado ? "lado" : "linha") + '">' +
+      (lado ? '<colgroup><col style="width:52px"><col><col style="width:52px"><col></colgroup>'
+            : '<colgroup><col style="width:52px"><col style="width:52px"><col></colgroup>') + "<tbody>";
+    for (let i = 0; i < L.length;) {
+      if (!vis[i]) {
+        let j = i;
+        while (j < L.length && !vis[j]) j++;
+        h += '<tr class="dobra"><td colspan="' + cols + '"><button data-abrir="' + i + "-" + (j - 1) + '">⋯ ' + (j - i) + " linhas iguais</button></td></tr>";
+        i = j;
+        continue;
+      }
+      const l = L[i];
+      if (l[0] === "h") { h += '<tr class="hh"><td colspan="' + cols + '">' + esc(l[3]) + "</td></tr>"; i++; continue; }
+      if (l[0] === "c") {
+        const t = hl(l[3], lang);
+        h += lado
+          ? "<tr>" + num(l[1], "", refVelho(l[1])) + '<td class="c">' + t + "</td>" + num(l[2], "", refNovo(l[2])) + '<td class="c">' + t + "</td></tr>"
+          : "<tr>" + num(l[1], "", refVelho(l[1])) + num(l[2], "", refNovo(l[2])) + '<td class="c">' + t + "</td></tr>";
+        i++;
+        continue;
+      }
+      // Bloco de mudança: removidas seguidas de adicionadas.
+      const dels = [], adds = [];
+      while (i < L.length && L[i][0] === "d") dels.push(L[i++]);
+      while (i < L.length && L[i][0] === "a") adds.push(L[i++]);
+      const pares = Math.max(dels.length, adds.length);
+      const htmlD = [], htmlA = [];
+      for (let x = 0; x < pares; x++) {
+        if (dels[x] && adds[x]) { const m = marcado(dels[x][3], adds[x][3], lang); htmlD.push(m[0]); htmlA.push(m[1]); }
+        else { if (dels[x]) htmlD.push(hl(dels[x][3], lang)); if (adds[x]) htmlA.push(hl(adds[x][3], lang)); }
+      }
+      if (lado) {
+        for (let x = 0; x < pares; x++) {
+          const d = dels[x], ad = adds[x];
+          h += "<tr>" +
+            (d ? num(d[1], "del", refVelho(d[1])) + '<td class="c del">' + htmlD[x] + "</td>" : '<td class="n vazio"></td><td class="c vazio"></td>') +
+            (ad ? num(ad[2], "add", refNovo(ad[2])) + '<td class="c add">' + htmlA[x] + "</td>" : '<td class="n vazio"></td><td class="c vazio"></td>') +
+            "</tr>";
+        }
+      } else {
+        dels.forEach(function (d, x) { h += "<tr>" + num(d[1], "del", refVelho(d[1])) + '<td class="n del"></td><td class="c del">' + htmlD[x] + "</td></tr>"; });
+        adds.forEach(function (ad, x) { h += "<tr>" + '<td class="n add"></td>' + num(ad[2], "add", refNovo(ad[2])) + '<td class="c add">' + htmlA[x] + "</td></tr>"; });
+      }
+    }
+    return h + "</tbody></table>";
+  }
+
+  function mostrar(ci, fi, rolar) {
+    if (!commits[ci] || !commits[ci].arquivos[fi]) return;
+    atual = [ci, fi];
+    const c = commits[ci], a = c.arquivos[fi], k = chaveArq(ci, fi);
+    vistos.add(k);
+    gravar(chave + ":vistos", Array.from(vistos));
+    document.querySelectorAll(".arq.atual").forEach(function (b) { b.classList.remove("atual"); });
+    const botao = document.getElementById("arq-" + ci + "-" + fi);
+    if (botao) {
+      botao.classList.add("atual", "visto");
+      if (rolar) botao.scrollIntoView({ block: "nearest" });
+    }
+    document.getElementById("vistos").textContent = vistos.size;
+    const cab = '<div class="painel-cab">' +
+      '<span class="caminho">' + esc(a.caminho) + "</span>" +
+      (a.antigo ? '<span class="era">era ' + esc(a.antigo) + "</span>" : "") +
+      '<span class="st st-' + esc(a.status) + '">' + esc(a.status) + "</span>" + contagem(a) +
+      '<span class="acoes">' +
+        '<button type="button" id="modo-lado" aria-pressed="' + (modo === "lado") + '">Lado a lado</button>' +
+        '<button type="button" id="modo-linha" aria-pressed="' + (modo === "linha") + '">Em linha</button>' +
+        '<button type="button" id="ant" title="Arquivo anterior (k)">↑</button>' +
+        '<button type="button" id="prox" title="Próximo arquivo (j)">↓</button></span>' +
+      '<span class="commit-info">Commit ' + (ci + 1) + " de " + commits.length + ": <code>" + esc(c.curto) + "</code> " + esc(c.titulo) +
+      " · " + esc(c.autor) + " · " + esc(c.data) + "</span>" +
+      (c.corpo ? '<pre class="corpo-commit">' + esc(c.corpo) + "</pre>" : "") + "</div>";
+    let corpo;
+    if (a.binario) corpo = '<p class="aviso">Arquivo binário.</p>';
+    else if (a.grande) corpo = '<p class="aviso">Diff grande demais para a página. Veja com <code>' + esc(a.comando) + "</code>.</p>";
+    else if (a.gerado && !abertos[k + ":gerado"]) corpo = '<p class="aviso">Arquivo gerado (' + a.adicionadas + " linhas adicionadas, " + a.removidas + ' removidas). <button type="button" id="ver-gerado">Mostrar mesmo assim</button></p>';
+    else if (!a.linhas.length) corpo = '<p class="aviso">Sem mudança no conteúdo' + (a.antigo ? ": só o nome mudou." : ".") + "</p>";
+    else corpo = tabela(a, { ci: ci, fi: fi });
+    const painel = document.getElementById("painel");
+    painel.innerHTML = cab + '<div class="diff-area" id="diff">' + corpo + "</div>";
+  }
+
+  function ordem() {
+    const o = [];
+    commits.forEach(function (c, ci) { c.arquivos.forEach(function (_, fi) { o.push([ci, fi]); }); });
+    return o;
+  }
+  function andar(passo) {
+    const o = ordem();
+    if (!o.length) return;
+    let i = atual ? o.findIndex(function (x) { return x[0] === atual[0] && x[1] === atual[1]; }) : -1;
+    i = Math.min(o.length - 1, Math.max(0, i + passo));
+    fechados.delete(o[i][0]);
+    document.getElementById("commit-" + o[i][0]).classList.remove("fechado");
+    mostrar(o[i][0], o[i][1], true);
+  }
+
+  // ---------- questionamentos ----------
+  function rotulo() {
+    document.getElementById("enviar").textContent = texto.trim() ? "Enviar questionamentos" : "Está tudo certo";
+  }
+  let timer = null;
+  function mudouTexto() {
+    gravar(chave + ":texto", texto);
+    rotulo();
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      fetch("/rascunho", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ texto: texto }) })
+        .then(function (x) { document.getElementById("estado").textContent = x.ok ? "Rascunho salvo." : ""; })
+        .catch(function () { document.getElementById("estado").textContent = "Rascunho salvo só neste navegador."; });
+    }, 600);
+  }
+  function citar(ref) {
+    const ta = document.getElementById("texto");
+    ta.value = (ta.value.trim() ? ta.value.replace(/\s*$/, "\n") : "") + "`" + ref + "` ";
+    texto = ta.value;
+    mudouTexto();
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+    ta.scrollTop = ta.scrollHeight;
+  }
+  function enviar() {
+    const btn = document.getElementById("enviar"), estado = document.getElementById("estado");
+    btn.disabled = true;
+    estado.classList.remove("erro");
+    fetch("/enviar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ texto: texto }) })
+      .then(function (x) { if (!x.ok) throw new Error("HTTP " + x.status); return x.json(); })
+      .then(function () {
+        try { localStorage.removeItem(chave + ":texto"); } catch (e) { /* ok */ }
+        document.getElementById("app").innerHTML = '<div class="enviado"><div><h1>Enviado</h1>' +
+          "<p>O Claude já recebeu" + (texto.trim() ? " os seus questionamentos" : " que está tudo certo") + ". Pode fechar esta aba.</p></div></div>";
+      })
+      .catch(function () {
+        btn.disabled = false;
+        estado.classList.add("erro");
+        estado.textContent = "Não consegui enviar: o servidor desta revisão não está rodando. O texto está guardado neste navegador; peça ao Claude para reabrir a revisão.";
+      });
+  }
+
+  // ---------- montagem e eventos ----------
+  function montar() {
+    const app = document.getElementById("app");
+    app.innerHTML = lateral() + '<main class="painel" id="painel"></main>';
+    rotulo();
+    document.getElementById("vistos").textContent = vistos.size;
+    if (!commits.length) {
+      document.getElementById("painel").innerHTML = '<p class="aviso">Nenhum commit na branch fora de <code>' + esc(D.base_ref) + "</code>, sem contar os de merge.</p>";
+      return;
+    }
+    const o = ordem();
+    if (o.length) mostrar(o[0][0], o[0][1]);
+  }
+
+  document.addEventListener("click", function (ev) {
+    const t = ev.target;
+    const arq = t.closest(".arq[data-c]");
+    if (arq) { mostrar(+arq.dataset.c, +arq.dataset.f); return; }
+    const cab = t.closest(".commit-cab");
+    if (cab) {
+      const ci = +cab.dataset.commit;
+      if (fechados.has(ci)) fechados.delete(ci); else fechados.add(ci);
+      document.getElementById("commit-" + ci).classList.toggle("fechado");
+      return;
+    }
+    const n = t.closest("td.n[data-ref]");
+    if (n) { citar(n.dataset.ref); return; }
+    const dobra = t.closest("[data-abrir]");
+    if (dobra && atual) {
+      const k = chaveArq(atual[0], atual[1]);
+      (abertos[k] = abertos[k] || []).push(dobra.dataset.abrir.split("-").map(Number));
+      const rolo = document.getElementById("diff").scrollTop;
+      mostrar(atual[0], atual[1]);
+      document.getElementById("diff").scrollTop = rolo;
+      return;
+    }
+    if (t.id === "ver-gerado" && atual) { abertos[chaveArq(atual[0], atual[1]) + ":gerado"] = true; mostrar(atual[0], atual[1]); return; }
+    if (t.id === "modo-lado" || t.id === "modo-linha") {
+      modo = t.id === "modo-lado" ? "lado" : "linha";
+      gravar("trilho-diff:modo", modo);
+      if (atual) mostrar(atual[0], atual[1]);
+      return;
+    }
+    if (t.id === "ant") { andar(-1); return; }
+    if (t.id === "prox") { andar(1); return; }
+    if (t.id === "enviar") enviar();
+  });
+  document.addEventListener("input", function (ev) {
+    if (ev.target.id === "texto") { texto = ev.target.value; mudouTexto(); }
+  });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.target.tagName === "TEXTAREA" || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (ev.key === "j") { andar(1); ev.preventDefault(); }
+    else if (ev.key === "k") { andar(-1); ev.preventDefault(); }
+  });
+  estreito.addEventListener("change", function () { if (atual) mostrar(atual[0], atual[1]); });
+
+  montar();
+  // O realce chega depois (CDN); sem internet, a página segue sem cor.
+  window.addEventListener("load", function () { if (window.hljs && atual) mostrar(atual[0], atual[1]); });
+})();
+</script>
+</body>
+</html>
