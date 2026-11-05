@@ -115,7 +115,7 @@ O modelo fica sem fixar porque os modelos disponíveis dependem do plano de cada
 Quando o usuário pedir para continuar ou citar uma tarefa que já existe:
 
 1. Leia o `estado.md` da tarefa. Da `spec.json` e do `plano.md`, leia só o que o próximo passo precisa. Na etapa `planejamento`, veja o que já existe: `discovery.json` sem respostas ou spec sem aprovação é uma tela pendente; rode o script de novo (`referencias/planejamento.md`, "A tela de revisão") e o rascunho dele volta.
-2. Confira com `git log` e `git status` o que de fato foi feito. Se divergir do estado (alguém trabalhou fora do fluxo), reconcilie e atualize o `estado.md`.
+2. Confira com `git log` e `git status` o que de fato foi feito. Se divergir do estado (alguém trabalhou fora do fluxo), reconcilie e atualize o `estado.md`. Se a branch da tarefa já foi mergeada, ou o usuário está em outra branch (ex.: mergeou e publicou pela integração), **não troque de branch sozinho**: pergunte em uma linha em qual branch seguir e registre a resposta no `estado.md`.
 3. Recapitule em poucas linhas onde paramos, o que já se aprendeu e o próximo passo. Siga sem esperar confirmação. Se a etapa for `entrega`, vá direto para `referencias/entrega.md`. Se houver tarefa `esperando o dev`, peça o resultado dela no recap.
 
 Tarefa com `roteiro.md` (formato anterior): siga usando o roteiro como plano; o Pedido e o Porquê dele fazem o papel da spec. Tarefa com `spec.md` e `progresso.json` (formato mais antigo): leia esses arquivos, gere um `estado.md` a partir deles e siga usando o `plano.md` dela.
