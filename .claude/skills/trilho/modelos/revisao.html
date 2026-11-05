@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão do trilho</title>
+<style>
+:root {
+  --papel: #f3f5f2;
+  --folha: #fbfcfa;
+  --tinta: #1d2b36;
+  --grafite: #5a6772;
+  --linha: #d5dbd6;
+  --cobalto: #2d5bd0;
+  --aprovado: #2f7d5b;
+  --ajustar: #a8701a;
+  --rejeitado: #b23a48;
+  --aprovado-fundo: #e6f2ec;
+  --ajustar-fundo: #f8efdf;
+  --rejeitado-fundo: #f7e6e8;
+  --serifa: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --papel: #13181c;
+    --folha: #1a2025;
+    --tinta: #e3e8eb;
+    --grafite: #9aa7b1;
+    --linha: #2e373e;
+    --cobalto: #8aa8f0;
+    --aprovado: #6cc59c;
+    --ajustar: #e2b25c;
+    --rejeitado: #ee8592;
+    --aprovado-fundo: #183229;
+    --ajustar-fundo: #33291a;
+    --rejeitado-fundo: #3a1f24;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font: 17px/1.6 var(--serifa);
+}
+main { max-width: 52rem; margin: 0 auto; padding: 2.5rem 1rem 8rem; }
+h1, h2, h3, legend, button, label, summary, .meta, .marg, .rodape, textarea, .selo {
+  font-family: var(--sans);
+}
+h1 { font-size: 2rem; line-height: 1.2; font-weight: 650; margin: 0 0 .4rem; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; font-weight: 650; margin: 3rem 0 1rem; padding-bottom: .4rem; border-bottom: 1px solid var(--linha); }
+h3 { font-size: 1.05rem; font-weight: 600; margin: 0 0 .5rem; line-height: 1.4; }
+p { margin: 0 0 .8rem; }
+code { font-size: .88em; background: var(--linha); padding: .05em .3em; border-radius: 3px; }
+a { color: var(--cobalto); }
+.meta { color: var(--grafite); font-size: .92rem; margin-bottom: 1.4rem; }
+.instrucao { font-family: var(--sans); font-size: .95rem; color: var(--grafite); max-width: 40rem; }
+.prosa { max-width: 44rem; }
+
+/* Cláusula: id na margem, borda com a cor do veredito */
+.clausula {
+  display: grid;
+  grid-template-columns: 6.4rem 1fr;
+  gap: 0 1rem;
+  background: var(--folha);
+  border: 1px solid var(--linha);
+  border-left: 5px solid var(--linha);
+  border-radius: 4px;
+  padding: 1.2rem 1.2rem 1.1rem .9rem;
+  margin: 0 0 1rem;
+  transition: border-color .15s;
+}
+.clausula[data-v="aprovado"], .clausula[data-v="concordo"], .clausula[data-v="certo"], .clausula[data-v="respondida"] { border-left-color: var(--aprovado); }
+.clausula[data-v="ajustar"] { border-left-color: var(--ajustar); }
+.clausula[data-v="rejeitado"], .clausula[data-v="discordo"], .clausula[data-v="errado"] { border-left-color: var(--rejeitado); }
+.marg { text-align: right; padding-top: .1rem; }
+.cid { display: block; font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.tipo { display: block; font-size: .75rem; color: var(--grafite); margin-top: .25rem; overflow-wrap: anywhere; hyphens: auto; }
+.corpo { min-width: 0; }
+.texto { font-size: 1.08rem; margin-bottom: .7rem; }
+.exemplo { border-left: 2px solid var(--linha); padding-left: .8rem; color: var(--grafite); font-style: italic; }
+.exemplo b { font-style: normal; font-family: var(--sans); font-size: .85rem; font-weight: 600; color: var(--tinta); }
+.selo { display: inline-block; font-size: .78rem; font-weight: 600; padding: .1rem .5rem; border-radius: 99px; margin: 0 .4rem .6rem 0; border: 1px solid currentColor; }
+.selo.mudou { color: var(--ajustar); }
+.selo.novo { color: var(--cobalto); }
+.selo.rec { color: var(--aprovado); margin: 0 0 0 .4rem; vertical-align: 1px; }
+
+dl.rastro { margin: .4rem 0 .8rem; display: grid; grid-template-columns: 8.5rem 1fr; gap: .35rem 1rem; font-size: .95rem; }
+dl.rastro dt { font-family: var(--sans); font-size: .85rem; font-weight: 600; color: var(--grafite); padding-top: .15rem; }
+dl.rastro dd { margin: 0; }
+.ader { font-weight: 600; font-family: var(--sans); font-size: .9rem; }
+.ader-bate { color: var(--aprovado); }
+.ader-parcial { color: var(--ajustar); }
+.ader-nao_bate { color: var(--rejeitado); }
+.just { font-weight: 400; font-family: var(--serifa); font-size: .95rem; color: var(--tinta); }
+
+details { margin: .2rem 0 .9rem; font-size: .92rem; }
+summary { cursor: pointer; color: var(--cobalto); font-size: .88rem; }
+details > div { margin-top: .5rem; padding: .6rem .8rem; background: var(--papel); border-radius: 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Veredito */
+fieldset { border: 0; padding: 0; margin: .4rem 0 .6rem; min-width: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.veredito { display: flex; flex-wrap: wrap; gap: .5rem; }
+.veredito label { position: relative; }
+.veredito input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.veredito span {
+  display: inline-block; padding: .45rem 1rem; border: 1.5px solid var(--linha); border-radius: 4px;
+  font-size: .92rem; font-weight: 600; color: var(--grafite); background: var(--folha); cursor: pointer;
+}
+.veredito label:hover span { border-color: var(--grafite); }
+.veredito input:focus-visible + span { outline: 3px solid var(--cobalto); outline-offset: 2px; }
+.veredito input[value="aprovado"]:checked + span, .veredito input[value="concordo"]:checked + span, .veredito input[value="certo"]:checked + span { background: var(--aprovado-fundo); border-color: var(--aprovado); color: var(--aprovado); }
+.veredito input[value="ajustar"]:checked + span { background: var(--ajustar-fundo); border-color: var(--ajustar); color: var(--ajustar); }
+.veredito input[value="rejeitado"]:checked + span, .veredito input[value="discordo"]:checked + span, .veredito input[value="errado"]:checked + span { background: var(--rejeitado-fundo); border-color: var(--rejeitado); color: var(--rejeitado); }
+
+/* Opções de pergunta */
+.opcoes { display: grid; gap: .5rem; margin: .6rem 0 .8rem; }
+.opcao { position: relative; display: block; border: 1.5px solid var(--linha); border-radius: 4px; padding: .7rem .9rem .7rem 2.6rem; cursor: pointer; background: var(--folha); }
+.opcao:hover { border-color: var(--grafite); }
+.opcao input { position: absolute; left: .9rem; top: .95rem; accent-color: var(--cobalto); width: 1.05rem; height: 1.05rem; }
+.opcao input:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
+.opcao:has(input:checked) { border-color: var(--cobalto); box-shadow: inset 0 0 0 1px var(--cobalto); }
+.opcao b { font-family: var(--sans); font-weight: 600; }
+.opcao small { display: block; color: var(--grafite); font-size: .92rem; margin-top: .15rem; }
+
+textarea {
+  width: 100%; min-height: 2.6rem; resize: vertical; padding: .55rem .7rem; font-size: .95rem; line-height: 1.45;
+  color: var(--tinta); background: var(--papel); border: 1px solid var(--linha); border-radius: 4px;
+}
+textarea:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 1px; border-color: transparent; }
+textarea.falta { border-color: var(--ajustar); }
+.aviso-campo { font-family: var(--sans); font-size: .82rem; color: var(--ajustar); margin: .3rem 0 0; display: none; }
+textarea.falta + .aviso-campo { display: block; }
+
+/* Item já aprovado na versão anterior */
+.clausula.travada { grid-template-columns: 6.4rem 1fr auto; align-items: center; padding-top: .7rem; padding-bottom: .7rem; }
+.clausula.travada .resumo-travado { font-size: .95rem; color: var(--grafite); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clausula.travada .cid { font-size: 1.05rem; }
+button { font-size: .9rem; font-weight: 600; border-radius: 4px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
+.btn-leve { background: none; border: 1px solid var(--linha); color: var(--tinta); padding: .35rem .8rem; }
+
+.objetivos { list-style: none; padding: 0; margin: 0; }
+.objetivos li { display: grid; grid-template-columns: 6.4rem 1fr; gap: 0 1rem; padding: .6rem 0; border-bottom: 1px dashed var(--linha); }
+.objetivos .cid { font-size: 1.05rem; text-align: right; font-family: var(--sans); }
+.cobertura { font-family: var(--sans); font-size: .85rem; color: var(--grafite); }
+.cobertura.lacuna { color: var(--rejeitado); }
+.lista-simples { padding-left: 1.2rem; }
+.lista-simples li { margin-bottom: .4rem; }
+
+/* Rodapé fixo: progresso e envio */
+.rodape {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--folha); border-top: 1px solid var(--linha);
+  padding: .75rem 1rem;
+}
+.rodape-in { max-width: 52rem; margin: 0 auto; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.progresso { flex: 1 1 14rem; font-size: .92rem; }
+.barra { height: 6px; background: var(--linha); border-radius: 99px; overflow: hidden; margin-top: .35rem; display: flex; }
+.barra i { display: block; height: 100%; transition: width .2s; }
+.barra .b-ap { background: var(--aprovado); }
+.barra .b-aj { background: var(--ajustar); }
+.barra .b-rj { background: var(--rejeitado); }
+.salvo { font-size: .8rem; color: var(--grafite); }
+.btn-enviar { background: var(--tinta); color: var(--papel); border: 0; padding: .7rem 1.4rem; font-size: 1rem; }
+.btn-enviar:disabled { opacity: .5; cursor: wait; }
+.erro { color: var(--rejeitado); font-family: var(--sans); font-size: .9rem; flex-basis: 100%; margin: 0; }
+
+.enviado { max-width: 36rem; margin: 18vh auto 0; text-align: left; }
+.enviado h1 { color: var(--aprovado); }
+
+@media (max-width: 40rem) {
+  body { font-size: 16px; }
+  .clausula, .objetivos li { grid-template-columns: 1fr; }
+  .marg { text-align: left; display: flex; gap: .6rem; align-items: baseline; margin-bottom: .4rem; }
+  .tipo { margin: 0; }
+  dl.rastro { grid-template-columns: 1fr; gap: 0; }
+  dl.rastro dd { margin-bottom: .5rem; }
+  .objetivos .cid { text-align: left; }
+  .clausula.travada { grid-template-columns: 1fr auto; }
+  .clausula.travada .marg { display: none; }
+  textarea { min-height: 4.2rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div class="rodape" id="rodape" hidden>
+  <div class="rodape-in">
+    <div class="progresso" aria-live="polite">
+      <span id="contagem"></span> <span class="salvo" id="salvo"></span>
+      <div class="barra" aria-hidden="true"><i class="b-ap"></i><i class="b-aj"></i><i class="b-rj"></i></div>
+    </div>
+    <button class="btn-enviar" id="enviar" type="button">Enviar respostas</button>
+    <p class="erro" id="erro" role="alert" hidden></p>
+  </div>
+</div>
+<script id="dados" type="application/json">__DADOS__</script>
+<script>
+(function () {
+  "use strict";
+  const D = JSON.parse(document.getElementById("dados").textContent);
+  const doc = D.doc, hashes = D.hashes, ant = D.anteriores;
+  const spec = doc.etapa === "spec";
+  const chaveLocal = "trilho:" + doc.tarefa + ":" + doc.etapa + ":v" + doc.versao;
+  const decididos = new Set((doc.decidido || []).map(function (d) { return d.id; }));
+  const ENT = "ENT";
+  const entendimento = { id: ENT, texto: doc.entendimento || "" };
+  const objetivosPorId = {};
+  (doc.objetivos || []).forEach(function (o) { objetivosPorId[o.id] = o; });
+
+  // ---------- estado das respostas ----------
+  let resp = D.rascunho || null;
+  if (!resp) { try { resp = JSON.parse(localStorage.getItem(chaveLocal) || "null"); } catch (e) { resp = null; } }
+  resp = resp || { itens: {}, geral: "" };
+  resp.itens = resp.itens || {};
+  const travados = new Set();
+
+  function itens() {
+    return spec ? (doc.requisitos || []).concat(doc.fora_de_escopo || [])
+                : [entendimento].concat(doc.perguntas || [], doc.decidido || []);
+  }
+  function resolvidoAntes(id) {
+    if (!ant || !ant.itens || !ant.itens[id]) return false;
+    const a = ant.itens[id];
+    if (a.hash !== hashes[id]) return false;
+    if (a.status === "aprovado" || a.status === "concordo" || a.status === "certo") return true;
+    return !spec && !decididos.has(id) && a.escolha && !a.comentario;
+  }
+  itens().forEach(function (it) {
+    if (resolvidoAntes(it.id) && !resp.itens[it.id]) {
+      const a = ant.itens[it.id];
+      resp.itens[it.id] = { status: a.status, escolha: a.escolha, comentario: "" };
+      travados.add(it.id);
+    } else if (resolvidoAntes(it.id)) {
+      travados.add(it.id);
+    }
+  });
+
+  function r(id) { return resp.itens[id] || (resp.itens[id] = { status: null, escolha: null, comentario: "" }); }
+  function valor(id) {
+    const x = resp.itens[id];
+    if (!x) return "";
+    if (x.status) return x.status;
+    if (x.escolha || (x.comentario && isAberta(id))) return "respondida";
+    return "";
+  }
+  function isAberta(id) {
+    const p = (doc.perguntas || []).find(function (q) { return q.id === id; });
+    return !!(p && p.aberta);
+  }
+
+  // ---------- texto ----------
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function fmt(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\n/g, "<br>"); }
+  function el(html) { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; }
+
+  const NOMES_TIPO = { requisito: "requisito", comportamento: "comportamento", restricao: "restrição",
+    produto: "produto", desenho: "desenho", entrega: "entrega", incerteza: "incerteza", escopo: "escopo" };
+  const ADER = { bate: "✅ Bate", parcial: "⚠️ Parcial", nao_bate: "❌ Não bate" };
+
+  function selo(id) {
+    if (!ant || !ant.itens) return "";
+    if (!ant.itens[id]) return '<span class="selo novo">Novo nesta versão</span>';
+    if (ant.itens[id].hash !== hashes[id]) return '<span class="selo mudou">Mudou desde a v' + esc(ant.versao) + "</span>";
+    return "";
+  }
+  function detalhe(prova) {
+    return prova ? '<details><summary>Ver detalhe técnico</summary><div>' + fmt(prova) + "</div></details>" : "";
+  }
+  function veredito(id, opcoes) {
+    const atual = r(id).status;
+    return '<fieldset class="veredito"><legend class="sr">Sua resposta para ' + esc(id) + "</legend>" +
+      opcoes.map(function (o) {
+        return '<label><input type="radio" name="v-' + esc(id) + '" value="' + o[0] + '"' +
+          (atual === o[0] ? " checked" : "") + "><span>" + o[1] + "</span></label>";
+      }).join("") + "</fieldset>";
+  }
+  function comentario(id, dica) {
+    return '<textarea data-c="' + esc(id) + '" rows="1" placeholder="' + esc(dica) + '" aria-label="Comentário sobre ' +
+      esc(id) + '">' + esc(r(id).comentario) + '</textarea><p class="aviso-campo">Diga o que mudar: sem isso o Claude vai ter que perguntar.</p>';
+  }
+  function linha(dt, dd, cls) { return dd ? '<div class="' + (cls || "") + '" style="display:contents"><dt>' + dt + "</dt><dd>" + dd + "</dd></div>" : ""; }
+
+  // ---------- cláusulas ----------
+  function clausulaRequisito(q, foraDeEscopo) {
+    const origem = (q.origem || []).map(function (o) {
+      const ob = objetivosPorId[o];
+      return '<a href="#' + esc(o) + '">' + esc(o) + "</a>" + (ob ? " " + fmt(ob.texto) : "");
+    }).join("<br>");
+    const ader = q.aderencia ? '<span class="ader ader-' + esc(q.aderencia) + '">' + ADER[q.aderencia] +
+      '</span> <span class="just">' + fmt(q.justificativa) + "</span>" : "";
+    return '<article class="clausula" id="' + esc(q.id) + '" data-id="' + esc(q.id) + '">' +
+      '<div class="marg"><span class="cid">' + esc(q.id) + '</span><span class="tipo">' +
+      esc(foraDeEscopo ? "fora de escopo" : NOMES_TIPO[q.tipo] || q.tipo) + "</span></div>" +
+      '<div class="corpo">' + selo(q.id) + '<p class="texto">' + fmt(q.texto) + "</p>" +
+      (q.exemplo ? '<p class="exemplo"><b>Exemplo:</b> ' + fmt(q.exemplo) + "</p>" : "") +
+      '<dl class="rastro">' +
+        linha("Porquê", fmt(q.porque)) +
+        linha("Vem de", origem) +
+        linha("Bate com o objetivo?", ader) +
+        linha("Não cobre", fmt(q.nao_cobre)) +
+        linha("Como se verifica", fmt(q.criterio)) +
+      "</dl>" + detalhe(q.prova) +
+      veredito(q.id, [["aprovado", "Aprovar"], ["ajustar", "Ajustar"], ["rejeitado", "Rejeitar"]]) +
+      comentario(q.id, "Comentário (diga o quê, se for ajustar ou rejeitar)") +
+      "</div></article>";
+  }
+  function clausulaPergunta(p) {
+    const atual = r(p.id).escolha;
+    const ops = p.aberta ? "" : '<fieldset class="opcoes"><legend class="sr">' + esc(p.pergunta) + "</legend>" +
+      (p.opcoes || []).map(function (o) {
+        return '<label class="opcao"><input type="radio" name="e-' + esc(p.id) + '" value="' + esc(o.id) + '"' +
+          (atual === o.id ? " checked" : "") + "><b>" + fmt(o.rotulo) + "</b>" +
+          (o.recomendada ? '<span class="selo rec">Recomendada</span>' : "") +
+          (o.efeito ? "<small>" + fmt(o.efeito) + "</small>" : "") + "</label>";
+      }).join("") + "</fieldset>";
+    return '<article class="clausula" id="' + esc(p.id) + '" data-id="' + esc(p.id) + '">' +
+      '<div class="marg"><span class="cid">' + esc(p.id) + '</span><span class="tipo">' + esc(NOMES_TIPO[p.tema] || p.tema || "") + "</span></div>" +
+      '<div class="corpo">' + selo(p.id) + "<h3>" + fmt(p.pergunta) + "</h3>" +
+      (p.contexto ? '<p class="prosa">' + fmt(p.contexto) + "</p>" : "") + detalhe(p.prova) + ops +
+      comentario(p.id, p.aberta ? "Sua resposta" : "Outra resposta, dúvida ou observação (opcional)") +
+      "</div></article>";
+  }
+  function clausulaDecidido(d) {
+    return '<article class="clausula" id="' + esc(d.id) + '" data-id="' + esc(d.id) + '">' +
+      '<div class="marg"><span class="cid">' + esc(d.id) + '</span><span class="tipo">já decidido</span></div>' +
+      '<div class="corpo">' + selo(d.id) + '<p class="texto">' + fmt(d.texto) + "</p>" +
+      '<dl class="rastro">' + linha("Porquê", fmt(d.porque)) + linha("Fonte", fmt(d.fonte)) + "</dl>" + detalhe(d.prova) +
+      veredito(d.id, [["concordo", "Concordo"], ["discordo", "Discordo"]]) +
+      comentario(d.id, "Comentário (se discordar, diga o quê)") + "</div></article>";
+  }
+  function clausulaEntendimento() {
+    return '<article class="clausula" id="' + ENT + '" data-id="' + ENT + '">' +
+      '<div class="marg"><span class="tipo">a conferir</span></div>' +
+      '<div class="corpo">' + selo(ENT) + '<div class="prosa"><p class="texto">' + fmt(entendimento.texto) + "</p></div>" +
+      veredito(ENT, [["certo", "Entendeu certo"], ["errado", "Entendeu errado"]]) +
+      comentario(ENT, "Se entendi errado, diga o quê") + "</div></article>";
+  }
+  function travada(it) {
+    const ver = ant ? ant.versao : "";
+    const resumo = it.texto || it.pergunta || "";
+    return '<article class="clausula travada" id="' + esc(it.id) + '" data-id="' + esc(it.id) + '" data-v="' + esc(valor(it.id)) + '">' +
+      '<div class="marg"><span class="cid">' + esc(it.id) + "</span></div>" +
+      '<div class="resumo-travado">Resolvido na v' + esc(ver) + ": " + esc(resumo) + "</div>" +
+      '<button type="button" class="btn-leve" data-reabrir="' + esc(it.id) + '">Reabrir</button></article>';
+  }
+  function cartao(it) {
+    if (travados.has(it.id)) return travada(it);
+    if (spec) return clausulaRequisito(it, (doc.fora_de_escopo || []).indexOf(it) >= 0);
+    if (it.id === ENT) return clausulaEntendimento();
+    return decididos.has(it.id) ? clausulaDecidido(it) : clausulaPergunta(it);
+  }
+
+  // ---------- página ----------
+  function render() {
+    const app = document.getElementById("app");
+    let h = "<header><h1>" + esc(doc.titulo) + "</h1>" +
+      '<p class="meta">' + (spec ? "Spec" : "Discovery") + " v" + esc(doc.versao) + " da tarefa " + esc(doc.tarefa) +
+      (ant ? ". Os itens que você já resolveu na v" + esc(ant.versao) + " estão fechados; reabra se quiser mudar." : "") + "</p>" +
+      '<p class="instrucao">' + (spec
+        ? "Esta é a spec: o que vai ser feito e por quê. Aprove, ajuste ou rejeite cada item. Ajustar e rejeitar pedem um comentário. O plano só começa com tudo aprovado."
+        : "Antes da spec, confira se entendi o seu pedido e me dê as suas decisões: escolha uma opção em cada pergunta, ou escreva outra resposta no comentário. Confira também o que eu já dei como decidido.") +
+      " Quando terminar, clique em Enviar respostas: o Claude recebe sozinho.</p></header>";
+
+    if (spec) {
+      if (doc.problema) h += "<h2>Problema</h2><div class=\"prosa\"><p>" + fmt(doc.problema) + "</p></div>";
+      h += "<h2>Objetivos</h2><ul class=\"objetivos\">" + (doc.objetivos || []).map(function (o) {
+        const cobrem = (doc.requisitos || []).filter(function (q) { return (q.origem || []).indexOf(o.id) >= 0; })
+          .map(function (q) { return '<a href="#' + esc(q.id) + '">' + esc(q.id) + "</a>"; });
+        const cob = cobrem.length ? '<span class="cobertura">Coberto por ' + cobrem.join(", ") + "</span>"
+          : '<span class="cobertura lacuna">Nenhum requisito cobre este objetivo: ' + fmt(o.lacuna || "") + "</span>";
+        return '<li id="' + esc(o.id) + '"><span class="cid">' + esc(o.id) + "</span><div>" + fmt(o.texto) + "<br>" + cob + "</div></li>";
+      }).join("") + "</ul>";
+      h += "<h2>Requisitos</h2>" + (doc.requisitos || []).map(cartao).join("");
+      if ((doc.fora_de_escopo || []).length) h += "<h2>Fora de escopo</h2>" + doc.fora_de_escopo.map(cartao).join("");
+      if ((doc.decisoes || []).length) h += "<h2>Decisões do discovery</h2><ul class=\"lista-simples\">" +
+        doc.decisoes.map(function (d) { return "<li>" + fmt(d.texto || d) + "</li>"; }).join("") + "</ul>";
+    } else {
+      h += "<h2>Como eu entendi o seu pedido</h2>" + cartao(entendimento);
+      if ((doc.achados || []).length) h += "<h2>O que a pesquisa achou</h2>" + doc.achados.map(function (a) {
+        return '<div class="prosa"><p><b>' + fmt(a.titulo) + ".</b> " + fmt(a.texto) + "</p>" + detalhe(a.prova) + "</div>";
+      }).join("");
+      h += "<h2>Perguntas</h2>" + (doc.perguntas || []).map(cartao).join("");
+      if ((doc.decidido || []).length) h += "<h2>O que eu já dei como decidido</h2>" + doc.decidido.map(cartao).join("");
+    }
+    h += '<h2>Comentário geral</h2><textarea id="geral" rows="3" placeholder="Algo que não cabe em nenhum item (opcional)">' + esc(resp.geral) + "</textarea>";
+    app.innerHTML = h;
+    itens().forEach(function (it) {
+      const art = document.getElementById(it.id);
+      if (art && !travados.has(it.id)) art.dataset.v = valor(it.id);
+    });
+    document.getElementById("rodape").hidden = false;
+    atualizar();
+  }
+
+  // ---------- eventos ----------
+  document.addEventListener("change", function (ev) {
+    const t = ev.target;
+    if (t.name && t.name.indexOf("v-") === 0) { r(t.name.slice(2)).status = t.value; }
+    else if (t.name && t.name.indexOf("e-") === 0) { r(t.name.slice(2)).escolha = t.value; }
+    else return;
+    const id = t.name.slice(2);
+    document.getElementById(id).dataset.v = valor(id);
+    marcarFalta(id);
+    mudou();
+  });
+  document.addEventListener("input", function (ev) {
+    const t = ev.target;
+    if (t.dataset && t.dataset.c) {
+      r(t.dataset.c).comentario = t.value;
+      document.getElementById(t.dataset.c).dataset.v = valor(t.dataset.c);
+      marcarFalta(t.dataset.c);
+      autoAltura(t);
+      mudou();
+    } else if (t.id === "geral") { resp.geral = t.value; mudou(); }
+  });
+  document.addEventListener("click", function (ev) {
+    const id = ev.target.dataset && ev.target.dataset.reabrir;
+    if (!id) return;
+    travados.delete(id);
+    const it = itens().find(function (x) { return x.id === id; });
+    const novo = el(cartao(it));
+    novo.dataset.v = valor(id);
+    document.getElementById(id).replaceWith(novo);
+    const foco = novo.querySelector("input, textarea");
+    if (foco) foco.focus();
+  });
+  function marcarFalta(id) {
+    const ta = document.querySelector('textarea[data-c="' + id + '"]');
+    if (!ta) return;
+    const st = r(id).status;
+    ta.classList.toggle("falta", (st === "ajustar" || st === "rejeitado" || st === "discordo" || st === "errado") && !r(id).comentario.trim());
+  }
+  function autoAltura(t) { t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight + 2, 320) + "px"; }
+
+  let timer = null;
+  function mudou() {
+    try { localStorage.setItem(chaveLocal, JSON.stringify(resp)); } catch (e) { /* sem armazenamento local */ }
+    atualizar();
+    clearTimeout(timer);
+    timer = setTimeout(salvarRascunho, 600);
+  }
+  function salvarRascunho() {
+    fetch("/rascunho", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(resp) })
+      .then(function (x) { document.getElementById("salvo").textContent = x.ok ? "Rascunho salvo." : ""; })
+      .catch(function () { document.getElementById("salvo").textContent = "Rascunho salvo só neste navegador."; });
+  }
+  function atualizar() {
+    const todos = itens();
+    let ap = 0, aj = 0, rj = 0, resp_ = 0;
+    todos.forEach(function (it) {
+      const v = valor(it.id);
+      if (!v) return;
+      resp_++;
+      if (v === "ajustar") aj++; else if (v === "rejeitado" || v === "discordo" || v === "errado") rj++; else ap++;
+    });
+    const n = todos.length || 1;
+    document.getElementById("contagem").textContent = resp_ + " de " + todos.length + " respondidos" +
+      (spec && (aj || rj) ? " (" + aj + " para ajustar, " + rj + " rejeitados)" : "");
+    const barras = document.querySelectorAll(".barra i");
+    barras[0].style.width = (ap / n * 100) + "%";
+    barras[1].style.width = (aj / n * 100) + "%";
+    barras[2].style.width = (rj / n * 100) + "%";
+  }
+
+  document.getElementById("enviar").addEventListener("click", function () {
+    const faltam = itens().filter(function (it) { return !valor(it.id); }).map(function (it) { return it.id; });
+    const semComentario = itens().filter(function (it) {
+      const x = resp.itens[it.id] || {};
+      return (x.status === "ajustar" || x.status === "rejeitado" || x.status === "discordo" || x.status === "errado") && !(x.comentario || "").trim();
+    }).map(function (it) { return it.id; });
+    let msg = "";
+    if (faltam.length) msg += "Sem resposta: " + faltam.join(", ") + ". Esses itens contam como não aprovados.\n";
+    if (semComentario.length) msg += "Sem comentário: " + semComentario.join(", ") + ". O Claude vai ter que perguntar o que mudar.\n";
+    if (msg && !confirm(msg + "\nEnviar mesmo assim?")) return;
+    const btn = this, erro = document.getElementById("erro");
+    btn.disabled = true; erro.hidden = true;
+    fetch("/enviar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(resp) })
+      .then(function (x) { if (!x.ok) throw new Error("HTTP " + x.status); return x.json(); })
+      .then(function () {
+        try { localStorage.removeItem(chaveLocal); } catch (e) { /* ok */ }
+        document.getElementById("rodape").hidden = true;
+        document.getElementById("app").innerHTML = '<div class="enviado"><h1>Respostas enviadas</h1>' +
+          "<p>O Claude já recebeu e segue a partir delas. Pode fechar esta aba.</p></div>";
+        window.scrollTo(0, 0);
+      })
+      .catch(function () {
+        btn.disabled = false;
+        erro.hidden = false;
+        erro.textContent = "Não consegui enviar: o servidor desta revisão não está rodando. Suas respostas estão guardadas neste navegador. Peça ao Claude para reabrir a revisão e envie de novo.";
+      });
+  });
+
+  render();
+  document.querySelectorAll("textarea[data-c]").forEach(function (t) { if (t.value) autoAltura(t); marcarFalta(t.dataset.c); });
+})();
+</script>
+</body>
+</html>

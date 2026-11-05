@@ -1,6 +1,6 @@
 # Execução
 
-Trabalhe uma tarefa de cada vez, na ordem do roteiro. A próxima é sempre a primeira que não está `feito` nem `esperando o dev` no `estado.md`.
+Trabalhe uma tarefa de cada vez, na ordem do plano. A próxima é sempre a primeira que não está `feito` nem `esperando o dev` no `estado.md`.
 
 ## O estado a cada tarefa
 
@@ -11,7 +11,7 @@ O `estado.md` acompanha a execução tarefa a tarefa, para que uma sessão que c
 
 ## Antes de cada tarefa
 
-Diga ao usuário, em uma linha, o porquê e o como da tarefa. Ex.: "T3: o frete vinha 0 porque `calcularFrete` roda antes de `validarCarrinho` (`checkout.ts:42`); vou mover a chamada para depois da validação." Se você não consegue escrever essa linha, ainda não entendeu o bastante: leia mais antes de editar.
+Diga ao usuário, em uma linha, o porquê e o como da tarefa, citando o requisito que ela atende. Ex.: "T3 (R2): o frete vinha 0 porque `calcularFrete` roda antes de `validarCarrinho` (`checkout.ts:42`); vou mover a chamada para depois da validação." Se você não consegue escrever essa linha, ainda não entendeu o bastante: leia mais antes de editar.
 
 ## Quando algo falha sem explicação
 
@@ -33,7 +33,7 @@ Um subagente com contexto limpo, que não herda o viés desta sessão nem a hip�
 - uma correção falhou na rodada real;
 - o usuário pedir uma visão crítica ou "um subagente mais capaz" para uma correção.
 
-A instrução dele é o conteúdo de `referencias/arquiteto.md`, mais os sintomas (com ids de thread, trace, teste), o caminho do `estado.md` e do `roteiro.md` e o que já foi tentado e desfeito. **Não passe a sua hipótese nem peça "a menor mudança":** isso prende o arquiteto ao remendo. Verifique os `arquivo:linha` e as medições que ele trouxer antes de repassar, e leve ao usuário as opções no formato de "Como falar com o usuário" (`SKILL.md`). Quem escolhe é ele.
+A instrução dele é o conteúdo de `referencias/arquiteto.md`, mais os sintomas (com ids de thread, trace, teste), o caminho do `estado.md`, da `spec.json` e do `plano.md` e o que já foi tentado e desfeito. **Não passe a sua hipótese nem peça "a menor mudança":** isso prende o arquiteto ao remendo. Verifique os `arquivo:linha` e as medições que ele trouxer antes de repassar, e leve ao usuário as opções no formato de "Como falar com o usuário" (`SKILL.md`). Quem escolhe é ele.
 
 ## Tarefa com `Teste:`
 
@@ -80,7 +80,7 @@ Um bloqueio de ambiente registrado no `estado.md` por outra sessão ("não consi
 
 A fase só fecha com todas as tarefas dela `feito`, inclusive as do dev.
 
-Roteiro sem fases conta como uma fase só, que termina com a última tarefa.
+Plano sem fases conta como uma fase só, que termina com a última tarefa.
 
 1. Rode a suíte completa e o lint/typecheck do `projeto.md`.
 2. Confira o critério da fase.
@@ -92,10 +92,11 @@ Roteiro sem fases conta como uma fase só, que termina com a última tarefa.
    - **Por quê:** a causa ou o pedido que exigiu a mudança.
    - **O trecho:** até ~10 linhas do código novo, quando ele ajuda a entender. Mudança mecânica (renome, teste, texto) entra numa linha só, agrupada.
 
+6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. Na última fase, não: siga para a entrega na mesma sessão (ver "Fim da execução").
+
 ## Quando rodar a suíte inteira
 
 A suíte do `projeto.md` fecha a fase e vem antes de commitar código de produção. Mudança só no instrumento de medição (o script do eval, a régua dele e o teste dele) roda o teste desse instrumento e entrega o comando ao usuário. A suíte fica para o fim da fase.
-6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. Na última fase, não: siga para a entrega na mesma sessão (ver "Fim da execução").
 
 ## Code review da fase
 
@@ -103,7 +104,7 @@ Revisar a cada fase evita acumular bug para o fim e abrir outra sessão só para
 
 A instrução dele é o conteúdo de `referencias/revisor.md`, mais:
 
-- o caminho do `roteiro.md`;
+- o caminho da `spec.json` e do `plano.md`;
 - o intervalo `<base>..HEAD`, com `<base>` = o "Último review" do `estado.md` ou, na primeira fase, `git merge-base <integração> HEAD` (use `origin/<integração>` se houver remoto);
 - as tarefas da fase (ex.: "T4 a T7") e se é a última fase.
 
@@ -111,10 +112,11 @@ O revisor só reporta achados com confiança ≥ 80. Mesmo assim, verifique cada
 
 Registre no `estado.md` o "Último review" (o hash do HEAD que o revisor leu e a fase) e, em "Aprendizados", os achados corrigidos.
 
-## Quando a realidade diverge do roteiro
+## Quando a realidade diverge do plano
 
 - **Detalhe de implementação** (outro arquivo, outra função, teste em outro lugar): decida, registre em "Decisões da execução" no `estado.md` e siga.
-- **Objetivo, escopo ou abordagem** precisariam mudar, ou a correção na raiz sai do escopo: pare e proponha o ajuste (ver "Autonomia" no `SKILL.md`). Com a aprovação, edite o `roteiro.md` e registre no `estado.md` o que mudou e por quê.
+- **Abordagem** precisaria mudar, mas os requisitos continuam os mesmos: pare e proponha o ajuste (ver "Autonomia" no `SKILL.md`). Com a aprovação, edite o `plano.md` e registre no `estado.md` o que mudou e por quê.
+- **Requisito, objetivo ou escopo** precisaria mudar, ou a correção na raiz sai do escopo: pare e diga o porquê em linguagem simples. Se ele quiser mudar, edite a `spec.json`, suba a `versao` e abra a tela de revisão (`referencias/planejamento.md`, "A tela de revisão"): os itens que não mudaram aparecem fechados. Com a aprovação, ajuste o `plano.md` e registre no `estado.md`.
 
 ## Fim da execução
 

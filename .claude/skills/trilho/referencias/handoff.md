@@ -18,7 +18,7 @@ O aviso não se discute: você não mede o próprio contexto, e a qualidade cai 
 ## Como
 
 1. **Releia a conversa inteira, não só o fim.** Resumos tendem a guardar o fim e esquecer o começo e o meio, onde costumam estar as correções do usuário e as decisões que mudaram o rumo.
-2. **Procure o que o roteiro não tem:**
+2. **Procure o que a spec e o plano não têm:**
    - correções, preferências e decisões do usuário, escritas com as suas palavras ("decidido: X"), sem transcrever a fala dele, salvo se ele pedir;
    - defeitos encontrados, com o mecanismo de desenho de cada um (é o que mostra a família na próxima sessão);
    - decisões tomadas no caminho, cada uma com o porquê (sem o porquê, a decisão é revertida na primeira dúvida);
@@ -27,7 +27,9 @@ O aviso não se discute: você não mede o próprio contexto, e a qualidade cai 
    - descobertas sobre o código que a próxima sessão precisaria redescobrir.
 3. **Reescreva o `estado.md`** a partir de `modelos/estado.md`. Reescreva, não acrescente: ele descreve o agora. Hipóteses descartadas e decisões continuam enquanto forem relevantes; o que virou história sai (o histórico fica no git).
 4. **Seja concreto:** arquivos, funções, comandos, ids, mensagens de erro. "Ajustamos o prompt" não serve; "trocamos o retorno da `acionar_manobra` em `tools/registry.py`" serve.
-5. **Teste antes de entregar:** uma sessão nova executaria o próximo passo lendo só `projeto.md`, `roteiro.md` e `estado.md`, sem perguntar nada? Se não, falta algo. Máximo de duas telas; corte o que já está no roteiro.
+5. **Teste antes de entregar:** uma sessão nova executaria o próximo passo lendo só `projeto.md`, `spec.json`, `plano.md` e `estado.md`, sem perguntar nada? Se não, falta algo. Máximo de duas telas; corte o que já está na spec ou no plano.
+
+No planejamento, com uma tela de revisão aberta (discovery ou spec sem resposta), o "Próximo passo" diz qual etapa e versão está esperando, e a próxima sessão roda o script de novo: o rascunho do usuário volta junto.
 
 ## Fechar
 

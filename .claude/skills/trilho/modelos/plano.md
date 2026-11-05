@@ -1,36 +1,26 @@
-# Roteiro — <título da tarefa>
+# Plano — <título da tarefa>
 
 **Tarefa:** AAAA-MM-DD-<slug>
 **Branch:** `<nome da branch>` (sai de `<integração>`)
+**Spec:** `spec.json` v<N>, aprovada em AAAA-MM-DD (respostas em `spec.respostas.json`)
 **Entrega:** só commits na branch | push da branch | push + PR para `<integração>`
 
-## Pedido
-
-O que o usuário pediu, reescrito de forma clara e fiel: cada ideia, restrição, nome e número dele, com o porquê quando ele deu. Sem requisitos novos.
-
-## Porquê
-
-Confirmado com o usuário em AAAA-MM-DD.
-
-- **Problema:** <o que está errado ou faltando, em uma frase>
-- **Causa:** <em bug: onde o problema nasce, com `arquivo:linha`; em feature: a motivação do pedido>
-- **Abordagem:** <o que muda e por que resolve na raiz, não só o sintoma>
+<!-- O quê e o porquê estão na spec aprovada. Este arquivo é só o como. -->
 
 ## Contexto no código
 
 - `caminho/do/arquivo.ts` — o que existe hoje e por que importa para a tarefa
 - Padrão a seguir: `caminho/exemplo.ts`
+- Em bug, a causa nos dois níveis: imediata (`arquivo:linha`) e de desenho
 
 ## Decisões
 
+As do discovery (com a resposta do usuário) e as técnicas que eu tomei, cada uma com o porquê.
+
 | Questão | Decisão | Porquê |
 |---|---|---|
-| … | … | … |
+| … | … (discovery, P1) | … |
 | … | … (decidido por mim) | … |
-
-## Fora de escopo
-
-- …
 
 ## Incertezas
 
@@ -40,24 +30,25 @@ O que só se descobre rodando. "nenhuma" se a tarefa é toda determinística.
 
 ## Tarefas
 
-<!-- Branch, push, PR e code review não entram aqui: o review roda no fim de cada fase; push e PR, na entrega. -->
+<!-- Branch, push, PR e code review não entram aqui: o review roda no fim de cada fase; push e PR, na entrega.
+     Todo requisito aprovado da spec aparece em pelo menos um "Atende:". -->
 
 ### Fase 1 — <o que fica funcionando ao fim da fase>
 
 - **T1** — <ação verificável>
-  - Porquê: <o que esta tarefa resolve, em uma linha>
+  - Atende: R1
   - Como: <o que fazer, em uma ou duas linhas>
   - Teste: <teste a escrever antes de implementar>
 - **T2** — <ação verificável>
-  - Porquê: <o que esta tarefa resolve, em uma linha>
+  - Atende: R2
   - Como: …
   - Verificar por: <comando ou passo concreto> (sem teste porque <motivo>)
 - **T3** — <tarefa empírica>
-  - Porquê: <o que esta tarefa resolve, em uma linha>
+  - Atende: R3
   - Como: …
   - Meta: <resultado mensurável>. Orçamento: <rodadas ou custo>. Se esgotar: <plano B, ou "parar e trazer ao usuário">
 - **T4** — <tarefa que o usuário executa>
-  - Porquê: <o que esta tarefa resolve, em uma linha>
+  - Atende: R3
   - Como: …
   - Quem roda: dev (<motivo: custo de LLM, credencial, ambiente dele, prova na tela>)
   - Verificar por / Meta: …
@@ -66,8 +57,8 @@ O que só se descobre rodando. "nenhuma" se a tarefa é toda determinística.
 
 ## Pronto quando
 
-- <critério observável>
+Cada requisito aprovado da spec verificado pelo "Como se verifica" dele.
 
 Validação manual (o usuário roda no final):
 
-1. <passo> → <resultado esperado>
+1. <passo> → <resultado esperado> (R1)

@@ -14,13 +14,13 @@ Uma ou duas frases: o que acabou de ser feito.
 - T2 — em andamento: <onde parou>
 - T3 — pendente
 - T4 — esperando o dev: <o que ele roda e o que deve colar de volta>
-- Entrega — pendente (verificação, <o que o campo Entrega do roteiro pede>)
+- Entrega — pendente (verificação, <o que o campo Entrega do plano pede>)
 
 ## Próximo passo
 
 A ação concreta, executável sem perguntar nada.
 
-## O que o usuário decidiu e não está no roteiro
+## O que o usuário decidiu e não está na spec nem no plano
 
 Correções, preferências, restrições e decisões que surgiram na conversa, escritas com as suas palavras ("decidido: X"). Não transcreva a fala dele, salvo se ele pedir.
 
@@ -34,7 +34,7 @@ Cada defeito encontrado na execução, com o mecanismo de desenho em uma linha. 
 
 ## Aprendizados
 
-O que se descobriu rodando ou lendo o código e o roteiro não sabia. Concreto: arquivo, função, comando, valor. As causas encontradas entram aqui, com `arquivo:linha`.
+O que se descobriu rodando ou lendo o código e o plano não sabia. Concreto: arquivo, função, comando, valor. As causas encontradas entram aqui, com `arquivo:linha`.
 
 - nenhum
 

@@ -20,13 +20,13 @@ Commite o `estado.md` e o `projeto.md` juntos.
 
 ## 4. Push e PR
 
-Faça o que o campo `Entrega:` do roteiro diz, e nada além:
+Faça o que o campo `Entrega:` do plano diz, e nada além:
 
 - **Só commits na branch:** não faça push.
 - **Push da branch:** `git push -u origin <branch>`.
-- **Push + PR:** faça o push e abra o PR para a branch de integração (`gh pr create`), seguindo o template de PR do repo, se houver. Na descrição: o pedido em uma frase, o que mudou, o resultado dos testes, o resumo dos reviews e a validação manual.
+- **Push + PR:** faça o push e abra o PR para a branch de integração (`gh pr create`), seguindo o template de PR do repo, se houver. Na descrição: o objetivo em uma frase, o que mudou (por requisito da spec), o resultado dos testes, o resumo dos reviews e a validação manual.
 
-Roteiro sem o campo `Entrega:` (tarefa antiga): pergunte antes do push. Push recusado (hook, conflito, permissão): pare e traga o erro ao usuário, sem contornar.
+Plano (ou roteiro, em tarefa antiga) sem o campo `Entrega:`: pergunte antes do push. Push recusado (hook, conflito, permissão): pare e traga o erro ao usuário, sem contornar.
 
 ## 5. Fechamento
 
@@ -38,7 +38,7 @@ Responda com:
 - o resumo dos reviews;
 - o que subiu para o `projeto.md`, se algo subiu;
 - o link do PR, se abriu um;
-- o roteiro de validação manual (do "Pronto quando"), para o usuário rodar;
+- a validação manual (do "Pronto quando"), com o requisito de cada passo, para o usuário rodar;
 - o caminho da pasta da tarefa.
 
 Não espere o resultado da validação manual. Se o usuário relatar um problema, ele vira uma nova rodada de execução.

@@ -5,7 +5,7 @@ Você é um arquiteto de software chamado com contexto limpo, porque a sessão q
 ## Leia antes
 
 - O `estado.md` da tarefa inteiro, principalmente "Defeitos", "Hipóteses descartadas" e "Decisões da execução": é o histórico de onde o sistema já falhou e do que já foi tentado.
-- O `roteiro.md` (Pedido e Porquê) e o `.trilho/projeto.md`.
+- A `spec.json` (objetivos e requisitos aprovados), o `plano.md` e o `.trilho/projeto.md`. Em tarefa antiga, o `roteiro.md` (Pedido e Porquê).
 - As decisões registradas do projeto que tocam a área (ADRs, `CLAUDE.md`), porque a solução estrutural pode contrariar uma delas.
 - O código do fluxo inteiro, não só o ponto onde o defeito aparece. Em comportamento de LLM, leia também o texto que o modelo recebe no turno (prompt, lembretes, descrição e retorno das tools).
 
