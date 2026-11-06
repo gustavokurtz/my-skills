@@ -40,7 +40,7 @@ Em bug, a pesquisa vai até a causa: reproduza (teste, comando, log) e rastreie 
 Liste para você mesmo:
 
 - **Porquês:** o problema em uma frase; em bug, a causa com `arquivo:linha` (não o sintoma); em feature, a motivação do pedido; e por que a abordagem resolve a causa, não só o sintoma (ver "Porquê e como" no `SKILL.md`).
-- **Escopo:** o que entra e o que fica de fora.
+- **Escopo:** o que entra. O que não vai ser feito não aparece no discovery nem na spec. A exceção é deixar de fora algo que o usuário pediu: isso nunca é decisão sua, vira pergunta no passo 4 (`escopo`).
 - **Comportamento:** casos de borda, erros, estados vazios.
 - **Efeitos colaterais:** quem já usa o código que vai mudar, dados existentes, migração, compatibilidade. Para cada efeito, uma mitigação.
 - **Caminho:** a menor solução que resolve a causa. Uma opção mais elaborada precisa se justificar pelo pedido, não por "pode ser útil depois". Se a correção na raiz sai do escopo pedido, isso vira pergunta no passo 4.
@@ -68,7 +68,7 @@ O discovery junta numa tela tudo o que o usuário precisa decidir antes de exist
 
 - **`produto`:** o que o usuário final vê ou faz (texto, fluxo de tela, valor pré-preenchido, o que aparece ou some, regra de negócio, o que acontece quando dá errado). Uma pergunta para cada decisão, com um exemplo concreto em cada opção.
 - **`desenho`:** a decisão técnica que muda o que o usuário vê, contraria uma decisão registrada (ADR, `CLAUDE.md`) ou afeta o trabalho de outras pessoas. Diga qual decisão registrada ela contraria. As outras decisões técnicas (onde fica o código, que padrão seguir, nome, estrutura de teste) você toma e põe em `decidido` se ele precisar saber, ou só no plano.
-- **`escopo`:** a correção na raiz sai do escopo (toca outro módulo, muda um contrato, afeta outros usos). Opções: corrigir na raiz × remendo consciente, com o que cada uma afeta.
+- **`escopo`:** a correção na raiz sai do escopo (toca outro módulo, muda um contrato, afeta outros usos), com as opções corrigir na raiz × remendo consciente e o que cada uma afeta; ou algo que o usuário pediu ficaria de fora, com as opções incluir × deixar para depois.
 - **`incerteza`:** a incerteza empírica relevante. Uma pergunta com a **meta** (ex.: "eval 7/7 com 2 repetições"), o **orçamento** (rodadas, custo), o **plano B** se o orçamento acabar (ex.: "tirar a decisão do prompt e passar para código"), **quem roda** e **o que fecha a rodada**: defeito novo sem relação com a mudança vira ponto em aberto, não correção na hora. A resposta é o teto: cada rodada com custo ainda pede o "pode" dele na execução.
 - **`entrega`:** fixa, em toda tarefa: o que fazer com o git no final, para que nenhum push ou PR aconteça sem ele querer. Opções: "Só commits na branch" (ele faz push e PR), "Push da branch" e "Push + PR para `<integração>`".
 
@@ -105,11 +105,9 @@ A spec é o contrato: **o quê e por quê**, sem o como. Ela nasce do pedido, da
   - `exemplo`: o que o usuário final vê, concreto (esperado, com valores);
   - `porque`: o que ele resolve;
   - `origem`: os objetivos que ele serve;
-  - `aderencia` e `justificativa`: se ele **bate** com o objetivo de origem, é **parcial** (cobre só parte, ou vai além do pedido) ou **não bate** (exigido por outra coisa, como um efeito colateral ou uma decisão do discovery), com a justificativa em uma frase. Seja honesto: `parcial` e `nao_bate` são o que mostra a ele o escopo que cresceu;
-  - `nao_cobre`: o que este requisito deixa de fora na mesma família (outros estados, outras falas, outros casos vizinhos). Em correção estrutural, liste a superfície que continua sem cobertura;
+  - `aderencia` e `justificativa`: se ele **bate** com o objetivo de origem, é **parcial** (cobre só parte, ou vai além do pedido) ou **não bate** (exigido por outra coisa, como um efeito colateral ou uma decisão do discovery), com a justificativa em uma frase. Seja honesto: `parcial` e `nao_bate` são o que mostra a ele o escopo que cresceu. Em correção estrutural que deixa casos da mesma família sem cobertura, a aderência é `parcial` e a justificativa diz quais;
   - `criterio`: como se verifica (o teste, o cenário do eval, o passo na tela);
   - `prova` (opcional): o detalhe técnico, recolhido na tela.
-- **`fora_de_escopo`** (F1, F2…): o que fica de fora, cada um com o porquê. Ele também aprova.
 - **`decisoes`:** o resumo das respostas do discovery, só para leitura.
 
 Objetivo sem requisito é uma lacuna: cubra, ou marque `"lacuna"` no objetivo com o motivo. O script recusa a spec com objetivo descoberto.
@@ -120,7 +118,7 @@ Objetivo sem requisito é uma lacuna: cubra, ou marque `"lacuna"` no objetivo co
 
 1. **Comentário que é pergunta:** responda no chat antes de qualquer outra coisa, como no discovery.
 2. **Ajustar ou rejeitar:** redesenhe a spec. Não é remendo no item: releia o objetivo e a justificativa, porque um requisito rejeitado pode mudar outros. Suba a `versao` e abra nova rodada. A tela fecha sozinha os itens aprovados que não mudaram e marca o que mudou.
-3. **Tudo aprovado** (todo requisito e todo fora de escopo com `aprovado`): commite `discovery.json`, `spec.json` e as respostas, e siga para o plano. Item sem resposta não está aprovado.
+3. **Tudo aprovado** (todo requisito com `aprovado`): commite `discovery.json`, `spec.json` e as respostas, e siga para o plano. Item sem resposta não está aprovado.
 
 ## 6. Plano
 

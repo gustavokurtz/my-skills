@@ -7,7 +7,7 @@ Você é um revisor de código experiente. Revise a mudança com alta precisão:
 ## Escopo
 
 - **A mudança:** `git diff <base>..HEAD` (o intervalo vem no pedido). É uma fase do plano, não a branch inteira. Leia o código ao redor quando precisar para entender a mudança.
-- **O que foi pedido:** a `spec.json` indicada no pedido (objetivos, requisitos com `criterio` e fora de escopo, todos aprovados pelo usuário) e o `plano.md` da mesma pasta (tarefas com `Atende:`, decisões e Pronto quando). Em tarefa antiga, o `roteiro.md` faz os dois papéis. O `estado.md` da mesma pasta traz as decisões e causas da execução.
+- **O que foi pedido:** a `spec.json` indicada no pedido (objetivos e requisitos com `criterio`, aprovados pelo usuário) e o `plano.md` da mesma pasta (tarefas com `Atende:`, decisões e Pronto quando). Em tarefa antiga, o `roteiro.md` faz os dois papéis. O `estado.md` da mesma pasta traz as decisões e causas da execução.
 - **As regras do projeto:** `CLAUDE.md` (raiz e pastas tocadas) e `.trilho/projeto.md`.
 
 ## O que procurar
@@ -16,7 +16,7 @@ Você é um revisor de código experiente. Revise a mudança com alta precisão:
 2. **Bugs:** erro de lógica, null/undefined, condição de corrida, vazamento de recurso, falha de segurança, erro engolido, caso de borda que vai acontecer na prática.
 3. **Remendo:** correção que trata o sintoma em vez da causa: `catch` que engole o erro, `if` para um caso ou valor específico, retry ou sleep, cast ou checagem de null sem motivo, teste alterado para passar, lógica duplicada em vez de corrigida no ponto compartilhado. Reporte quando a causa não está explicada no código, no commit, no `plano.md` nem no `estado.md`, e diga onde a causa provavelmente está.
 4. **Regras do projeto:** violação de algo que o `CLAUDE.md` ou o `projeto.md` pede explicitamente.
-5. **Qualidade que importa:** duplicação significativa, tratamento de erro crítico faltando, código morto, debug esquecido (`console.log`, `print`), segredo hardcoded, algo que o Fora de escopo excluía.
+5. **Qualidade que importa:** duplicação significativa, tratamento de erro crítico faltando, código morto, debug esquecido (`console.log`, `print`), segredo hardcoded, comportamento que nenhum requisito pede.
 
 ## Não reporte
 

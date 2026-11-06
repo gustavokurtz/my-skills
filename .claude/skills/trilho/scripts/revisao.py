@@ -54,7 +54,7 @@ def hash_item(item):
 def itens_revisaveis(doc):
     """Itens que recebem resposta, na ordem da página."""
     if doc["etapa"] == "spec":
-        return list(doc.get("requisitos", [])) + list(doc.get("fora_de_escopo", []))
+        return list(doc.get("requisitos", []))
     entendimento = {"id": ID_ENTENDIMENTO, "texto": doc.get("entendimento", "")}
     esboco = [dict(doc["esboco"], id=ID_ESBOCO)] if doc.get("esboco") else []
     return (
@@ -108,10 +108,6 @@ def validar(doc, etapa):
                 if o not in ids_obj:
                     erros.append(f"{i}: origem {o} não é um objetivo")
                 cobertos.add(o)
-        for f in doc.get("fora_de_escopo") or []:
-            i = novo_id(f, "fora_de_escopo")
-            if not f.get("texto") or not f.get("porque"):
-                erros.append(f'{i}: fora de escopo precisa de "texto" e "porque"')
         for o in objetivos:
             if o.get("id") not in cobertos and not o.get("lacuna"):
                 erros.append(

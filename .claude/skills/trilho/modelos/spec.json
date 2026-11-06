@@ -18,7 +18,6 @@
       "origem": ["O1"],
       "aderencia": "bate",
       "justificativa": "É exatamente o desacoplamento pedido.",
-      "nao_cobre": "Outros campos da OS (tecnologia, PON, cliente): entram quando uma jornada precisar.",
       "criterio": "Teste: abrir a sessão grava os três campos; o trace do eval mostra a busca antes do 1º turno.",
       "prova": "adapters/langgraph.py:497"
     },
@@ -31,7 +30,6 @@
       "origem": ["O1"],
       "aderencia": "parcial",
       "justificativa": "O1 pede a OS disponível; transferir todas as jornadas quando ela falta vai além do que você pediu, e vem da sua resposta à P2.",
-      "nao_cobre": "A OS iniciada depois da abertura da conversa: ela também transfere.",
       "criterio": "Teste com a API simulada fora do ar; cenário caso1-sem-registro do eval passa a transferir no T1."
     },
     {
@@ -44,13 +42,6 @@
       "aderencia": "bate",
       "justificativa": "É o objetivo O2, sem mudar o que o técnico vê.",
       "criterio": "Teste: a manobra completa roda sem nenhuma chamada à busca de atividades; o texto que o J2 recebe fica igual."
-    }
-  ],
-  "fora_de_escopo": [
-    {
-      "id": "F1",
-      "texto": "Guardar os dados do cliente (nome, endereço) na conversa.",
-      "porque": "O mascaramento atual cuida da fala, não do que fica guardado (ADR-237)."
     }
   ],
   "decisoes": [

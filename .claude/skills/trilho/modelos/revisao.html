@@ -223,7 +223,7 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
   const travados = new Set();
 
   function itens() {
-    return spec ? (doc.requisitos || []).concat(doc.fora_de_escopo || [])
+    return spec ? (doc.requisitos || [])
                 : [entendimento].concat(esboco ? [esboco] : [], doc.perguntas || [], doc.terceiros || [], doc.decidido || []);
   }
   function resolvidoAntes(id) {
@@ -293,7 +293,7 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
   function linha(dt, dd, cls) { return dd ? '<div class="' + (cls || "") + '" style="display:contents"><dt>' + dt + "</dt><dd>" + dd + "</dd></div>" : ""; }
 
   // ---------- cláusulas ----------
-  function clausulaRequisito(q, foraDeEscopo) {
+  function clausulaRequisito(q) {
     const origem = (q.origem || []).map(function (o) {
       const ob = objetivosPorId[o];
       return '<a href="#' + esc(o) + '">' + esc(o) + "</a>" + (ob ? " " + fmt(ob.texto) : "");
@@ -302,14 +302,13 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
       '</span> <span class="just">' + fmt(q.justificativa) + "</span>" : "";
     return '<article class="clausula" id="' + esc(q.id) + '" data-id="' + esc(q.id) + '">' +
       '<div class="marg"><span class="cid">' + esc(q.id) + '</span><span class="tipo">' +
-      esc(foraDeEscopo ? "fora de escopo" : NOMES_TIPO[q.tipo] || q.tipo) + "</span></div>" +
+      esc(NOMES_TIPO[q.tipo] || q.tipo) + "</span></div>" +
       '<div class="corpo">' + selo(q.id) + '<p class="texto">' + fmt(q.texto) + "</p>" +
       (q.exemplo ? '<p class="exemplo"><b>Exemplo:</b> ' + fmt(q.exemplo) + "</p>" : "") +
       '<dl class="rastro">' +
         linha("Porquê", fmt(q.porque)) +
         linha("Vem de", origem) +
         linha("Bate com o objetivo?", ader) +
-        linha("Não cobre", fmt(q.nao_cobre)) +
         linha("Como se verifica", fmt(q.criterio)) +
       "</dl>" + detalhe(q.prova) +
       veredito(q.id, [["aprovado", "Aprovar"], ["ajustar", "Ajustar"], ["rejeitado", "Rejeitar"]]) +
@@ -378,7 +377,7 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
   }
   function cartao(it) {
     if (travados.has(it.id)) return travada(it);
-    if (spec) return clausulaRequisito(it, (doc.fora_de_escopo || []).indexOf(it) >= 0);
+    if (spec) return clausulaRequisito(it);
     if (it.id === ENT) return clausulaEntendimento();
     if (it.id === ESB) return clausulaEsboco();
     if (terceiros.has(it.id)) return clausulaTerceiro(it);
@@ -406,7 +405,6 @@ button:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
         return '<li id="' + esc(o.id) + '"><span class="cid">' + esc(o.id) + "</span><div>" + fmt(o.texto) + "<br>" + cob + "</div></li>";
       }).join("") + "</ul>";
       h += "<h2>Requisitos</h2>" + (doc.requisitos || []).map(cartao).join("");
-      if ((doc.fora_de_escopo || []).length) h += "<h2>Fora de escopo</h2>" + doc.fora_de_escopo.map(cartao).join("");
       if ((doc.decisoes || []).length) h += "<h2>Decisões do discovery</h2><ul class=\"lista-simples\">" +
         doc.decisoes.map(function (d) { return "<li>" + fmt(d.texto || d) + "</li>"; }).join("") + "</ul>";
     } else {
