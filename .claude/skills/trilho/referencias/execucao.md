@@ -93,7 +93,7 @@ Plano sem fases conta como uma fase só, que termina com a última tarefa.
 
 ## A tela do diff
 
-O diff da branch, commit a commit, estilo VS Code: os commits que não estão na integração, sem os de merge, cada um com os seus arquivos e o diff contra o pai. Ele lê, cita linhas e escreve os questionamentos num campo só. Não há JSON para escrever.
+O diff da branch, commit a commit, estilo VS Code: os commits que não estão na integração, sem os de merge, do mais novo ao mais antigo, cada um com os seus arquivos e o diff contra o pai. A página abre só nos commits da fase (os que vieram depois da tela da fase anterior); a branch inteira fica a um clique. Ele lê, cita linhas e escreve os questionamentos num campo só. Não há JSON para escrever.
 
 Rode em segundo plano (Bash com `run_in_background: true`):
 `python3 <pasta da skill>/scripts/diff.py .trilho/tarefas/<slug> --base origin/<integração> --fase <N>` (sem remoto, a integração local).
@@ -110,7 +110,7 @@ Quando ele envia, o script grava `codigo-fase<N>.respostas.json`, imprime o text
 
 As correções aparecem na tela da fase seguinte, como commits novos. Na última fase não há tela seguinte: depois das correções, rode o script de novo com a mesma `--fase`.
 
-Commite o `codigo-fase<N>.respostas.json`. O rascunho e o pid são temporários e não entram no commit.
+Commite o `codigo-fase<N>.respostas.json` e o `codigo-fases.json` (onde cada fase começa). O rascunho e o pid são temporários e não entram no commit.
 
 ## Quando rodar a suíte inteira
 

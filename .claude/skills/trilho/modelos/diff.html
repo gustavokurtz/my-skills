@@ -77,6 +77,10 @@ code { font-family: var(--mono); }
 .topo { padding: 10px 12px 8px; border-bottom: 1px solid var(--linha); }
 .topo .branch { font-weight: 600; overflow-wrap: anywhere; }
 .topo .sub { color: var(--apagado); font-size: 12px; margin-top: 2px; }
+.escopo { display: flex; margin-top: 8px; border: 1px solid var(--linha); border-radius: 3px; overflow: hidden; }
+.escopo button { flex: 1; padding: 3px 6px; font-size: 12px; text-align: center; }
+.escopo button + button { border-left: 1px solid var(--linha); }
+.escopo button[aria-pressed="true"] { background: var(--fundo); color: var(--foco); font-weight: 600; }
 
 .caixa { padding: 10px 12px; border-bottom: 1px solid var(--linha); }
 .caixa label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--apagado); margin-bottom: 6px; }
@@ -118,7 +122,10 @@ code { font-family: var(--mono); }
 .acoes { margin-left: auto; display: flex; gap: 4px; }
 .acoes button { padding: 2px 8px; border: 1px solid var(--linha); border-radius: 3px; font-size: 12px; }
 .acoes button[aria-pressed="true"] { background: var(--fundo); border-color: var(--foco); }
-.corpo-commit { flex-basis: 100%; white-space: pre-wrap; font-size: 12px; color: var(--apagado); margin: 0; }
+.corpo-commit { flex-basis: 100%; font-size: 12px; color: var(--apagado); }
+.corpo-commit summary { cursor: pointer; width: max-content; }
+.corpo-commit summary:hover { color: var(--foco); }
+.corpo-commit pre { white-space: pre-wrap; font: 12px/1.45 var(--mono); margin: 4px 0 2px; max-height: 40vh; overflow: auto; }
 
 .diff-area { overflow: auto; flex: 1; }
 .aviso { padding: 24px; color: var(--apagado); font-size: 14px; }
@@ -180,6 +187,9 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
   const abertos = {};      // "c:f" -> lista de [i, j] de dobras abertas
   const fechados = new Set();
   let atual = null;         // [c, f]
+  let tudo = !D.desde;      // false: só os commits da fase
+  function mostra(c) { return tudo || c.da_fase; }
+  function visiveis_() { return commits.filter(mostra); }
   let texto = D.rascunho || ler(chave + ":texto", "") || "";
 
   function esc(s) {
@@ -227,17 +237,26 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
   }
 
   function lateral() {
-    const total = commits.reduce(function (n, c) { return n + c.arquivos.length; }, 0);
+    const lista = visiveis_();
+    const total = lista.reduce(function (n, c) { return n + c.arquivos.length; }, 0);
+    const nFase = commits.filter(function (c) { return c.da_fase; }).length;
     let h = '<aside class="lateral">' +
       '<div class="topo"><div class="branch">' + esc(D.branch) + '</div><div class="sub">' +
-      commits.length + " commit" + (commits.length === 1 ? "" : "s") + " fora de <code>" + esc(D.base_ref) + "</code>, sem merges" +
+      (tudo ? commits.length + " commit" + (commits.length === 1 ? "" : "s") + " fora de <code>" + esc(D.base_ref) + "</code>"
+            : nFase + " commit" + (nFase === 1 ? "" : "s") + " da fase " + esc(D.fase)) +
+      ", sem merges, do mais novo ao mais antigo" +
       (D.pendentes ? " · " + D.pendentes + " arquivo(s) não commitado(s) fora daqui" : "") +
-      ' · <span id="vistos"></span> de ' + total + " vistos</div></div>" +
+      ' · <span id="vistos"></span> de ' + total + " vistos</div>" +
+      (D.desde ? '<div class="escopo" role="group" aria-label="O que mostrar">' +
+        '<button type="button" id="escopo-fase" aria-pressed="' + !tudo + '">Fase ' + esc(D.fase) + " (" + nFase + ")</button>" +
+        '<button type="button" id="escopo-tudo" aria-pressed="' + tudo + '">Branch inteira (' + commits.length + ")</button></div>" : "") +
+      "</div>" +
       '<div class="caixa"><label for="texto">Questionamentos</label>' +
       '<textarea id="texto" placeholder="Dúvidas, discordâncias, o que mudar. Clique no número de uma linha para citá-la.">' + esc(texto) + "</textarea>" +
       '<button id="enviar" type="button"></button><div class="estado" id="estado" aria-live="polite"></div></div>' +
       '<nav class="lista" aria-label="Commits e arquivos">';
     commits.forEach(function (c, ci) {
+      if (!mostra(c)) return;
       h += '<div class="commit' + (fechados.has(ci) ? " fechado" : "") + '" id="commit-' + ci + '">' +
         '<button class="commit-cab" data-commit="' + ci + '" title="' + esc(c.titulo) + '">' +
         '<span class="seta">▾</span><span class="hash">' + esc(c.curto) + '</span><span class="titulo">' + esc(c.titulo) + "</span></button><ul>";
@@ -328,10 +347,22 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
     return h + "</tbody></table>";
   }
 
+  const diffs = {};  // "c:f" -> diff do arquivo, buscado no servidor quando abre
   function mostrar(ci, fi, rolar) {
     if (!commits[ci] || !commits[ci].arquivos[fi]) return;
     atual = [ci, fi];
-    const c = commits[ci], a = c.arquivos[fi], k = chaveArq(ci, fi);
+    try { history.replaceState(null, "", "#c=" + ci + "&f=" + fi); } catch (e) { /* ok */ }
+    const c = commits[ci], k = chaveArq(ci, fi);
+    const a = diffs[k] || Object.assign({ carregando: true, adicionadas: "…", removidas: "…" }, c.arquivos[fi]);
+    if (!diffs[k]) {
+      fetch("/diff?c=" + ci + "&f=" + fi)
+        .then(function (x) { if (!x.ok) throw new Error("HTTP " + x.status); return x.json(); })
+        .then(function (d) { diffs[k] = d; if (atual && atual[0] === ci && atual[1] === fi) mostrar(ci, fi); })
+        .catch(function () {
+          if (!atual || atual[0] !== ci || atual[1] !== fi) return;
+          document.getElementById("diff").innerHTML = '<p class="aviso">Não consegui buscar o diff: o servidor desta revisão não está rodando. Peça ao Claude para reabrir.</p>';
+        });
+    }
     vistos.add(k);
     gravar(chave + ":vistos", Array.from(vistos));
     document.querySelectorAll(".arq.atual").forEach(function (b) { b.classList.remove("atual"); });
@@ -340,7 +371,7 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
       botao.classList.add("atual", "visto");
       if (rolar) botao.scrollIntoView({ block: "nearest" });
     }
-    document.getElementById("vistos").textContent = vistos.size;
+    contarVistos();
     const cab = '<div class="painel-cab">' +
       '<span class="caminho">' + esc(a.caminho) + "</span>" +
       (a.antigo ? '<span class="era">era ' + esc(a.antigo) + "</span>" : "") +
@@ -350,12 +381,13 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
         '<button type="button" id="modo-linha" aria-pressed="' + (modo === "linha") + '">Em linha</button>' +
         '<button type="button" id="ant" title="Arquivo anterior (k)">↑</button>' +
         '<button type="button" id="prox" title="Próximo arquivo (j)">↓</button></span>' +
-      '<span class="commit-info">Commit ' + (ci + 1) + " de " + commits.length + ": <code>" + esc(c.curto) + "</code> " + esc(c.titulo) +
+      '<span class="commit-info">Commit ' + (visiveis_().length - visiveis_().indexOf(c)) + " de " + visiveis_().length + (tudo ? "" : " da fase") + ": <code>" + esc(c.curto) + "</code> " + esc(c.titulo) +
       " · " + esc(c.autor) + " · " + esc(c.data) + "</span>" +
-      (c.corpo ? '<pre class="corpo-commit">' + esc(c.corpo) + "</pre>" : "") + "</div>";
+      (c.corpo ? '<details class="corpo-commit"><summary>Mensagem do commit</summary><pre>' + esc(c.corpo) + "</pre></details>" : "") + "</div>";
     let corpo;
-    if (a.binario) corpo = '<p class="aviso">Arquivo binário.</p>';
-    else if (a.grande) corpo = '<p class="aviso">Diff grande demais para a página. Veja com <code>' + esc(a.comando) + "</code>.</p>";
+    if (a.carregando) corpo = '<p class="aviso">Carregando…</p>';
+    else if (a.binario) corpo = '<p class="aviso">Arquivo binário.</p>';
+    else if (a.grande) corpo = '<p class="aviso">Mudança grande demais para a página (' + a.adicionadas + " linhas adicionadas, " + a.removidas + " removidas). Veja com <code>" + esc(a.comando) + "</code>.</p>";
     else if (a.gerado && !abertos[k + ":gerado"]) corpo = '<p class="aviso">Arquivo gerado (' + a.adicionadas + " linhas adicionadas, " + a.removidas + ' removidas). <button type="button" id="ver-gerado">Mostrar mesmo assim</button></p>';
     else if (!a.linhas.length) corpo = '<p class="aviso">Sem mudança no conteúdo' + (a.antigo ? ": só o nome mudou." : ".") + "</p>";
     else corpo = tabela(a, { ci: ci, fi: fi });
@@ -365,7 +397,7 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
 
   function ordem() {
     const o = [];
-    commits.forEach(function (c, ci) { c.arquivos.forEach(function (_, fi) { o.push([ci, fi]); }); });
+    commits.forEach(function (c, ci) { if (mostra(c)) c.arquivos.forEach(function (_, fi) { o.push([ci, fi]); }); });
     return o;
   }
   function andar(passo) {
@@ -421,15 +453,28 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
   }
 
   // ---------- montagem e eventos ----------
-  function montar() {
+  function contarVistos() {
+    let n = 0;
+    commits.forEach(function (c, ci) { if (mostra(c)) c.arquivos.forEach(function (_, fi) { if (vistos.has(chaveArq(ci, fi))) n++; }); });
+    const el = document.getElementById("vistos");
+    if (el) el.textContent = n;
+  }
+  function montar(usarEndereco) {
+    const m = usarEndereco ? /c=(\d+)&f=(\d+)/.exec(location.hash) : null;
+    const alvo = m && commits[+m[1]] && commits[+m[1]].arquivos[+m[2]] ? [+m[1], +m[2]] : null;
+    if (alvo && !mostra(commits[alvo[0]])) tudo = true;
     const app = document.getElementById("app");
     app.innerHTML = lateral() + '<main class="painel" id="painel"></main>';
     rotulo();
-    document.getElementById("vistos").textContent = vistos.size;
-    if (!commits.length) {
-      document.getElementById("painel").innerHTML = '<p class="aviso">Nenhum commit na branch fora de <code>' + esc(D.base_ref) + "</code>, sem contar os de merge.</p>";
+    contarVistos();
+    atual = null;
+    if (!visiveis_().length) {
+      document.getElementById("painel").innerHTML = '<p class="aviso">' + (commits.length
+        ? "Nenhum commit novo nesta fase. Veja a branch inteira no botão ao lado."
+        : "Nenhum commit na branch fora de <code>" + esc(D.base_ref) + "</code>, sem contar os de merge.") + "</p>";
       return;
     }
+    if (alvo) { mostrar(alvo[0], alvo[1], true); return; }
     const o = ordem();
     if (o.length) mostrar(o[0][0], o[0][1]);
   }
@@ -463,6 +508,11 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
       if (atual) mostrar(atual[0], atual[1]);
       return;
     }
+    if (t.id === "escopo-fase" || t.id === "escopo-tudo") {
+      const novo = t.id === "escopo-tudo";
+      if (novo !== tudo) { tudo = novo; montar(false); }
+      return;
+    }
     if (t.id === "ant") { andar(-1); return; }
     if (t.id === "prox") { andar(1); return; }
     if (t.id === "enviar") enviar();
@@ -477,7 +527,7 @@ table.d tr.hh td { background: var(--dobra); color: var(--apagado); padding: 2px
   });
   estreito.addEventListener("change", function () { if (atual) mostrar(atual[0], atual[1]); });
 
-  montar();
+  montar(true);
   // O realce chega depois (CDN); sem internet, a página segue sem cor.
   window.addEventListener("load", function () { if (window.hljs && atual) mostrar(atual[0], atual[1]); });
 })();

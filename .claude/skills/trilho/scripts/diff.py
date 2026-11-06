@@ -5,7 +5,12 @@ Uso:
     python3 diff.py <pasta-da-tarefa> --base <ref> [--fase N] [--porta N] [--host H] [--sem-abrir] [--ocioso MIN]
 
 Pega os commits da branch que não estão em <ref> (ex.: origin/develop), sem os de merge,
-do mais antigo ao mais novo, e o diff de cada um contra o pai. A página tem os commits com
+do mais novo ao mais antigo, e o diff de cada um contra o pai. O diff de cada arquivo é
+calculado só quando o usuário abre o arquivo.
+
+Com --fase N, a página abre só nos commits da fase: os que vieram depois do HEAD em que a
+tela da fase anterior abriu (guardado em codigo-fases.json, na pasta da tarefa). A branch
+inteira fica a um clique. A página tem os commits com
 os arquivos de cada um, o diff lado a lado (ou em linha) e um campo só para os
 questionamentos. Ao clicar em Enviar, grava <nome>.respostas.json, imprime o texto e
 encerra. <nome> é codigo-fase<N>, ou codigo sem --fase. Rode em segundo plano: o
@@ -45,7 +50,8 @@ GERADOS_NOMES = {
     "Pipfile.lock", "Cargo.lock", "go.sum", "composer.lock", "Gemfile.lock",
 }
 GERADOS_GLOBS = ["*/__snapshots__/*", "*.snap", "*.min.js", "*.min.css"]
-LIMITE_LINHAS = 6000
+LIMITE_MUDANCA = 5000    # linhas adicionadas + removidas; acima disso a página manda para o git
+LIMITE_CONTEXTO = 20000  # linhas do arquivo inteiro; acima disso, só os trechos com 20 de contexto
 CAB_TRECHO = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(.*)$")
 
 
@@ -77,9 +83,9 @@ VAZIO = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"  # a árvore vazia do git (pa
 
 
 def commits_da_branch(raiz, base_ref):
-    """Commits da branch fora de base_ref, sem merge, do mais antigo ao mais novo."""
+    """Commits da branch fora de base_ref, sem merge, do mais novo ao mais antigo. Sem o diff."""
     fmt = "%H%x1f%h%x1f%s%x1f%an%x1f%ad%x1f%P%x1e"
-    saida = git(raiz, "log", "--no-merges", "--reverse", "--date=format:%d/%m %H:%M",
+    saida = git(raiz, "log", "--no-merges", "--date=format:%d/%m %H:%M",
                 f"--format={fmt}", f"{base_ref}..HEAD").stdout
     commits = []
     for bloco in saida.split("\x1e"):
@@ -90,18 +96,18 @@ def commits_da_branch(raiz, base_ref):
         pai = pais.split()[0] if pais.split() else VAZIO
         corpo = git(raiz, "log", "-1", "--format=%b", h).stdout.strip()
         arquivos = sorted(
-            (diff_do_arquivo(raiz, pai, h, s, c, a) for s, c, a in arquivos_alterados(raiz, pai, h)),
+            ({"caminho": c, "antigo": a, "status": s, "gerado": gerado(c)} for s, c, a in arquivos_alterados(raiz, pai, h)),
             key=lambda a: a["caminho"],
         )
-        commits.append({"hash": h, "curto": curto, "titulo": titulo, "corpo": corpo, "autor": autor,
+        commits.append({"hash": h, "pai": pai, "curto": curto, "titulo": titulo, "corpo": corpo, "autor": autor,
                         "data": data, "arquivos": arquivos})
     return commits
 
 
-def diff_do_arquivo(raiz, base, topo, status, caminho, antigo):
-    """O arquivo inteiro como contexto: a página dobra os trechos iguais."""
+def diff_do_arquivo(raiz, base, topo, status, caminho, antigo, contexto=1000000):
+    """Por padrão o arquivo inteiro como contexto: a página dobra os trechos iguais."""
     caminhos = [antigo, caminho] if antigo else [caminho]
-    texto = git(raiz, "diff", "--no-color", "--no-ext-diff", "-M", "-U1000000", base, topo, "--", *caminhos).stdout
+    texto = git(raiz, "diff", "--no-color", "--no-ext-diff", "-M", f"-U{contexto}", base, topo, "--", *caminhos).stdout
     arq = {
         "caminho": caminho, "antigo": antigo, "status": status, "binario": False, "grande": False,
         "gerado": gerado(caminho), "adicionadas": 0, "removidas": 0, "linhas": [],
@@ -116,7 +122,7 @@ def diff_do_arquivo(raiz, base, topo, status, caminho, antigo):
         m = CAB_TRECHO.match(linha)
         if m:
             na, nb = int(m.group(1)), int(m.group(3))
-            if dentro:
+            if dentro or na > 1 or nb > 1:
                 arq["linhas"].append(["h", None, None, linha])
             dentro = True
             continue
@@ -134,9 +140,11 @@ def diff_do_arquivo(raiz, base, topo, status, caminho, antigo):
             arq["linhas"].append(["c", na, nb, linha[1:]])
             na += 1
             nb += 1
-    if len(arq["linhas"]) > LIMITE_LINHAS:
+    if arq["adicionadas"] + arq["removidas"] > LIMITE_MUDANCA:
         arq["grande"] = True
         arq["linhas"] = []
+    elif len(arq["linhas"]) > LIMITE_CONTEXTO and contexto > 20:
+        return diff_do_arquivo(raiz, base, topo, status, caminho, antigo, contexto=20)
     return arq
 
 
@@ -152,7 +160,9 @@ def main():
     args = ap.parse_args()
 
     pasta = args.pasta.resolve()
-    pasta.mkdir(parents=True, exist_ok=True)
+    if not pasta.is_dir():
+        print(f"[trilho] não achei a pasta da tarefa {pasta}", file=sys.stderr)
+        sys.exit(2)
     nome = f"codigo-fase{args.fase}" if args.fase else "codigo"
     arq_resp = pasta / f"{nome}.respostas.json"
     arq_rasc = pasta / f"{nome}.rascunho.json"
@@ -173,6 +183,22 @@ def main():
     pendentes = [l for l in git(raiz, "status", "--porcelain").stdout.splitlines() if not l[3:].startswith(".trilho/")]
 
     commits = commits_da_branch(raiz, args.base)
+
+    # A fase começa no HEAD em que a tela da fase anterior abriu.
+    arq_fases = pasta / "codigo-fases.json"
+    fases = ler_json(arq_fases) or {}
+    desde = None
+    if args.fase:
+        for k in range(args.fase - 1, 0, -1):
+            ref = fases.get(str(k)) or (ler_json(pasta / f"codigo-fase{k}.respostas.json") or {}).get("topo")
+            if ref and git(raiz, "merge-base", "--is-ancestor", ref, "HEAD").returncode == 0:
+                desde = ref
+                break
+        fases[str(args.fase)] = topo
+        gravar_json(arq_fases, fases)
+    da_fase = set(git(raiz, "rev-list", "--no-merges", f"{desde}..HEAD", f"^{args.base}").stdout.split()) if desde else None
+    for c in commits:
+        c["da_fase"] = da_fase is None or c["hash"] in da_fase
     tarefa = pasta.name
 
     # O rascunho vale mesmo com commits novos: é texto do usuário, não do diff.
@@ -192,13 +218,14 @@ def main():
     carga = json.dumps(
         {
             "tarefa": tarefa, "nome": nome, "fase": args.fase, "branch": branch, "base_ref": args.base,
-            "base": base, "topo": topo, "commits": commits, "pendentes": len(pendentes),
+            "base": base, "topo": topo, "desde": desde, "commits": commits, "pendentes": len(pendentes),
             "rascunho": (rascunho or {}).get("texto", ""),
         },
         ensure_ascii=False,
     ).replace("</", "<\\/")
     pagina = MODELO.read_text(encoding="utf-8").replace("__DADOS__", carga).encode("utf-8")
 
+    cache = {}
     fim = threading.Event()
     ultimo_acesso = [time.monotonic()]
 
@@ -215,7 +242,21 @@ def main():
             self.wfile.write(corpo)
 
         def do_GET(self):
-            if self.path.split("?")[0] not in ("/", "/index.html"):
+            rota, _, consulta = self.path.partition("?")
+            if rota == "/diff":
+                try:
+                    q = dict(x.split("=", 1) for x in consulta.split("&") if "=" in x)
+                    c, f = int(q["c"]), int(q["f"])
+                    commit, a = commits[c], commits[c]["arquivos"][f]
+                except (KeyError, ValueError, IndexError):
+                    self._json(404, {"ok": False})
+                    return
+                chave = (c, f)
+                if chave not in cache:
+                    cache[chave] = diff_do_arquivo(raiz, commit["pai"], commit["hash"], a["status"], a["caminho"], a["antigo"])
+                self._json(200, cache[chave])
+                return
+            if rota not in ("/", "/index.html"):
                 self.send_error(404)
                 return
             self.send_response(200)
@@ -242,7 +283,8 @@ def main():
                 return
             respostas = {
                 "tarefa": tarefa, "fase": args.fase, "branch": branch, "base_ref": args.base,
-                "base": base, "topo": topo, "commits": [c["curto"] for c in commits],
+                "base": base, "topo": topo, "desde": desde,
+                "commits": [c["curto"] for c in commits if c["da_fase"]],
                 "enviado_em": datetime.now().astimezone().isoformat(timespec="seconds"),
                 "texto": texto,
             }
@@ -261,7 +303,9 @@ def main():
     servidor = ThreadingHTTPServer((args.host, args.porta), Handler)
     url = f"http://localhost:{servidor.server_address[1]}/"
     extra = f"; {len(pendentes)} arquivo(s) com mudança não commitada fora do diff" if pendentes else ""
-    print(f"[trilho] diff de {branch} contra {args.base} ({len(commits)} commits, sem merges) em {url} (esperando o Enviar){extra}", flush=True)
+    n_fase = sum(1 for c in commits if c["da_fase"])
+    escopo = f"{n_fase} commits da fase {args.fase}, {len(commits)} na branch" if desde else f"{len(commits)} commits"
+    print(f"[trilho] diff de {branch} contra {args.base} ({escopo}, sem merges) em {url} (esperando o Enviar){extra}", flush=True)
     threading.Thread(target=servidor.serve_forever, daemon=True).start()
     if not args.sem_abrir:
         try:
