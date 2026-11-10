@@ -109,6 +109,8 @@ Escreva `plano.md` a partir de `modelos/plano.md`. O plano não passa por aprova
 - **Pronto quando:** cada requisito verificado pelo "como a gente confere" dele, e o passo a passo da validação manual para o usuário, com o requisito de cada passo.
 - **Curto.** Seção sem conteúdo fica "nenhuma". O plano é o mais curto que se basta.
 
+**Antes de fechar, questione o plano** (para você, sem perguntar a ele): o que pode quebrar, qual o passo mais arriscado e que opção você descartou e por quê. O que mudar o plano entra nele: o risco vira tarefa mais cedo ou verificação, e a opção descartada vai para Decisões com o porquê, para ninguém tentar de novo sem saber.
+
 ## 7. Fechar
 
 1. Crie o `estado.md` a partir de `modelos/estado.md`, com todas as tarefas `pendente` (inclusive a linha Entrega, no fim) e o próximo passo apontando para a primeira.
