@@ -91,7 +91,7 @@ Objetivo sem requisito é uma lacuna: cubra, ou diga no objetivo por que ficou d
 
 **Antes de abrir, confira cada requisito:** dá para verificar? Tem uma leitura só? O exemplo é concreto? Ele descreve o quê, e não o como (arquivo, função ou estrutura vai para o plano)? Contradiz uma resposta dele? O tamanho acompanha a tarefa: um bug pequeno tem de 2 a 5 requisitos, não 16.
 
-**Abra o arquivo para ele:** `code <caminho do spec.md>` (VS Code; se o comando não existir, só mostre o caminho). No chat, uma linha com o caminho e, se houver, quantos requisitos têm ⚠️. Não espere resposta: siga para o plano. Se ele comentar no chat enquanto isso, trate antes de fechar o plano: edite o `spec.md` e ajuste o que dependia.
+**Não abra o arquivo:** ele abre no editor dele. No chat, uma linha com o caminho do `spec.md` e, se houver, quantos requisitos têm ⚠️. Não espere resposta: siga para o plano. Se ele comentar no chat enquanto isso, trate antes de fechar o plano: edite o `spec.md` e ajuste o que dependia.
 
 ## 6. Plano
 

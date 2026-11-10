@@ -78,7 +78,7 @@ Se o arquivo não existir, diga ao usuário que `/trilho-init` cria esse arquivo
 ## Fluxo
 
 ```
-branch → pesquisar → perguntas no chat → spec.md (abre no editor, sem esperar) → plano.md → handoff + /clear
+branch → pesquisar → perguntas no chat → spec.md (só o caminho no chat, sem esperar) → plano.md → handoff + /clear
 → executar fase (code review → commits no chat → handoff + /clear) → … → última fase (code review) → entrega (verificação, push/PR)
 ```
 

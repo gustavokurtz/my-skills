@@ -88,7 +88,7 @@ Plano sem fases conta como uma fase só, que termina com a última tarefa.
 2. Confira o critério da fase.
 3. Faça o code review da fase (abaixo). Sempre.
 4. Confira se o `estado.md` registra o que a fase ensinou (defeitos, aprendizados, decisões, hipóteses descartadas), não só o status das tarefas.
-5. Liste no chat os commits da fase, um por linha (hash curto e mensagem), e, se houver, as decisões da execução desta fase, uma linha cada. Ele revisa o código no VS Code (Source Control ou `git diff <base>..HEAD`) quando quiser; não espere.
+5. Liste no chat os commits da fase, um por linha (hash curto e mensagem), e, se houver, as decisões da execução desta fase, uma linha cada. Ele revisa o código no editor dele quando quiser; não espere.
 6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. Na última fase, não faça handoff: siga para a entrega na mesma sessão (ver "Fim da execução").
 
 ## Comentários dele sobre o código
