@@ -14,7 +14,7 @@ Uma ou duas frases: o que acabou de ser feito.
 - T2 — em andamento: <onde parou>
 - T3 — pendente
 - T4 — esperando o dev: <o que ele roda e o que deve colar de volta>
-- C1.1 — pendente: <o que ele pediu para mudar no diff da fase 1>
+- C1.1 — pendente: <o que ele pediu para mudar no código da fase 1>
 - Entrega — pendente (verificação, <o que o campo Entrega do plano pede>)
 
 ## Próximo passo

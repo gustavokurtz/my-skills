@@ -27,9 +27,7 @@ O aviso não se discute: você não mede o próprio contexto, e a qualidade cai 
    - descobertas sobre o código que a próxima sessão precisaria redescobrir.
 3. **Reescreva o `estado.md`** a partir de `modelos/estado.md`. Reescreva, não acrescente: ele descreve o agora. Hipóteses descartadas e decisões continuam enquanto forem relevantes; o que virou história sai (o histórico fica no git).
 4. **Seja concreto:** arquivos, funções, comandos, ids, mensagens de erro. "Ajustamos o prompt" não serve; "trocamos o retorno da `acionar_manobra` em `tools/registry.py`" serve.
-5. **Teste antes de entregar:** uma sessão nova executaria o próximo passo lendo só `projeto.md`, `spec.json`, `plano.md` e `estado.md`, sem perguntar nada? Se não, falta algo. Máximo de duas telas; corte o que já está na spec ou no plano.
-
-Com uma tela sem resposta (discovery, spec ou o diff de uma fase), o "Próximo passo" diz qual tela está esperando, e a próxima sessão roda o script de novo: o rascunho do usuário volta junto. O diff não trava a próxima fase: a sessão roda o script em segundo plano e segue.
+5. **Teste antes de entregar:** uma sessão nova executaria o próximo passo lendo só `projeto.md`, `spec.md`, `plano.md` e `estado.md`, sem perguntar nada? Se não, falta algo. Máximo de duas telas; corte o que já está na spec ou no plano.
 
 ## Fechar
 

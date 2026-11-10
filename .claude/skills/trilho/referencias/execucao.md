@@ -23,7 +23,7 @@ Teste vermelho que não devia, erro inesperado, comportamento estranho:
 4. **Classifique a correção:** raiz ou sintoma (ver "Porquê e como" no `SKILL.md`). Raiz dentro do escopo e primeiro da família: corrija. Fora do escopo, só dá para remendar, ou segundo da família: lance o arquiteto (abaixo), pare e traga ao usuário a causa e as opções: local, só no caminho da falha e estrutural.
 5. **Registre o defeito** em "Defeitos" no `estado.md`: sintoma, causa imediata com `arquivo:linha`, mecanismo de desenho em uma linha e o que foi feito.
 
-Se uma correção não resolveu, a hipótese estava errada: volte ao passo 2 em vez de empilhar outra correção em cima. Correção que falhou na rodada real (eval, tela) também aciona o arquiteto antes da próxima tentativa.
+Se uma correção não resolveu, a hipótese estava errada: volte ao passo 2 em vez de empilhar outra correção em cima. Correção que falhou na rodada real (eval, tela do app) também aciona o arquiteto antes da próxima tentativa.
 
 ## Arquiteto
 
@@ -33,7 +33,7 @@ Um subagente com contexto limpo, que não herda o viés desta sessão nem a hip�
 - uma correção falhou na rodada real;
 - o usuário pedir uma visão crítica ou "um subagente mais capaz" para uma correção.
 
-A instrução dele é o conteúdo de `referencias/arquiteto.md`, mais as restrições que o usuário já deu para a tarefa (ex.: "não afetar os casos normais"), os sintomas (com ids de thread, trace, teste), o caminho do `estado.md`, da `spec.json` e do `plano.md` e o que já foi tentado e desfeito. **Não passe a sua hipótese nem peça "a menor mudança":** isso prende o arquiteto ao remendo. Verifique os `arquivo:linha` e as medições que ele trouxer antes de repassar, e leve ao usuário as opções no formato de "Como falar com o usuário" (`SKILL.md`). Quem escolhe é ele.
+A instrução dele é o conteúdo de `referencias/arquiteto.md`, mais as restrições que o usuário já deu para a tarefa (ex.: "não afetar os casos normais"), os sintomas (com ids de thread, trace, teste), o caminho do `estado.md`, do `spec.md` e do `plano.md` e o que já foi tentado e desfeito. **Não passe a sua hipótese nem peça "a menor mudança":** isso prende o arquiteto ao remendo. Verifique os `arquivo:linha` e as medições que ele trouxer antes de repassar, e leve ao usuário as opções no formato de "Como falar com o usuário" (`SKILL.md`). Quem escolhe é ele.
 
 ## Tarefa com `Teste:`
 
@@ -88,29 +88,16 @@ Plano sem fases conta como uma fase só, que termina com a última tarefa.
 2. Confira o critério da fase.
 3. Faça o code review da fase (abaixo). Sempre.
 4. Confira se o `estado.md` registra o que a fase ensinou (defeitos, aprendizados, decisões, hipóteses descartadas), não só o status das tarefas.
-5. Abra o diff da branch para ele revisar (abaixo, "A tela do diff"). No chat, só o endereço e, se houver, as decisões da execução desta fase, uma linha cada: elas não aparecem no diff.
-6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. A tela não segura o handoff: se ele ainda não enviou, o "Próximo passo" diz isso. Na última fase, não faça handoff: siga para a entrega na mesma sessão (ver "Fim da execução").
+5. Liste no chat os commits da fase, um por linha (hash curto e mensagem), e, se houver, as decisões da execução desta fase, uma linha cada. Ele revisa o código no VS Code (Source Control ou `git diff <base>..HEAD`) quando quiser; não espere.
+6. Faça o handoff (`referencias/handoff.md`) e peça o `/clear`. Sempre, mesmo que a fase tenha sido curta: a próxima fase começa numa sessão limpa. Na última fase, não faça handoff: siga para a entrega na mesma sessão (ver "Fim da execução").
 
-## A tela do diff
+## Comentários dele sobre o código
 
-O diff da branch, commit a commit, estilo VS Code: os commits que não estão na integração, sem os de merge, do mais novo ao mais antigo, cada um com os seus arquivos e o diff contra o pai. A página abre só nos commits da fase (os que vieram depois da tela da fase anterior); a branch inteira fica a um clique. Ele lê, cita linhas e escreve os questionamentos num campo só. Não há JSON para escrever.
+Quando ele comentar o código de uma fase (no chat, a qualquer momento), trate antes da próxima tarefa do plano (termine a que está em andamento):
 
-Rode em segundo plano (Bash com `run_in_background: true`):
-`python3 <pasta da skill>/scripts/diff.py .trilho/tarefas/<slug> --base origin/<integração> --fase <N>` (sem remoto, a integração local).
-
-Ele tenta abrir o navegador sozinho. Saída 2 é ref que não existe: confira a integração no `projeto.md`. O rascunho, o pid e o encerramento por ociosidade funcionam como na tela do planejamento (`referencias/planejamento.md`, "A tela de revisão"). No OpenCode, rode com `nohup … &` e peça que ele diga "enviei".
-
-## Questionamentos do diff
-
-Quando ele envia, o script grava `codigo-fase<N>.respostas.json`, imprime o texto e encerra. Texto vazio quer dizer que está tudo certo. Trate o texto antes da próxima tarefa do plano (termine a que está em andamento):
-
-- **Pergunta:** responda no chat antes de seguir.
+- **Pergunta:** responda no chat, curto, antes de seguir.
 - **Pedido de mudança:** vira a tarefa `C<N>.<k>` no `estado.md` (ex.: `C1.1`), feita com o mesmo rigor das outras (porquê, como, teste). O commit cita o id.
 - **Discordância de uma decisão:** siga "Quando a realidade diverge do plano", abaixo.
-
-As correções aparecem na tela da fase seguinte, como commits novos. Na última fase não há tela seguinte: depois das correções, rode o script de novo com a mesma `--fase`.
-
-Commite o `codigo-fase<N>.respostas.json` e o `codigo-fases.json` (onde cada fase começa). O rascunho e o pid são temporários e não entram no commit.
 
 ## Quando rodar a suíte inteira
 
@@ -122,7 +109,7 @@ Revisar a cada fase evita acumular bug para o fim e abrir outra sessão só para
 
 A instrução dele é o conteúdo de `referencias/revisor.md`, mais:
 
-- o caminho da `spec.json` e do `plano.md`;
+- o caminho do `spec.md` e do `plano.md`;
 - o intervalo `<base>..HEAD`, com `<base>` = o "Último review" do `estado.md` ou, na primeira fase, `git merge-base <integração> HEAD` (use `origin/<integração>` se houver remoto);
 - as tarefas da fase (ex.: "T4 a T7") e se é a última fase.
 
@@ -134,7 +121,7 @@ Registre no `estado.md` o "Último review" (o hash do HEAD que o revisor leu e a
 
 - **Detalhe de implementação** (outro arquivo, outra função, teste em outro lugar): decida, registre em "Decisões da execução" no `estado.md` e siga.
 - **Abordagem** precisaria mudar, mas os requisitos continuam os mesmos: pare e proponha o ajuste (ver "Autonomia" no `SKILL.md`). Com a aprovação, edite o `plano.md` e registre no `estado.md` o que mudou e por quê.
-- **Requisito, objetivo ou escopo** precisaria mudar, ou a correção na raiz sai do escopo: pare e diga o porquê em linguagem simples. Se ele quiser mudar, edite a `spec.json`, suba a `versao` e abra a tela de revisão (`referencias/planejamento.md`, "A tela de revisão"): os itens que não mudaram aparecem fechados. Com a aprovação, ajuste o `plano.md` e registre no `estado.md`.
+- **Requisito, objetivo ou escopo** precisaria mudar, ou a correção na raiz sai do escopo: pare e diga o porquê em linguagem simples. Se ele quiser mudar, edite o `spec.md` (no mesmo tom amigável), ajuste o `plano.md` e registre no `estado.md`. Diga em uma linha o que mudou na spec; não precisa de nova aprovação.
 
 ## Fim da execução
 

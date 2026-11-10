@@ -1,14 +1,14 @@
 # Planejamento
 
-O planejamento tem três produtos, nesta ordem, e cada um só começa quando o anterior fecha:
+O planejamento tem três produtos, nesta ordem:
 
-1. **Discovery** (`discovery.json`): as decisões que só o usuário toma, respondidas por ele numa tela.
-2. **Spec** (`spec.json`): o contrato do que vai ser feito e por quê, aprovado por ele item a item.
-3. **Plano** (`plano.md`): como fazer, que uma sessão nova, sem nada desta conversa, executa lendo só `projeto.md`, `spec.json`, `plano.md` e `estado.md`, sem perguntar nada.
+1. **Perguntas** no chat: as decisões que só o usuário toma.
+2. **Spec** (`spec.md`): o que vai ser feito e por quê, para ele ler.
+3. **Plano** (`plano.md`): como fazer, que uma sessão nova, sem nada desta conversa, executa lendo só `projeto.md`, `spec.md`, `plano.md` e `estado.md`, sem perguntar nada.
+
+Nada disso passa por aprovação formal. Ele responde as perguntas, lê a spec quando quiser e muda o que quiser editando o `spec.md` ou falando no chat.
 
 **Pedido de feature gera um trilho que termina com ela funcionando.** Protótipo, docs e esboços são tarefas da primeira fase dele, não um trilho à parte. Se você propuser um trilho só de planejamento ou documentação, diga isso com essas palavras ("este trilho não entrega código; a implementação é outro trilho depois"), e o recap de cada retomada repete.
-
-Discovery e spec são lidos e respondidos numa página no navegador (ver "A tela de revisão", no fim). O chat não leva bloco de porquês nem pedido de "batem?": a validação está na spec, em cada requisito.
 
 ## 1. Branch
 
@@ -27,137 +27,91 @@ Entenda como o código funciona hoje antes de decidir qualquer coisa: o que a ta
 
 Em bug, a pesquisa vai até a causa: reproduza (teste, comando, log) e rastreie até onde o comportamento diverge do esperado. Se a causa não aparecer lendo nem reproduzindo de forma barata, ela é uma incerteza empírica e vira sondagem no plano.
 
-**Leia direto** quando a tarefa toca poucos arquivos e você já sabe quais são. **Use subagentes** quando a área é ampla (vários módulos, fluxo que atravessa camadas, código que você não sabe onde fica) ou quando o bug não tem causa conhecida. Eles devolvem conclusões em vez de arquivos inteiros, e a sessão de planejamento fica leve para o discovery, a spec e o plano.
+**Leia direto** quando a tarefa toca poucos arquivos e você já sabe quais são. **Use subagentes** quando a área é ampla (vários módulos, fluxo que atravessa camadas, código que você não sabe onde fica) ou quando o bug não tem causa conhecida. Eles devolvem conclusões em vez de arquivos inteiros, e a sessão de planejamento fica leve.
 
 - Lance de 1 a 3 subagentes em paralelo, numa mensagem só (Agent tool, tipo `Explore`, `model: "sonnet"`), cada um com uma pergunta diferente. Ex.: "onde está e como funciona o fluxo de X", "quem chama Y e o que depende do retorno dele", "como o projeto faz Z hoje (padrão e testes)". Passe o modelo explicitamente, como no revisor, para não depender do padrão do tipo.
 - A instrução de cada um é o conteúdo de `referencias/pesquisador.md` mais a pergunta dele.
 - Antes de decidir em cima de uma conclusão, confira os `arquivo:linha` que a sustentam. O subagente também erra.
 
-**Se a tarefa mexe em UI** (tela, componente, layout, estilo): carregue a skill `frontend-design` (Skill tool, `frontend-design:frontend-design`) antes de decidir o desenho. Se o projeto tem um protótipo navegável (ou dá para fazer uma página solta rápida), faça um esboço da tela nele durante o planejamento e leve o link ao discovery (`esboco`): o usuário julga o desenho vendo a tela, não lendo. O app de verdade só muda na execução, e diga isso ao mostrar o esboço, e leve as escolhas visuais que mudam o que o usuário vê para o discovery (`desenho`), e o resto para as Decisões do plano. Se a skill não estiver instalada, siga sem ela e avise o usuário.
+**Se a tarefa mexe em UI** (tela, componente, layout, estilo): carregue a skill `frontend-design` (Skill tool, `frontend-design:frontend-design`) antes de decidir o desenho. Se o projeto tem um protótipo navegável (ou dá para fazer uma página solta rápida), faça um esboço e mande o link junto das perguntas: ele julga o desenho vendo, não lendo. Diga que o app de verdade só muda na execução. Se a skill não estiver instalada, siga sem ela e avise.
 
 ## 3. Mapear
 
 Liste para você mesmo:
 
 - **Porquês:** o problema em uma frase; em bug, a causa com `arquivo:linha` (não o sintoma); em feature, a motivação do pedido; e por que a abordagem resolve a causa, não só o sintoma (ver "Porquê e como" no `SKILL.md`).
-- **Escopo:** o que entra. O que não vai ser feito não aparece no discovery nem na spec. A exceção é deixar de fora algo que o usuário pediu: isso nunca é decisão sua, vira pergunta no passo 4 (`escopo`).
+- **Escopo:** o que entra. O que não vai ser feito não aparece nas perguntas nem na spec. A exceção é deixar de fora algo que o usuário pediu: isso nunca é decisão sua, vira pergunta.
 - **Comportamento:** casos de borda, erros, estados vazios.
 - **Efeitos colaterais:** quem já usa o código que vai mudar, dados existentes, migração, compatibilidade. Para cada efeito, uma mitigação.
-- **Caminho:** a menor solução que resolve a causa. Uma opção mais elaborada precisa se justificar pelo pedido, não por "pode ser útil depois". Se a correção na raiz sai do escopo pedido, isso vira pergunta no passo 4.
-- **Incertezas empíricas:** o que nem você nem o usuário sabem e só aparece rodando. Isso não vira pergunta sobre o resultado: vira sondagem no plano, com meta e orçamento combinados no discovery (`incerteza`).
+- **Caminho:** a menor solução que resolve a causa. Uma opção mais elaborada precisa se justificar pelo pedido, não por "pode ser útil depois". Se a correção na raiz sai do escopo pedido, isso vira pergunta.
+- **Incertezas empíricas:** o que nem você nem o usuário sabem e só aparece rodando. Isso não vira pergunta sobre o resultado: vira sondagem no plano, com meta e orçamento combinados nas perguntas.
 
 O comportamento e os porquês viram requisitos da spec; o caminho vira o plano.
 
-## 4. Discovery
+## 4. Perguntas
 
-O discovery junta numa tela tudo o que o usuário precisa decidir antes de existir uma spec. Escreva `discovery.json` na pasta da tarefa seguindo `modelos/discovery.json`.
+Uma rodada no chat, com AskUserQuestion (até 4 perguntas por chamada; a recomendada é a primeira opção, com "(Recomendado)"). Pergunta aberta (objetivo, contexto de negócio) vai em texto, curta. Antes das perguntas, se ajudar, diga em até 3 linhas o que você entendeu do pedido (em bug, a causa), em linguagem simples.
 
-- **`entendimento`:** o problema e o que você entendeu do pedido, em até 5 linhas de linguagem simples (ver "Como falar com o usuário" no `SKILL.md`). Em bug, a causa nos dois níveis, imediata e de desenho, dita com as palavras do domínio. Na tela, ele marca "Entendeu certo" ou "Entendeu errado" (o item `ENT` nas respostas).
-- **`achados`** (opcional): o que a pesquisa encontrou e que muda a conversa, cada um com a prova técnica em `prova` (fica recolhida na tela).
-- **`perguntas`:** as decisões, uma por item, com 2 a 4 opções. A recomendada leva `"recomendada": true` (nunca na de entrega, que é preferência dele). Cada opção diz em `efeito` o que o usuário final vê. Pergunta aberta (objetivo, contexto de negócio) leva `"aberta": true` e nenhuma opção.
-- **`esboco`** (tarefa de UI): `link` para o esboço da tela e `texto` dizendo o que olhar nele. Ele marca "Está bom" ou "Mudar".
-- **`terceiros`:** as perguntas para outro time (contrato, API de terceiro), ver abaixo.
-- **`decidido`:** o que você decidiu sem perguntar e que ele precisa conhecer: decisão técnica que passa no teste abaixo e decisão que uma fala dele já responde. Cada item com `porque` e `fonte` (a fala dele, com a data, ou o `arquivo:linha`). Ele concorda ou discorda na tela, e é isso que evita perguntar de novo o que ele já disse.
-
-**O que vira pergunta.** Antes de cada uma, teste: "se a resposta fosse a outra, o código ou o escopo mudaria? E o que o usuário já disse resolve?". Pergunte se mudaria e o que ele disse não resolve. Se uma fala dele resolve, o item vai para `decidido`, citando a fala. As perguntas são da tarefa e ancoradas no código, nunca genéricas:
+**O que vira pergunta.** Antes de cada uma, teste: "se a resposta fosse a outra, o código ou o escopo mudaria? E o que o usuário já disse resolve?". Pergunte só se mudaria e o que ele disse não resolve. O que uma fala dele já resolve vai para "O que ficou decidido" na spec, sem perguntar de novo. As perguntas são da tarefa e ancoradas no código, nunca genéricas:
 
 - Ruim: "Como você quer tratar erros?"
-- Bom: "`calcularFrete` hoje devolve 0 para carrinho vazio, e o novo fluxo chama ele antes da validação. Mantemos o 0 ou passamos a lançar `CarrinhoVazioError`?"
+- Bom: "Hoje o frete vem 0 com carrinho vazio, e o novo fluxo calcula antes de validar. Mantemos o 0 ou mostramos um erro?"
 
-**Tipos de pergunta (`tema`):**
+Cada opção diz o que o usuário final vê. Tipos:
 
-- **`produto`:** o que o usuário final vê ou faz (texto, fluxo de tela, valor pré-preenchido, o que aparece ou some, regra de negócio, o que acontece quando dá errado). Uma pergunta para cada decisão, com um exemplo concreto em cada opção.
-- **`desenho`:** a decisão técnica que muda o que o usuário vê, contraria uma decisão registrada (ADR, `CLAUDE.md`) ou afeta o trabalho de outras pessoas. Diga qual decisão registrada ela contraria. As outras decisões técnicas (onde fica o código, que padrão seguir, nome, estrutura de teste) você toma e põe em `decidido` se ele precisar saber, ou só no plano.
-- **`escopo`:** a correção na raiz sai do escopo (toca outro módulo, muda um contrato, afeta outros usos), com as opções corrigir na raiz × remendo consciente e o que cada uma afeta; ou algo que o usuário pediu ficaria de fora, com as opções incluir × deixar para depois.
-- **`incerteza`:** a incerteza empírica relevante. Uma pergunta com a **meta** (ex.: "eval 7/7 com 2 repetições"), o **orçamento** (rodadas, custo), o **plano B** se o orçamento acabar (ex.: "tirar a decisão do prompt e passar para código"), **quem roda** e **o que fecha a rodada**: defeito novo sem relação com a mudança vira ponto em aberto, não correção na hora. A resposta é o teto: cada rodada com custo ainda pede o "pode" dele na execução.
-- **`entrega`:** fixa, em toda tarefa: o que fazer com o git no final, para que nenhum push ou PR aconteça sem ele querer. Opções: "Só commits na branch" (ele faz push e PR), "Push da branch" e "Push + PR para `<integração>`".
+- **Produto:** o que o usuário final vê ou faz (texto, fluxo, valor pré-preenchido, regra de negócio, o que acontece quando dá errado), com um exemplo concreto por opção.
+- **Desenho:** só a decisão técnica que muda o que o usuário vê, contraria uma decisão registrada (ADR, `CLAUDE.md`, diga qual) ou afeta o trabalho de outras pessoas. As outras decisões técnicas você toma e põe no plano.
+- **Escopo:** a correção na raiz sai do escopo (opções: raiz × remendo consciente, com o que cada uma afeta), ou algo que ele pediu ficaria de fora (incluir × depois).
+- **Incerteza:** a incerteza empírica relevante, com **meta** (ex.: "eval 7/7 com 2 repetições"), **orçamento** (rodadas, custo), **plano B** se acabar, **quem roda** e **o que fecha a rodada** (defeito novo sem relação com a mudança vira ponto em aberto, não correção na hora). O orçamento é o teto: cada rodada com custo ainda pede o "pode" dele na execução.
+- **Entrega:** fixa, em toda tarefa: "Só commits na branch" (ele faz push e PR), "Push da branch" ou "Push + PR para `<integração>`". Sem opção recomendada: é preferência dele.
 
-**Perguntas para outro time** (o contrato de uma API externa, o comportamento de um sistema de terceiro). Antes de cada uma, o filtro: **só eles sabem a resposta?** Se o nosso código, uma decisão registrada ou o próprio usuário resolvem, ela não vai: vira `decidido`, com a fonte. Cada uma que passa no filtro é uma situação, não um rótulo:
-
-- `hoje`: o que vem hoje (o trecho real do payload ou do comportamento);
-- `nosso_codigo`: o que fazemos com isso;
-- `nao_sabemos`: a dúvida, em uma frase;
-- `se_vier_diferente`: o que o usuário final vê se o real vier diferente;
-- `prova`: o `arquivo:linha`, recolhido.
-
-Na tela ele marca "Mandar" ou "Tirar" em cada uma. Só depois disso monte o texto para enviar (com as que ficaram), pedindo resposta de todas, a menos que ele diga outra coisa.
+**Perguntas para outro time** (contrato de API externa, comportamento de sistema de terceiro): filtre antes, **só eles sabem a resposta?** Se o nosso código, uma decisão registrada ou o próprio usuário resolvem, ela não vai. As que passam, mostre no chat, cada uma em poucas linhas: o que vem hoje, o que fazemos com isso, a dúvida e o que o usuário final vê se vier diferente. Ele tira o que quiser; depois monte o texto para enviar, pedindo resposta de todas.
 
 **Regra que o usuário escreveu** (formato, faixa, texto) não vira pergunta com reinterpretações dela como opções. Ela vai para a spec ao pé da letra, onde ele disse. Só pergunte o que a regra não responde.
 
-**Sem tela quando não precisa.** Se a única pergunta for a de entrega, faça-a no chat (AskUserQuestion) e vá direto para a spec. Mudança trivial nem chega aqui (ver "Fluxo" no `SKILL.md`).
+**Ao receber as respostas:**
 
-**Ao receber as respostas** (`discovery.respostas.json`):
-
-1. **Comentário que é pergunta ou dúvida** ("não entendi", "mas como fica X?", "que tool?"): responda no chat, em linguagem simples, antes de qualquer outra coisa. Não grave nada em arquivo no lugar de responder.
-2. **Entendeu errado** (`ENT`): corrija o entendimento antes de tudo e refaça as perguntas que dependiam dele; as respostas dadas em cima do entendimento errado não valem até ele confirmar de novo.
-3. **Discordo, outra resposta, esboço para mudar ou correção de desenho** (o quê, onde ou como): atualize o `discovery.json`, suba a `versao` e abra nova rodada só com o que mudou ou o que a correção criou. Até duas rodadas é o normal numa tarefa com fluxo novo; não economize a segunda.
-4. **Tudo respondido** (com o entendimento certo): siga para a spec.
+1. **Resposta que é dúvida** ("não entendi", "mas como fica X?"): responda em uma ou duas frases antes de qualquer outra coisa. Não grave nada no lugar de responder.
+2. **Ele disse que você entendeu errado:** corrija o entendimento e refaça só as perguntas que dependiam dele.
+3. **Respostas dadas:** siga para a spec. Uma segunda rodada só se uma resposta abriu uma decisão nova.
 
 ## 5. Spec
 
-A spec é o contrato: **o quê e por quê**, sem o como. Ela nasce do pedido, da pesquisa e das respostas do discovery, e não traz pergunta nem decisão em aberto. Escreva `spec.json` seguindo `modelos/spec.json`.
+A spec diz **o quê e por quê**, sem o como. Ela nasce do pedido, da pesquisa e das respostas, e não traz pergunta em aberto. Escreva `spec.md` na pasta da tarefa seguindo `modelos/spec.md`.
 
-- **`problema`:** o que está errado ou faltando, em até 3 linhas.
-- **`objetivos`** (O1, O2…): o que o usuário quer alcançar, tirado do pedido e da dor dele, fiel às palavras e aos números dele. Sem objetivo novo que ele não deu.
-- **`requisitos`** (R1, R2…): cada um uma coisa só, verificável, com:
-  - `tipo`: `comportamento` (o que acontece em uma situação), `requisito` (o que precisa existir ou valer) ou `restricao` (o que não pode mudar ou acontecer);
-  - `texto`: na forma "Quando <situação>, o sistema <resposta>" para comportamento; em linguagem do domínio, sem nome de função, campo ou status;
-  - `exemplo`: o que o usuário final vê, concreto (esperado, com valores);
-  - `porque`: o que ele resolve;
-  - `origem`: os objetivos que ele serve;
-  - `aderencia` e `justificativa`: se ele **bate** com o objetivo de origem, é **parcial** (cobre só parte, ou vai além do pedido) ou **não bate** (exigido por outra coisa, como um efeito colateral ou uma decisão do discovery), com a justificativa em uma frase. Seja honesto: `parcial` e `nao_bate` são o que mostra a ele o escopo que cresceu. Em correção estrutural que deixa casos da mesma família sem cobertura, a aderência é `parcial` e a justificativa diz quais;
-  - `criterio`: como se verifica (o teste, o cenário do eval, o passo na tela);
-  - `prova` (opcional): o detalhe técnico, recolhido na tela.
-- **`decisoes`:** o resumo das respostas do discovery, só para leitura.
+**Escreva para ele ler sem esforço.** É um texto amigável, como se você explicasse a um colega: frases curtas, as palavras do domínio e as dele, exemplos com valores de verdade. Nada de nome de função, campo, status ou sigla que ele não usou; nada de tabela, linha separadora ou bloco de código. Se ele precisar reler uma frase para entender, reescreva.
 
-Objetivo sem requisito é uma lacuna: cubra, ou marque `"lacuna"` no objetivo com o motivo. O script recusa a spec com objetivo descoberto.
+- **O problema:** até 3 linhas.
+- **O que você quer** (O1, O2…): os objetivos, fiéis às palavras e aos números dele. Sem objetivo que ele não deu.
+- **O que vai mudar** (R1, R2…): cada requisito uma coisa só, verificável, com "Quando <situação>, <o que acontece>", um exemplo concreto, o porquê (com o objetivo que ele serve) e como a gente confere.
+- **⚠️ Vai além do pedido:** só no requisito que cresceu o escopo ou existe por outro motivo (efeito colateral, decisão), em uma frase. Em correção estrutural que deixa casos da mesma família sem cobertura, diga quais. É o sinal de escopo crescendo; não esconda.
+- **O que ficou decidido:** as respostas das perguntas e o que você decidiu que ele precisa conhecer (só o que muda o que ele vê), cada um com a fonte.
 
-**Antes de abrir a tela, confira cada requisito:** dá para verificar? Tem uma leitura só? O exemplo é concreto? A origem é real? Ele descreve o quê, e não o como (nome de arquivo, função ou estrutura vai para o plano)? Ele contradiz uma resposta do discovery? O tamanho acompanha a tarefa: um bug pequeno tem de 2 a 5 requisitos, não 16.
+Objetivo sem requisito é uma lacuna: cubra, ou diga no objetivo por que ficou de fora.
 
-**Ao receber as respostas** (`spec.respostas.json`):
+**Antes de abrir, confira cada requisito:** dá para verificar? Tem uma leitura só? O exemplo é concreto? Ele descreve o quê, e não o como (arquivo, função ou estrutura vai para o plano)? Contradiz uma resposta dele? O tamanho acompanha a tarefa: um bug pequeno tem de 2 a 5 requisitos, não 16.
 
-1. **Comentário que é pergunta:** responda no chat antes de qualquer outra coisa, como no discovery.
-2. **Ajustar ou rejeitar:** redesenhe a spec. Não é remendo no item: releia o objetivo e a justificativa, porque um requisito rejeitado pode mudar outros. Suba a `versao` e abra nova rodada. A tela fecha sozinha os itens aprovados que não mudaram e marca o que mudou.
-3. **Tudo aprovado** (todo requisito com `aprovado`): commite `discovery.json`, `spec.json` e as respostas, e siga para o plano. Item sem resposta não está aprovado.
+**Abra o arquivo para ele:** `code <caminho do spec.md>` (VS Code; se o comando não existir, só mostre o caminho). No chat, uma linha com o caminho e, se houver, quantos requisitos têm ⚠️. Não espere resposta: siga para o plano. Se ele comentar no chat enquanto isso, trate antes de fechar o plano: edite o `spec.md` e ajuste o que dependia.
 
 ## 6. Plano
 
-Escreva `plano.md` a partir de `modelos/plano.md`. O plano não passa por aprovação do usuário: ele aprovou o contrato, e o plano é como cumpri-lo.
+Escreva `plano.md` a partir de `modelos/plano.md`. O plano não passa por aprovação do usuário: é como cumprir a spec.
 
-- **Decisões:** as do discovery, com a resposta do usuário, e as técnicas que você tomou, marcadas "(decidido por mim)", cada uma com o porquê.
+- **Decisões:** as respostas dele e as técnicas que você tomou, marcadas "(decidido por mim)", cada uma com o porquê.
 - **Tarefas:**
   - cada uma é uma ação verificável, não um tema, e cabe num passo de trabalho (se vai encostar em oito arquivos, quebre);
-  - cada uma diz em `Atende:` os requisitos que cumpre, e em `Como:` o que fazer. **Todo requisito aprovado aparece em pelo menos um `Atende:`;** confira antes de fechar;
+  - cada uma diz em `Atende:` os requisitos que cumpre, e em `Como:` o que fazer. **Todo requisito da spec aparece em pelo menos um `Atende:`;** confira antes de fechar;
   - ordem por dependência **e por risco**: a sondagem da maior incerteza vem primeiro, antes de construir em volta dela;
   - branch, push, PR e code review **não são tarefas**: a branch já existe (passo 1), o review roda no fim de cada fase e push e PR são da entrega (`referencias/entrega.md`);
   - cada uma declara como é verificada: `Teste:` (escrito antes, TDD), ou `Verificar por:` com um comando ou passo concreto e o motivo de não ter teste, ou, se for empírica, `Meta:`, `Orçamento:` e `Se esgotar:`;
-  - a que o usuário executa leva `Quem roda: dev` e o motivo (custo de LLM que ele aprova, credencial ou ambiente dele, prova na tela). Sem a marca, quem roda é você.
+  - a que o usuário executa leva `Quem roda: dev` e o motivo (custo de LLM que ele aprova, credencial ou ambiente dele, prova visual). Sem a marca, quem roda é você.
 - **Fases:** só se houver mais de umas 8 tarefas ou não couber numa sessão. Cada fase entrega algo funcionando, termina com um critério claro e passa por um code review.
-- **Pronto quando:** cada requisito verificado pelo `criterio` dele, e o passo a passo da validação manual para o usuário, com o requisito de cada passo.
+- **Pronto quando:** cada requisito verificado pelo "como a gente confere" dele, e o passo a passo da validação manual para o usuário, com o requisito de cada passo.
 - **Curto.** Seção sem conteúdo fica "nenhuma". O plano é o mais curto que se basta.
 
 ## 7. Fechar
 
 1. Crie o `estado.md` a partir de `modelos/estado.md`, com todas as tarefas `pendente` (inclusive a linha Entrega, no fim) e o próximo passo apontando para a primeira.
-2. Commite o `plano.md` e o `estado.md` na branch da tarefa, seguindo a convenção do `projeto.md`.
-3. Diga em até 3 linhas o caminho do plano: fases, a maior incerteza e quem roda o quê. O quê e o porquê ele já aprovou; não repita.
+2. Commite `spec.md`, `plano.md` e `estado.md` na branch da tarefa, seguindo a convenção do `projeto.md`.
+3. Diga em até 3 linhas o caminho do plano: fases, a maior incerteza e quem roda o quê. Lembre que ele pode editar o `spec.md` antes do `/clear` ou depois: a próxima sessão confere.
 4. Faça o handoff (`referencias/handoff.md`). Sempre, mesmo com plano curto: você não mede o próprio contexto, e a execução rende mais numa sessão limpa.
-
-## A tela de revisão
-
-O script `scripts/revisao.py` valida o JSON da etapa, serve a página (`modelos/revisao.html`) e espera o usuário. Cada mudança na página vira rascunho (`<etapa>.rascunho.json`). Ao clicar em Enviar, ele grava `<etapa>.respostas.json`, imprime o resumo das respostas e encerra.
-
-1. **Rode em segundo plano** (Bash com `run_in_background: true`):
-   `python3 <pasta da skill>/scripts/revisao.py .trilho/tarefas/<slug> discovery` (ou `spec`).
-   Ele tenta abrir o navegador sozinho (no WSL, o do Windows). Saída 2 é erro no JSON: o stderr lista cada um; corrija e rode de novo.
-2. **Avise em uma ou duas linhas**: o endereço que ele imprimiu e o que pede atenção (ex.: "2 requisitos marcados ⚠️ parcial"). Nada do conteúdo da tela no chat. Termine o turno.
-3. **O encerramento do script é o aviso** de que as respostas chegaram: leia o resumo da saída e o `<etapa>.respostas.json`, e siga o "Ao receber as respostas" da etapa. Não pergunte se ele terminou.
-4. **Se ele responder no chat em vez da tela**, trate a resposta do chat como resposta, registre no próximo JSON o que ela decidiu e **desligue o servidor** que ficou esperando (TaskStop no processo em segundo plano, ou `kill $(cat <pasta>/<etapa>.pid)`). Sem perguntar: servidor esquecido rodando é trabalho que ele não pediu.
-5. **Nova rodada:** edite o JSON, suba a `versao` e rode o script de novo. Ele derruba sozinho o servidor anterior da mesma etapa, e os itens já aprovados e sem mudança aparecem fechados.
-6. **Ao sair do planejamento** (plano escrito, handoff, ou o usuário mudou de assunto), confira que nenhum servidor da tarefa ficou de pé (`ls <pasta>/*.pid`) e desligue o que sobrou. Ele também encerra sozinho depois de 4 horas sem acesso.
-
-A execução mostra o diff de cada fase com outro script, no mesmo esquema (`referencias/execucao.md`, "A tela do diff").
-
-Commite o JSON da etapa e as respostas. O `<etapa>.rascunho.json` e o `<etapa>.pid` são temporários e não entram no commit.
-
-No OpenCode, sem aviso de processo em segundo plano: rode com `nohup … &`, mostre o endereço e peça que ele diga "respondi" depois de enviar. Aí leia o `<etapa>.respostas.json`.

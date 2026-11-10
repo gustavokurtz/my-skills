@@ -1,6 +1,6 @@
 ---
 name: trilho
-description: Workflow de desenvolvimento que explora o código, pergunta só o que muda a solução (discovery), escreve uma spec que o usuário aprova item a item numa página no navegador, um plano executável, e executa com autonomia (TDD, handoff entre sessões, code review e o diff de cada fase numa página estilo VS Code para o usuário revisar). Use quando o usuário pedir para planejar ("vamos planejar", "planeja isso", "cria a spec", "cria o plano"), executar ou continuar ("executa", "continua de onde paramos", "onde paramos?", "continua <slug>"), fazer handoff de uma tarefa do trilho ("handoff", "vou dar clear", "salva onde paramos"), mencionar uma tarefa em `.trilho/` ou registrar feedback sobre o trilho ("feedback: …", "anota isso pro trilho"). Não use para perguntas, explicações ou edições pontuais que o usuário não pediu para planejar.
+description: Workflow de desenvolvimento que explora o código, pergunta só o que muda a solução, escreve uma spec em .md amigável para o usuário ler, um plano executável, e executa com autonomia (TDD, handoff entre sessões e code review a cada fase). Use quando o usuário pedir para planejar ("vamos planejar", "planeja isso", "cria a spec", "cria o plano"), executar ou continuar ("executa", "continua de onde paramos", "onde paramos?", "continua <slug>"), fazer handoff de uma tarefa do trilho ("handoff", "vou dar clear", "salva onde paramos"), mencionar uma tarefa em `.trilho/` ou registrar feedback sobre o trilho ("feedback: …", "anota isso pro trilho"). Não use para perguntas, explicações ou edições pontuais que o usuário não pediu para planejar.
 hooks:
   UserPromptSubmit:
     - hooks:
@@ -14,14 +14,14 @@ hooks:
 
 # Trilho
 
-O usuário já disse o que quer. Seu trabalho é entender o código, perguntar só o que muda a solução, escrever a spec (o quê e por quê) que ele aprova, escrever o plano (como) que uma sessão nova executa sem perguntar nada, e executar com autonomia. O estado do trabalho vive em `.trilho/`, não na conversa.
+O usuário já disse o que quer. Seu trabalho é entender o código, perguntar só o que muda a solução, escrever a spec (o quê e por quê) para ele ler, escrever o plano (como) que uma sessão nova executa sem perguntar nada, e executar com autonomia. O estado do trabalho vive em `.trilho/`, não na conversa.
 
 ## Dois tipos de incerteza
 
 - **De decisão:** o que o usuário quer. Some perguntando, no planejamento.
 - **Empírica:** o que o sistema vai fazer de fato. Só some rodando. Exemplos: comportamento de LLM (prompt, juiz, tool, eval), performance, integração externa instável, bug sem causa conhecida.
 
-Planejar por mais tempo não reduz a incerteza empírica. Descubra cedo e barato: a sondagem da maior incerteza vem antes de construir em volta dela, e a iteração tem meta e orçamento combinados no discovery e registrados no plano, em vez de virar exceção a cada rodada.
+Planejar por mais tempo não reduz a incerteza empírica. Descubra cedo e barato: a sondagem da maior incerteza vem antes de construir em volta dela, e a iteração tem meta e orçamento combinados nas perguntas do planejamento e registrados no plano, em vez de virar exceção a cada rodada.
 
 Medir não substitui pensar. Antes de qualquer rodada empírica (replay, eval, sondagem), escreva a hipótese em uma linha a partir do código e do texto que o modelo recebe. Se a causa já está legível ali (um lembrete que contradiz uma regra, uma instrução que manda fazer o errado), ela é de desenho, não empírica: diga a causa e trate. Mede-se para confirmar uma hipótese, nunca para procurar uma. Duas rodadas de investigação sem hipótese nova: pare e raciocine sobre o desenho antes de rodar de novo.
 
@@ -54,7 +54,7 @@ Se a correção na raiz cabe no escopo, faça a da raiz. Se sai do escopo (toca 
 
 Corrigir só a imediata é corrigir o caso, não o sistema. Antes de corrigir, confira em "Defeitos" no `estado.md` se outro defeito já teve o mesmo mecanismo de desenho. **O segundo defeito da mesma família é remendo por definição**, mesmo que a correção local seja pequena e passe no teste: pare, consulte o arquiteto (`referencias/arquiteto.md`) e traga ao usuário as três opções (a local, a que só assume no caminho da falha e a estrutural), com o que cada uma resolve, o que toca (inclusive a decisão registrada que a estrutural contraria), quantos casos normais ela muda e quanto custa. A estrutural pode não ser simples; quem decide se vale é o usuário, sabendo que ela existe.
 
-Os porquês também são do usuário: ele precisa conhecê-los. Por isso cada requisito da spec traz o porquê dele e se bate com o objetivo de origem, ele aprova item a item, e a execução diz em uma linha o porquê e o como de cada tarefa.
+Os porquês também são do usuário: ele precisa conhecê-los. Por isso cada requisito da spec traz o porquê dele e o objetivo que serve, o que vai além do pedido vem marcado, e a execução diz em uma linha o porquê e o como de cada tarefa.
 
 ## Como falar com o usuário
 
@@ -63,6 +63,7 @@ Ele quer entender o porquê, não receber tudo de uma vez. Escreva para quem nã
 - **Primeiro o essencial, em linguagem simples:** o problema e a solução em até 5 linhas, com as palavras do domínio (o técnico, a posição, a manobra), não nomes de função, status ou campo. Termo técnico só quando ele já o usou.
 - **Depois a prova, curta:** um exemplo concreto (esperado × aconteceu), o `arquivo:linha` e, quando ajudar, um trecho de código de poucas linhas. Mais detalhe só se ele pedir.
 - **Sem repetir:** um número ou fato aparece uma vez. Tabela só quando compara coisas lado a lado.
+- **"Não entendi":** responda em uma ou duas frases, sem tabela. Mais só se ele pedir.
 - **Ao parar para uma decisão:** "o que aconteceu" (com exemplo), depois "o que você decide", com opções curtas, cada uma com o efeito que o usuário final vê. Diga o que já está decidido e não muda.
 - **Pedido ambíguo com mais de uma oferta pendente** ("corrija a régua", "faz isso"): pergunte qual em uma linha antes de editar.
 - **Regra que ele escreveu se aplica ao pé da letra, onde ele disse.** Não ofereça reinterpretações dela como opções, não acrescente exceção nem mexa em mais nada.
@@ -77,13 +78,13 @@ Se o arquivo não existir, diga ao usuário que `/trilho-init` cria esse arquivo
 ## Fluxo
 
 ```
-branch → pesquisar → discovery (tela, 1 a 2 rodadas) → spec (tela, aprovada item a item) → plano.md → handoff + /clear
-→ executar fase (code review → diff → handoff + /clear) → … → última fase (code review → diff) → entrega (verificação, push/PR)
+branch → pesquisar → perguntas no chat → spec.md (abre no editor, sem esperar) → plano.md → handoff + /clear
+→ executar fase (code review → commits no chat → handoff + /clear) → … → última fase (code review) → entrega (verificação, push/PR)
 ```
 
 Contexto limpo entre etapas é regra, não avaliação: depois do planejamento e no fim de cada fase (menos a última, que segue para a entrega na mesma sessão), faça o handoff e peça ao usuário o `/clear`. O tamanho do contexto também dispara o handoff: quando aparecer o aviso `[trilho] contexto em …` (vem de um hook, ver `referencias/handoff.md`), siga o que ele diz, no meio da fase se for preciso.
 
-É um fluxo só, para qualquer tamanho. O que muda é a profundidade de cada passo: uma tarefa pequena tem a pergunta da entrega no chat, uma spec de 2 a 5 requisitos e um plano de 15 linhas; uma grande tem discovery com várias perguntas, várias fases e alguns handoffs. Mudança trivial (uma linha, um texto, formatação): faça direto e avise que não abriu spec.
+É um fluxo só, para qualquer tamanho. O que muda é a profundidade de cada passo: uma tarefa pequena tem a pergunta da entrega no chat, uma spec de 2 a 5 requisitos e um plano de 15 linhas; uma grande tem várias perguntas, várias fases e alguns handoffs. Mudança trivial (uma linha, um texto, formatação): faça direto e avise que não abriu spec.
 
 Ao entrar em cada passo, leia a referência dele. Os caminhos `referencias/`, `modelos/` e `scripts/` são relativos à pasta desta skill (no Claude Code, `${CLAUDE_SKILL_DIR}`; no OpenCode, o "Base directory" que vem ao carregar a skill).
 
@@ -114,28 +115,25 @@ O modelo fica sem fixar porque os modelos disponíveis dependem do plano de cada
 
 Quando o usuário pedir para continuar ou citar uma tarefa que já existe:
 
-1. Leia o `estado.md` da tarefa. Da `spec.json` e do `plano.md`, leia só o que o próximo passo precisa. Na etapa `planejamento`, veja o que já existe: `discovery.json` sem respostas ou spec sem aprovação é uma tela pendente; rode o script de novo (`referencias/planejamento.md`, "A tela de revisão") e o rascunho dele volta. Na execução, o diff de uma fase sem `codigo-fase<N>.respostas.json` está pendente: rode o script de novo em segundo plano e siga com o próximo passo; quando o texto chegar, trate-o antes da próxima tarefa (`referencias/execucao.md`, "Questionamentos do diff").
-2. Confira com `git log` e `git status` o que de fato foi feito. Se divergir do estado (alguém trabalhou fora do fluxo), reconcilie e atualize o `estado.md`. Se a branch da tarefa já foi mergeada, ou o usuário está em outra branch (ex.: mergeou e publicou pela integração), **não troque de branch sozinho**: pergunte em uma linha em qual branch seguir e registre a resposta no `estado.md`.
-3. Recapitule em poucas linhas onde paramos, o que já se aprendeu e o próximo passo. Siga sem esperar confirmação. Se a etapa for `entrega`, vá direto para `referencias/entrega.md`. Se houver tarefa `esperando o dev`, peça o resultado dela no recap.
+1. Leia o `estado.md` da tarefa. Do `spec.md` e do `plano.md`, leia só o que o próximo passo precisa.
+2. **A spec mudou?** Ele pode ter editado o `spec.md` depois do plano. Mudou se o `git status` mostra o `spec.md` modificado, ou se o último commit que tocou o `spec.md` é mais novo que o último que tocou o `plano.md` (`git log -1 --format=%ci -- <arquivo>`). Se mudou, leia o diff, ajuste o `plano.md` (e o `estado.md`) antes de executar, commite e diga em uma linha o que mudou.
+3. Confira com `git log` e `git status` o que de fato foi feito. Se divergir do estado (alguém trabalhou fora do fluxo), reconcilie e atualize o `estado.md`. Se a branch da tarefa já foi mergeada, ou o usuário está em outra branch (ex.: mergeou e publicou pela integração), **não troque de branch sozinho**: pergunte em uma linha em qual branch seguir e registre a resposta no `estado.md`.
+4. Recapitule em poucas linhas onde paramos, o que já se aprendeu e o próximo passo. Siga sem esperar confirmação. Se a etapa for `entrega`, vá direto para `referencias/entrega.md`. Se houver tarefa `esperando o dev`, peça o resultado dela no recap.
 
-Tarefa com `roteiro.md` (formato anterior): siga usando o roteiro como plano; o Pedido e o Porquê dele fazem o papel da spec. Tarefa com `spec.md` e `progresso.json` (formato mais antigo): leia esses arquivos, gere um `estado.md` a partir deles e siga usando o `plano.md` dela.
+Tarefa em formato anterior: `spec.json` (com ou sem `discovery.json`) ou o Pedido e o Porquê de um `roteiro.md` fazem o papel da spec; `roteiro.md` também faz o do plano; sem `estado.md` (só `progresso.json`), gere um a partir do que existir.
 
 ## Arquivos da tarefa
 
 ```
 .trilho/tarefas/AAAA-MM-DD-<slug>/
-  discovery.json            # perguntas do discovery (modelo: modelos/discovery.json)
-  discovery.respostas.json  # o que o usuário respondeu na tela
-  spec.json                 # o quê e por quê, o contrato (modelo: modelos/spec.json). Estável.
-  spec.respostas.json       # a aprovação item a item
-  plano.md                  # como (modelo: modelos/plano.md). Estável.
-  codigo-fase<N>.respostas.json  # os questionamentos do usuário sobre o diff da fase N
+  spec.md      # o quê e por quê, em texto amigável (modelo: modelos/spec.md). O usuário pode editar.
+  plano.md     # como (modelo: modelos/plano.md). Estável.
   estado.md    # onde estamos (modelo: modelos/estado.md). Atualizado a cada tarefa; reescrito no handoff.
 ```
 
 Use a data real do sistema e um slug curto em kebab-case.
 
-- **`spec.json`** só muda com nova rodada de aprovação do usuário: objetivo, requisito ou escopo novo volta para a tela, só com os itens afetados.
+- **`spec.md`** é dele: muda quando ele edita ou pede. Objetivo, requisito ou escopo novo que você precise só entra com o sim dele no chat.
 - **`plano.md`** só muda quando o caminho muda de verdade (ver "Autonomia").
 - **`estado.md`** guarda o status de cada tarefa e tudo o que a spec e o plano não sabiam: o que se aprendeu rodando, hipóteses descartadas, correções do usuário, o próximo passo. Uma tarefa só vira `feito` **com evidência**: o teste dela passou, ou a verificação do plano rodou e deu certo.
 
@@ -143,7 +141,7 @@ Use a data real do sistema e um slug curto em kebab-case.
 
 Perguntas pertencem ao planejamento. Na execução, siga sozinha e pare só quando:
 
-- um requisito, objetivo ou o escopo da spec precisaria mudar (mudança aprovada volta à tela, só com os itens afetados);
+- um requisito, objetivo ou o escopo da spec precisaria mudar;
 - o orçamento de uma incerteza acabou sem atingir a meta (aplique o plano B se ele foi combinado; pare se não houver);
 - a correção na raiz sai do escopo da spec, ou só dá para remendar (ver "Porquê e como");
 - é o segundo defeito da mesma família, ou uma correção falhou na rodada real (ver "A causa tem dois níveis");
@@ -169,8 +167,9 @@ Falhas que já aconteceram e custaram retrabalho.
 - **Rodadas de ajuste sem meta.** Uma tarefa determinística que vira empírica no meio (o teste passa, mas o comportamento real não) leva a ajustes emendados sem fim, com um pedido de desvio a cada rodada. Não emende: proponha ao usuário, uma vez, meta, orçamento e plano B, registre no plano e siga como tarefa empírica.
 - **Verde no arquivo, vermelho na suíte.** O teste da tarefa passar não fecha a fase. Verde é a suíte do `projeto.md`, não o arquivo que você rodou.
 - **Implementar durante o planejamento.** A spec registra o quê e o porquê, e o plano registra decisões (onde, como verificar), não o código. Se está escrevendo implementação no plano, volte ao nível de decisão. Se a spec cita arquivo ou função, isso é plano.
-- **"Batem" como carimbo.** Num bloco de porquês no chat com uma pergunta "batem?", o usuário respondeu "Batem" em 15 de 17 planejamentos, e as dúvidas e correções de desenho vieram depois do roteiro pronto (um foi reescrito três vezes). Por isso a validação é por item, na spec, com o porquê e a aderência de cada um, e nada de plano antes de todos aprovados.
+- **Confirmação como carimbo, e tela como cerimônia.** Um "batem?" no chat foi respondido "Batem" em 15 de 17 planejamentos, e as dúvidas vieram depois do plano pronto. A troca por telas de aprovação item a item virou cerimônia (servidor, rodadas, itens já decididos reabertos). Por isso a spec é um `.md` amigável que ele lê no tempo dele e edita se quiser, e a sessão seguinte confere se ela mudou. Não peça confirmação da spec.
 - **Gravar no lugar de responder.** O usuário escreveu uma dúvida na resposta de uma pergunta ("não entendi muito bem o problema") e a sessão seguiu gravando o roteiro. Comentário que é pergunta se responde no chat antes de qualquer outra coisa.
+- **Spec que dá raiva de ler.** Spec técnica, com tabela, sigla, nome de campo e marcações em todo item, não é lida. Escreva como quem explica a um colega (ver `referencias/planejamento.md`, "Spec").
 - **Julgar o contexto como leve.** Uma sessão foi do planejamento direto para a execução com quase 300k de contexto, depois de sondagem com eval real e várias leituras, e a qualidade cai com o contexto cheio, mesmo numa janela de 1M. O modelo não mede o próprio contexto e tende a se achar leve para seguir trabalhando. Por isso o handoff depois do planejamento e de cada fase é obrigatório, sem avaliação, e o aviso do hook de contexto se obedece, não se discute.
 - **Corrigir o turno, não a família.** Numa tarefa com eval de LLM, seis defeitos com o mesmo mecanismo (o modelo escrevendo livremente um passo de resposta única) ganharam seis remendos: uma recusa, uma frase na orientação, um lembrete, duas exceções na régua. Cada um passou no replay; o lembrete derrubou o eval inteiro de 51/52 para 48/52. A saída estrutural apareceu uma vez e foi descartada por contrariar uma decisão registrada, sem chegar ao usuário como opção. Ver "A causa tem dois níveis".
 - **Régua e produto no mesmo commit.** Uma correção de comportamento e o endurecimento da régua do eval entraram juntos; ao desfazer a correção, a régua endurecida ficou e passou a reprovar a rodada boa. Mudança no produto e mudança na régua vão em commits separados, e cada uma se mede sozinha.

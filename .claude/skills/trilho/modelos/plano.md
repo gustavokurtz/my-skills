@@ -2,10 +2,10 @@
 
 **Tarefa:** AAAA-MM-DD-<slug>
 **Branch:** `<nome da branch>` (sai de `<integração>`)
-**Spec:** `spec.json` v<N>, aprovada em AAAA-MM-DD (respostas em `spec.respostas.json`)
+**Spec:** `spec.md`
 **Entrega:** só commits na branch | push da branch | push + PR para `<integração>`
 
-<!-- O quê e o porquê estão na spec aprovada. Este arquivo é só o como. -->
+<!-- O quê e o porquê estão no spec.md. Este arquivo é só o como. -->
 
 ## Contexto no código
 
@@ -15,11 +15,11 @@
 
 ## Decisões
 
-As do discovery (com a resposta do usuário) e as técnicas que eu tomei, cada uma com o porquê.
+As respostas do usuário às perguntas e as técnicas que eu tomei, cada uma com o porquê.
 
 | Questão | Decisão | Porquê |
 |---|---|---|
-| … | … (discovery, P1) | … |
+| … | … (resposta do usuário) | … |
 | … | … (decidido por mim) | … |
 
 ## Incertezas
@@ -31,7 +31,7 @@ O que só se descobre rodando. "nenhuma" se a tarefa é toda determinística.
 ## Tarefas
 
 <!-- Branch, push, PR e code review não entram aqui: o review roda no fim de cada fase; push e PR, na entrega.
-     Todo requisito aprovado da spec aparece em pelo menos um "Atende:". -->
+     Todo requisito da spec aparece em pelo menos um "Atende:". -->
 
 ### Fase 1 — <o que fica funcionando ao fim da fase>
 
@@ -50,14 +50,14 @@ O que só se descobre rodando. "nenhuma" se a tarefa é toda determinística.
 - **T4** — <tarefa que o usuário executa>
   - Atende: R3
   - Como: …
-  - Quem roda: dev (<motivo: custo de LLM, credencial, ambiente dele, prova na tela>)
+  - Quem roda: dev (<motivo: custo de LLM, credencial, ambiente dele, prova visual>)
   - Verificar por / Meta: …
 
 **Fim da fase 1:** <o que deve estar verde ou demonstrável>
 
 ## Pronto quando
 
-Cada requisito aprovado da spec verificado pelo "Como se verifica" dele.
+Cada requisito da spec verificado pelo "Como a gente confere" dele.
 
 Validação manual (o usuário roda no final):
 
