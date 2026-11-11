@@ -50,7 +50,7 @@ O comportamento e os porquês viram requisitos da spec; o caminho vira o plano.
 
 ## 4. Perguntas
 
-Uma rodada no chat, com AskUserQuestion (até 4 perguntas por chamada; a recomendada é a primeira opção, com "(Recomendado)"). Pergunta aberta (objetivo, contexto de negócio) vai em texto, curta. Antes das perguntas, se ajudar, diga em até 3 linhas o que você entendeu do pedido (em bug, a causa), em linguagem simples.
+Uma rodada no chat, com AskUserQuestion (a recomendada é a primeira opção, com "(Recomendado)"). Se a ferramenta limitar perguntas por chamada (AskUserQuestion: 4), faça outra chamada em seguida, na mesma rodada. Não corte nem junte duas decisões numa pergunta para caber: o que limita é o filtro abaixo, não a contagem. Pergunta aberta (objetivo, contexto de negócio) vai em texto, curta. Antes das perguntas, se ajudar, diga em até 3 linhas o que você entendeu do pedido (em bug, a causa), em linguagem simples.
 
 **O que vira pergunta.** Antes de cada uma, teste: "se a resposta fosse a outra, o código ou o escopo mudaria? E o que o usuário já disse resolve?". Pergunte só se mudaria e o que ele disse não resolve. O que uma fala dele já resolve vai para "O que ficou decidido" na spec, sem perguntar de novo. As perguntas são da tarefa e ancoradas no código, nunca genéricas:
 
