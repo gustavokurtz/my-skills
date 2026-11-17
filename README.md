@@ -1,6 +1,6 @@
 # my-skills
 
-Claude Code skills I use every day. One turns a sloppy draft into a clear prompt before it is sent, one runs a full plan-then-execute workflow with spec files, subagent reviews and handoffs between sessions, and one writes a structured summary before `/compact`.
+Claude Code skills I use every day. One turns a sloppy draft into a clear prompt before it is sent, one runs a full plan-then-execute workflow with spec files, subagent reviews and handoffs between sessions, one writes a structured summary before `/compact`, and one turns a technical explanation into a chat message for someone who is not technical.
 
 The skills are written in Portuguese, because that is the language I work in. They still apply to code in any language, and `refinar-prompt` answers in the language of the draft.
 
@@ -12,6 +12,7 @@ The skills are written in Portuguese, because that is the language I work in. Th
 | `trilho` | Development workflow: research, questions, `spec.md`, `plano.md`, autonomous execution with TDD, a code review per phase, handoffs between sessions, and delivery | "vamos planejar", "executa", "continua <slug>", "handoff", or `/trilho` |
 | `trilho-init` | Scans the repo once and writes `.trilho/projeto.md` (commands, conventions, fixed rules) for `trilho` to read | `/trilho-init` only (model invocation is disabled) |
 | `compactar-contexto` | Writes a summary of the whole session to `.claude/contexto-sessao.md` before `/compact` | "compactar", "o contexto tá cheio", "resumir a sessão", or before running `/compact` |
+| `descomplicar` | Writes the message you send to someone non-technical (PO, manager, client) from a loose technical explanation, in plain words and your own voice, and copies it to the clipboard | "explica de forma leiga", "me ajuda a responder a PO", "redige uma resposta pra...", or `/descomplicar` |
 
 ## Install
 
@@ -27,7 +28,7 @@ cp -r my-skills/.claude/skills/* ~/.claude/skills/
 cp -r my-skills/.claude/skills/* /path/to/project/.claude/skills/
 ```
 
-Requirements: `python3` for the `trilho` context hook. The Ctrl+G editor needs `bash`, the `claude` CLI and `timeout` on your PATH.
+Requirements: `python3` for the `trilho` context hook. `descomplicar` copies through `clip.exe` and `iconv`, so the clipboard step only works under WSL. The Ctrl+G editor needs `bash`, the `claude` CLI and `timeout` on your PATH.
 
 ### Ctrl+G setup for refinar-prompt
 
@@ -139,6 +140,18 @@ When you are unhappy with how the workflow behaved, `trilho` appends an entry to
 
 Automatic summaries keep the end of a conversation and lose the start and middle, where decisions and corrections usually are. This skill rereads the whole session and writes a fixed-format summary: goal, timeline (start, middle, end), key decisions with reasons, discarded alternatives, user corrections, current state, next steps and reference details. It saves it to `.claude/contexto-sessao.md`, newest on top, and suggests a `/compact` command that preserves it. If a `trilho` task is in progress, the `trilho` handoff is used instead.
 
+## descomplicar
+
+You paste whatever you have (jargon, out of order, the question the other person asked) and get back the message to send, written as you would write it in a work chat. The skill treats the text as material: it does not investigate the code or try to fix the problem.
+
+- **Answer first.** The message starts with the answer to what the person asked, then only the context they need to accept it, then the next step (who does what).
+- **The concrete fact, not an analogy.** The reason comes from the fact that convinces ("the test passes with or without the fix"). An analogy is used only when the fact cannot do it, in one sentence.
+- **No backstage.** What changed in the code, how the issue was found, service names, environments and dev acronyms stay out. Their words stay in ("checklist", "PRD"); dev terms become what they mean in the other person's field.
+- **Sounds like you.** Colloquial pt-BR, first person, 2 to 6 sentences, no headings, bold or emoji. If you paste earlier messages, it copies your style. A list of AI tells (staged metaphors, punchlines, "não é X, é Y", em dashes, dangling gerunds, corporate filler) is checked and rewritten before showing.
+- **Invents nothing.** No deadlines, promises or names you did not give. If a missing fact would change the message, it says which one after the text.
+
+The final message goes to the Windows clipboard through `scripts/copiar.sh` (UTF-16LE so accents survive, CRLF line endings) and is shown in the chat as plain text, followed by "Copiado.". "Mais curto" or "mais formal" adjusts the last version and copies it again.
+
 ## Layout
 
 ```
@@ -157,4 +170,7 @@ Automatic summaries keep the end of a conversation and lose the start and middle
     modelo-projeto.md   template for .trilho/projeto.md
   compactar-contexto/
     SKILL.md
+  descomplicar/
+    SKILL.md
+    scripts/            copiar.sh (clipboard via clip.exe)
 ```
